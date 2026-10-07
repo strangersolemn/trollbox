@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Strange Café · Trollbox</title>
+<style>
+  :root { --ink: #f4ecdf; --dim: #9a8fae; --orange: #f7931a; --pink: #ff4fa3; --green: #7dff9a; --bg: #07060a; }
+  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; color: var(--ink);
+    font: 14px/1.5 "Courier New", monospace; -webkit-user-select: none; user-select: none; touch-action: none; }
+  canvas { display: block; }
+  .ui { position: fixed; z-index: 5; }
+  #logo { top: 14px; left: 16px; font-weight: bold; letter-spacing: .12em; font-size: 13px; color: var(--ink);
+    text-shadow: 0 0 8px var(--pink); }
+  #logo span { color: var(--dim); font-weight: normal; letter-spacing: .04em; }
+  #infoBtn { top: 10px; right: 12px; }
+  button { font: inherit; color: var(--ink); background: rgba(20,14,30,.75); border: 1px solid #4a3d63; padding: 8px 12px;
+    border-radius: 6px; cursor: pointer; }
+  button:hover { border-color: var(--pink); }
+  #prompt { left: 50%; bottom: 84px; transform: translateX(-50%); padding: 8px 14px; border-radius: 6px;
+    background: rgba(10,8,16,.8); border: 1px solid var(--green); color: var(--green); display: none; cursor: pointer; white-space: nowrap; }
+  #toast { left: 50%; top: 22%; transform: translateX(-50%); padding: 10px 16px; border-radius: 6px; background: rgba(10,8,16,.85);
+    border: 1px solid var(--orange); color: var(--orange); display: none; text-align: center; }
+  #standBtn { left: 50%; bottom: 20px; transform: translateX(-50%); display: none; }
+  #hint { left: 16px; bottom: 12px; color: var(--dim); font-size: 11px; }
+  #cross { left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: rgba(255,255,255,.6); display: none; }
+
+  #intro, #info { inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(5,4,8,.82); z-index: 10; padding: 16px; box-sizing: border-box; }
+  #info { display: none; }
+  .card { max-width: 440px; width: 100%; background: #0d0a14; border: 1px solid #3a2f4f; border-radius: 10px; padding: 26px 24px; box-sizing: border-box; }
+  .card h1 { margin: 0 0 4px; font-size: 30px; letter-spacing: .14em; color: var(--ink); text-shadow: 0 0 14px var(--pink), 0 0 2px var(--pink); }
+  .card h2 { margin: 0 0 18px; font-size: 13px; font-weight: normal; color: var(--dim); letter-spacing: .08em; }
+  .card p { margin: 0 0 12px; }
+  .card .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0; }
+  .card .stats div { border: 1px solid #2c2440; border-radius: 6px; padding: 8px; text-align: center; }
+  .card .stats b { display: block; color: var(--orange); font-size: 16px; }
+  .card .stats small { color: var(--dim); font-size: 11px; }
+  .card .go { width: 100%; padding: 12px; font-weight: bold; letter-spacing: .12em; background: var(--orange); color: #120a00; border: 0; margin-top: 6px; }
+  .card .go:hover { filter: brightness(1.1); }
+  .card .muted { color: var(--dim); font-size: 12px; }
+  .card a { color: var(--green); }
+
+  /* touch controls */
+  #joy { left: 22px; bottom: 60px; width: 110px; height: 110px; border-radius: 50%; border: 1px solid rgba(255,255,255,.25); display: none; }
+  #joy i { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px; border-radius: 50%; background: rgba(255,255,255,.25); }
+</style>
+</head>
+<body>
+<div id="logo" class="ui">STRANGE CAFÉ <span>· trollbox</span></div>
+<button id="infoBtn" class="ui">trollz?</button>
+<div id="prompt" class="ui"></div>
+<div id="toast" class="ui"></div>
+<button id="standBtn" class="ui">stand up</button>
+<div id="hint" class="ui"></div>
+<div id="cross" class="ui"></div>
+<div id="joy" class="ui"><i></i></div>
+
+<div id="intro" class="ui">
+  <div class="card">
+    <h1>STRANGE CAFÉ</h1>
+    <h2>troll station</h2>
+    <img src="logo/trollbox-logo-alpha.png" alt="TROLLBOX" style="width:100%;max-width:360px;display:block;margin:0 auto 14px">
+    <p>2,222 anonymous trolls on bitcoin.</p>
+    <p>every troll gets a line in the trollbox. nobody can see who wrote it.</p>
+    <div class="stats">
+      <div><b>2,222</b><small>trolls</small></div>
+      <div><b>~$10</b><small>mint</small></div>
+      <div><b>TBA</b><small>date</small></div>
+    </div>
+    <button class="go" id="enterBtn">WALK IN</button>
+    <p class="muted" style="margin-top:12px">shielded on ord dropz · by strangersolemn</p>
+    <p class="muted" style="margin-top:6px"><a href="?trollbox" style="color:#7dff9a">open as the trollbox (the parent: starts on the screen) →</a></p>
+  </div>
+</div>
+
+<div id="info" class="ui">
+  <div class="card">
+    <img src="logo/trollbox-logo-alpha.png" alt="TROLLBOX" style="width:100%;max-width:360px;display:block;margin:0 auto 6px">
+    <h2>anonymous trolls on bitcoin</h2>
+    <p>2,222 trolls, inscribed on bitcoin as children of the trollbox.</p>
+    <p>shielded on ord dropz. the art is public. who holds it is private, and so is every move after the mint.</p>
+    <p>every troll gets a line in the trollbox. write what you want. change it later, or switch it off before you sell. it goes in through the relay, so nobody can see who wrote it.</p>
+    <div class="stats">
+      <div><b>2,222</b><small>supply</small></div>
+      <div><b>~$10</b><small>mint</small></div>
+      <div><b>TBA</b><small>date</small></div>
+    </div>
+    <p class="muted">mint on ord dropz. guaranteed: the ord lot, block party, the masters (1/1 holders), block clocks. everyone else first come, first served.</p>
+    <button class="go" id="closeInfo">BACK TO THE CAFÉ</button>
+  </div>
+</div>
+
+<!-- On-chain: swap for a recursive /content/<id> Three.js inscription -->
+<script src="three.min.js"></script>
+<script src="trollbox-screen.js?v=1791401740"></script>
+<script src="trollbox-computer.js?v=1791401740"></script>
+<script>
+const $ = id => document.getElementById(id);
+const TOUCH = matchMedia("(pointer: coarse)").matches;
+
+// ---------------------------------------------------------------------------
+// Renderer / scene
+// ---------------------------------------------------------------------------
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#07060a");
+scene.fog = new THREE.Fog("#07060a", 13, 34);
+const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.03, 90);
+
+const ROOM = { w: 21, d: 18, h: 3.9 };     // v2: 1.5x. x: -10.5..10.5, z: -9..9
+const EYE = 1.6;
+
+// ---------------------------------------------------------------------------
+// Canvas textures (all procedural: no image files)
+// ---------------------------------------------------------------------------
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  draw(c.getContext("2d"), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  return t;
+}
+// 90s café carpet: dark with neon squiggles, triangles and dots
+const carpetTex = canvasTex(512, 512, (g, w, h) => {
+  g.fillStyle = "#0e0a16"; g.fillRect(0, 0, w, h);
+  const cols = ["#f7931a", "#ff4fa3", "#3fe0d0", "#9b5cff", "#7dff9a"];
+  let s = 7; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 120; i++) {
+    g.strokeStyle = g.fillStyle = cols[Math.floor(r() * cols.length)];
+    g.lineWidth = 3; const x = r() * w, y = r() * h, k = r();
+    if (k < 0.4) { g.beginPath(); g.moveTo(x, y); for (let j = 1; j < 4; j++) g.lineTo(x + j * 9, y + (j % 2 ? 8 : -8)); g.stroke(); }
+    else if (k < 0.7) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 12, y + 3); g.lineTo(x + 4, y + 13); g.closePath(); g.stroke(); }
+    else { g.beginPath(); g.arc(x, y, 2.5, 0, 7); g.fill(); }
+  }
+}, [10.5, 9]);
+const brickTex = canvasTex(512, 256, (g, w, h) => {
+  g.fillStyle = "#120d18"; g.fillRect(0, 0, w, h);
+  const bh = 32, bw = 64;
+  for (let y = 0; y < h; y += bh) for (let x = (y / bh) % 2 ? -bw / 2 : 0; x < w; x += bw) {
+    const v = 22 + Math.floor(Math.random() * 10);
+    g.fillStyle = `rgb(${v + 6},${v - 4},${v + 12})`; g.fillRect(x + 2, y + 2, bw - 4, bh - 4);
+  }
+}, [7, 2]);
+function textTex(lines, opts) {
+  const { w = 1024, h = 256, color = "#fff", glow = "#ff4fa3", font = "bold 120px 'Courier New', monospace", bg = null } = opts;
+  return canvasTex(w, h, (g) => {
+    if (bg) { g.fillStyle = bg; g.fillRect(0, 0, w, h); }
+    g.textAlign = "center"; g.textBaseline = "middle"; g.font = font;
+    const lh = h / lines.length;
+    lines.forEach((ln, i) => {
+      for (const b of [40, 20, 6]) { g.shadowColor = glow; g.shadowBlur = b; g.fillStyle = color; g.fillText(ln, w / 2, lh * i + lh / 2); }
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Room
+// ---------------------------------------------------------------------------
+const M = (o) => new THREE.MeshStandardMaterial(o);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM.w, ROOM.d), M({ map: carpetTex, roughness: 0.95 }));
+floor.rotation.x = -Math.PI / 2; scene.add(floor);
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(ROOM.w, ROOM.d), M({ color: "#0b0910", roughness: 1 }));
+ceil.rotation.x = Math.PI / 2; ceil.position.y = ROOM.h; scene.add(ceil);
+const wallMat = M({ map: brickTex, roughness: 0.95 });
+function wall(w, x, z, ry) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, ROOM.h), wallMat);
+  m.position.set(x, ROOM.h / 2, z); m.rotation.y = ry; scene.add(m);
+}
+wall(ROOM.w, 0, -ROOM.d / 2, 0); wall(ROOM.w, 0, ROOM.d / 2, Math.PI);
+wall(ROOM.d, -ROOM.w / 2, 0, Math.PI / 2); wall(ROOM.d, ROOM.w / 2, 0, -Math.PI / 2);
+
+// neon ceiling strips
+function neonBar(len, color, x, y, z, ry = 0) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.05, 0.05), new THREE.MeshBasicMaterial({ color }));
+  m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); return m;
+}
+neonBar(17, "#f7931a", 0, ROOM.h - 0.08, -2.0);
+neonBar(17, "#9b5cff", 0, ROOM.h - 0.08, 2.4);
+neonBar(15, "#ff4fa3", -ROOM.w / 2 + 0.05, 3.2, 0, Math.PI / 2);
+neonBar(15, "#3fe0d0", ROOM.w / 2 - 0.05, 3.2, 0, Math.PI / 2);
+neonBar(17, "#3fe0d0", 0, ROOM.h - 0.08, 6.6);
+
+// lighting
+scene.add(new THREE.AmbientLight("#3a2d52", 2.0));
+scene.add(new THREE.HemisphereLight("#5a3d80", "#120a14", 0.9));
+const L = (c, i, d, x, y, z) => { const l = new THREE.PointLight(c, i, d); l.position.set(x, y, z); scene.add(l); return l; };
+L("#f7931a", 11, 11, -4.5, 3.4, -2.0); L("#f7931a", 11, 11, 4.5, 3.4, -2.0);
+L("#9b5cff", 11, 12, -4, 3.4, 2.6); L("#9b5cff", 11, 12, 4, 3.4, 2.6);
+const signLight = L("#ff4fa3", 10, 8, 0, 3.1, -8.0);
+L("#ffcf9a", 5, 5.5, -7.6, 2.5, -6.6);   // warm light over the troll station
+L("#3fe0d0", 8, 11, -5, 3.4, 6.8); L("#ff4fa3", 8, 11, 5, 3.4, 6.8);   // front of the room
+L("#ff4fa3", 5, 9, -9.6, 2.6, 3.0); L("#ffd9a0", 6, 7, 8.8, 2.9, 5.6);   // side-wall wash + feature-art light
+
+// ---------------------------------------------------------------------------
+// The neon sign (back wall)
+// ---------------------------------------------------------------------------
+const signTex = textTex(["STRANGE CAFÉ"], { w: 2048, h: 256, font: "bold 150px 'Courier New', monospace", color: "#ffe9f4", glow: "#ff4fa3" });
+const sign = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 0.8), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, toneMapped: false }));
+sign.position.set(0, 3.25, -ROOM.d / 2 + 0.03); scene.add(sign);
+// The line under the sign is the ONE updatable string: later it comes off the café's control sat.
+const SUBLINE = "troll station";
+const sub = textTex([SUBLINE], { w: 1024, h: 128, font: "64px 'Courier New', monospace", color: "#d9fff0", glow: "#3fe0d0" });
+const subM = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.32), new THREE.MeshBasicMaterial({ map: sub, transparent: true, toneMapped: false }));
+subM.position.set(0, 2.72, -ROOM.d / 2 + 0.03); scene.add(subM);
+
+// ---------------------------------------------------------------------------
+// The Trollbox station (back-left corner): a small desk, "that's the troll station"
+// ---------------------------------------------------------------------------
+const wood = M({ color: "#3b2a20", roughness: 0.55 });
+const counter = new THREE.Group(); counter.position.set(-7.6, 0, -7.4); scene.add(counter);
+const ctop = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.08, 1.2), wood); ctop.position.y = 0.95; counter.add(ctop);
+const cbody = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.91, 1.0), M({ color: "#1d1426", roughness: 0.8 })); cbody.position.y = 0.455; counter.add(cbody);
+const cstrip = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.03, 0.02), new THREE.MeshBasicMaterial({ color: "#7dff9a" }));
+cstrip.position.set(0, 0.12, 0.51); counter.add(cstrip);
+const pc = makeTrollboxComputer(THREE, TrollboxScreen.canvas);
+pc.group.position.set(0, 0.99, -0.1); counter.add(pc.group);
+const st1 = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.22),
+  new THREE.MeshBasicMaterial({ map: textTex(["STATION 1 · TROLLBOX"], { w: 1024, h: 160, font: "bold 70px 'Courier New', monospace", color: "#fff", glow: "#7dff9a", bg: "#120a1c" }), toneMapped: false }));
+st1.position.set(0, 1.9, -0.55); counter.add(st1);
+TrollboxScreen.setKeystroke(pc.press);
+// a mug next to it
+const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.11, 16), M({ color: "#f4ecdf", roughness: 0.4 }));
+mug.position.set(0.95, 1.045, 0.15); counter.add(mug);
+// stool
+function stool(x, z, parent = scene) {
+  const s = new THREE.Group(); s.position.set(x, 0, z); parent.add(s);
+  const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 20), M({ color: "#ff4fa3", roughness: 0.5 })); seat.position.y = 0.72; s.add(seat);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.7, 8), M({ color: "#8a8a99", metalness: 0.8, roughness: 0.3 })); pole.position.y = 0.36; s.add(pole);
+  const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.03, 20), pole.material); foot.position.y = 0.015; s.add(foot);
+  return s;
+}
+stool(-7.6, -6.35);
+
+
+// ---------------------------------------------------------------------------
+// The bar (centre back), stocked with bottles of COPE
+// ---------------------------------------------------------------------------
+const eggs = [];   // { pos, label, msg }
+const BAR = { x: 1.5, z: -7.5, w: 6.6 };
+const copeLabel = canvasTex(256, 128, (g, w, h) => {
+  g.fillStyle = "#c8102e"; g.fillRect(0, 0, w, h);
+  g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.font = "italic bold 72px Georgia, serif"; g.fillText("COPE", w / 2, h / 2 - 4);
+  g.font = "16px 'Courier New', monospace"; g.fillText("ice cold · 330ml", w / 2, h - 16);
+});
+const glassMat = M({ color: "#2b1407", roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.92 });
+const labelMat = M({ map: copeLabel, roughness: 0.6 });
+const capMat = M({ color: "#c8102e", roughness: 0.4 });
+const bottleGeo = new THREE.CylinderGeometry(0.03, 0.033, 0.16, 12);
+const neckGeo = new THREE.CylinderGeometry(0.013, 0.026, 0.08, 10);
+const capGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.015, 10);
+const labelGeo = new THREE.CylinderGeometry(0.0315, 0.0335, 0.07, 12, 1, true);
+function copeBottle(x, y, z, parent = scene, ry = 0) {
+  const b = new THREE.Group(); b.position.set(x, y, z); b.rotation.y = ry; parent.add(b);
+  const body = new THREE.Mesh(bottleGeo, glassMat); body.position.y = 0.08; b.add(body);
+  const lab = new THREE.Mesh(labelGeo, labelMat); lab.position.y = 0.075; b.add(lab);
+  const neck = new THREE.Mesh(neckGeo, glassMat); neck.position.y = 0.2; b.add(neck);
+  const cap = new THREE.Mesh(capGeo, capMat); cap.position.y = 0.247; b.add(cap);
+  return b;
+}
+(function bar() {
+  const g = new THREE.Group(); g.position.set(BAR.x, 0, BAR.z); scene.add(g);
+  const top = new THREE.Mesh(new THREE.BoxGeometry(BAR.w, 0.08, 0.9), wood); top.position.y = 1.05; g.add(top);
+  const front = new THREE.Mesh(new THREE.BoxGeometry(BAR.w - 0.2, 1.01, 0.7), M({ color: "#1d1426", roughness: 0.8 })); front.position.y = 0.505; g.add(front);
+  const rail = new THREE.Mesh(new THREE.BoxGeometry(BAR.w - 0.2, 0.03, 0.02), new THREE.MeshBasicMaterial({ color: "#f7931a" })); rail.position.set(0, 0.14, 0.36); g.add(rail);
+  const edge = new THREE.Mesh(new THREE.BoxGeometry(BAR.w, 0.03, 0.03), new THREE.MeshBasicMaterial({ color: "#ff4fa3" })); edge.position.set(0, 1.1, 0.45); g.add(edge);
+  // back bar: mirror panel + three shelves full of COPE
+  const mirror = new THREE.Mesh(new THREE.PlaneGeometry(BAR.w - 0.4, 1.5), M({ color: "#2a2438", roughness: 0.1, metalness: 0.9 }));
+  mirror.position.set(0, 1.95, -ROOM.d / 2 - BAR.z + 0.02); g.add(mirror);
+  const welcome = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.26),
+    new THREE.MeshBasicMaterial({ map: textTex(["TROLLS WELCOME"], { w: 1024, h: 128, font: "bold 72px 'Courier New', monospace", color: "#fff1dc", glow: "#f7931a" }), transparent: true, toneMapped: false }));
+  welcome.position.set(0, 2.52, -ROOM.d / 2 - BAR.z + 0.04); g.add(welcome);
+  [1.35, 1.8, 2.25].forEach((y, row) => {
+    const sh = new THREE.Mesh(new THREE.BoxGeometry(BAR.w - 0.4, 0.04, 0.26), wood); sh.position.set(0, y, -ROOM.d / 2 - BAR.z + 0.15); g.add(sh);
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(BAR.w - 0.5, 0.015, 0.015), new THREE.MeshBasicMaterial({ color: ["#3fe0d0", "#ff4fa3", "#f7931a"][row] }));
+    strip.position.set(0, y - 0.03, -ROOM.d / 2 - BAR.z + 0.27); g.add(strip);
+    const n = 22;
+    for (let i = 0; i < n; i++) copeBottle(-BAR.w / 2 + 0.45 + i * (BAR.w - 0.9) / (n - 1), y + 0.02, -ROOM.d / 2 - BAR.z + 0.15, g, (i * 0.7) % 6.28);
+  });
+  // a few on the bar top
+  [-2.4, -1.1, 0.4, 1.9, 2.7].forEach((x, i) => copeBottle(x, 1.09, (i % 2 ? -0.2 : 0.1), g, i));
+  // stools along the front
+  [-2.4, -1.2, 0, 1.2, 2.4].forEach(x => stool(BAR.x + x, BAR.z + 1.05));
+  L("#f7931a", 7, 6, BAR.x - 1.8, 2.6, BAR.z - 0.6); L("#ff4fa3", 7, 6, BAR.x + 1.8, 2.6, BAR.z - 0.6);   // back-bar glow
+  eggs.push({ pos: new THREE.Vector3(BAR.x, EYE, BAR.z + 1.7), label: "the bar", msg: "bottles of COPE. the bar opens later." });
+})();
+
+// ---------------------------------------------------------------------------
+// Arcade cabinets (left wall): Easter-egg slots for later
+// ---------------------------------------------------------------------------
+function cabinet(z, title, screenColor) {
+  const c = new THREE.Group(); c.position.set(-ROOM.w / 2 + 0.5, 0, z); c.rotation.y = Math.PI / 2; scene.add(c);
+  const body = M({ color: "#160f22", roughness: 0.7 });
+  const b = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.9, 0.7), body); b.position.y = 0.95; c.add(b);
+  const marquee = new THREE.Mesh(new THREE.PlaneGeometry(0.76, 0.22),
+    new THREE.MeshBasicMaterial({ map: textTex([title], { w: 512, h: 128, font: "bold 64px 'Courier New', monospace", color: "#fff", glow: screenColor, bg: "#120a1c" }), toneMapped: false }));
+  marquee.position.set(0, 1.76, 0.355); c.add(marquee);
+  const scr = document.createElement("canvas"); scr.width = 256; scr.height = 192;
+  const st = new THREE.CanvasTexture(scr); st.colorSpace = THREE.SRGBColorSpace;
+  const sm = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.45), new THREE.MeshBasicMaterial({ map: st, toneMapped: false }));
+  sm.position.set(0, 1.3, 0.37); sm.rotation.x = -0.12; c.add(sm);
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 0.3), M({ color: "#2a1d3d" })); panel.position.set(0, 0.98, 0.45); panel.rotation.x = 0.3; c.add(panel);
+  [[-0.15, "#ff4fa3"], [0.05, "#f7931a"], [0.18, "#3fe0d0"]].forEach(([x, col]) => {
+    const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.02, 12), new THREE.MeshBasicMaterial({ color: col }));
+    btn.position.set(x, 1.03, 0.47); c.add(btn);
+  });
+  L(screenColor, 1.5, 2.2, -ROOM.w / 2 + 1.1, 1.4, z);
+  const g = scr.getContext("2d");
+  const draw = (t) => {
+    g.fillStyle = "#05030a"; g.fillRect(0, 0, 256, 192);
+    for (let i = 0; i < 18; i++) { g.fillStyle = screenColor; const y = (i * 23 + t * 40) % 192; g.fillRect((i * 53) % 256, y, 3, 3); }
+    g.textAlign = "center"; g.fillStyle = "#fff"; g.font = "bold 20px 'Courier New', monospace"; g.fillText(title, 128, 86);
+    if (Math.floor(t * 2) % 2) { g.font = "14px 'Courier New', monospace"; g.fillStyle = screenColor; g.fillText("OPENS LATER", 128, 130); }
+    st.needsUpdate = true;
+  };
+  eggs.push({ pos: new THREE.Vector3(-ROOM.w / 2 + 1.3, EYE, z), label: title.toLowerCase(), msg: "this station opens later.", draw });
+}
+cabinet(-3.6, "STATION 2", "#ff4fa3");
+cabinet(-2.0, "STATION 3", "#f7931a");
+cabinet(-0.4, "STATION 4", "#3fe0d0");
+
+// ---------------------------------------------------------------------------
+// Jukebox (right wall): another Easter-egg slot
+// ---------------------------------------------------------------------------
+(function jukebox() {
+  const j = new THREE.Group(); j.position.set(ROOM.w / 2 - 0.45, 0, -5.0); j.rotation.y = -Math.PI / 2; scene.add(j);
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.4, 0.55), M({ color: "#2a1630", roughness: 0.5 })); body.position.y = 0.7; j.add(body);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.04, 10, 40, Math.PI), new THREE.MeshBasicMaterial({ color: "#f7931a", toneMapped: false }));
+  arch.position.set(0, 1.4, 0.28); j.add(arch);
+  const arch2 = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.03, 10, 40, Math.PI), new THREE.MeshBasicMaterial({ color: "#ff4fa3", toneMapped: false }));
+  arch2.position.set(0, 1.4, 0.29); j.add(arch2);
+  const grill = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.5), M({ color: "#3a2a12", metalness: 0.6, roughness: 0.4 })); grill.position.set(0, 0.5, 0.28); j.add(grill);
+  L("#f7931a", 2.5, 3, ROOM.w / 2 - 1.1, 1.3, -5.0);
+  eggs.push({ pos: new THREE.Vector3(ROOM.w / 2 - 1.2, EYE, -5.0), label: "use the jukebox", msg: "no records yet. opens later." });
+})();
+
+// ---------------------------------------------------------------------------
+// Tables (right side) + the Trollz poster
+// ---------------------------------------------------------------------------
+const tables = [];
+[[5.4, 0.3], [5.4, 3.6], [2.4, 5.2], [-4.6, 4.2], [-2.0, 1.0]].forEach(([x, z]) => {
+  const t = new THREE.Group(); t.position.set(x, 0, z); scene.add(t);
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.05, 28), M({ color: "#d8cfb4", roughness: 0.5 })); top.position.y = 0.74; t.add(top);
+  const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.72, 8), M({ color: "#8a8a99", metalness: 0.8, roughness: 0.3 })); leg.position.y = 0.36; t.add(leg);
+  copeBottle(0.15, 0.765, -0.1, t, x + z);
+  stool(x - 0.75, z); stool(x + 0.75, z);
+  tables.push({ x, z, r: 1.25 });
+});
+const posterTex = canvasTex(512, 720, (g, w, h) => {
+  g.fillStyle = "#0d0a14"; g.fillRect(0, 0, w, h);
+  g.strokeStyle = "#f7931a"; g.lineWidth = 8; g.strokeRect(14, 14, w - 28, h - 28);
+  g.textAlign = "center"; g.fillStyle = "#f4ecdf"; g.font = "bold 92px 'Courier New', monospace";
+  g.shadowColor = "#ff4fa3"; g.shadowBlur = 20; g.fillText("TROLLZ", w / 2, 140); g.shadowBlur = 0;
+  g.font = "28px 'Courier New', monospace"; g.fillStyle = "#9a8fae";
+  ["anonymous trolls", "on bitcoin"].forEach((l, i) => g.fillText(l, w / 2, 200 + i * 36));
+  // a big placeholder troll
+  const face = document.createElement("canvas"); face.width = face.height = 16;
+  const ctx = face.getContext("2d");
+  ctx.fillStyle = "#7bd34f"; ctx.fillRect(3, 4, 10, 10); ctx.fillRect(2, 6, 12, 6); ctx.fillRect(1, 7, 1, 3); ctx.fillRect(14, 7, 1, 3);
+  ctx.fillStyle = "#ff7a1a"; [4, 6, 7, 9, 11].forEach((x, i) => ctx.fillRect(x, 1 + (i % 2), 1, 3));
+  ctx.fillStyle = "#fff"; ctx.fillRect(5, 7, 2, 2); ctx.fillRect(9, 7, 2, 2);
+  ctx.fillStyle = "#000"; ctx.fillRect(6, 8, 1, 1); ctx.fillRect(10, 8, 1, 1);
+  ctx.fillStyle = "#2a0d0d"; ctx.fillRect(5, 12, 6, 1); ctx.fillStyle = "#fff"; ctx.fillRect(6, 12, 1, 1); ctx.fillRect(9, 12, 1, 1);
+  g.imageSmoothingEnabled = false; g.drawImage(face, 128, 270, 256, 256);
+  g.font = "bold 40px 'Courier New', monospace"; g.fillStyle = "#f7931a"; g.fillText("2,222", w / 2, 600);
+  g.font = "24px 'Courier New', monospace"; g.fillStyle = "#9a8fae"; g.fillText("shielded · ord dropz", w / 2, 645);
+});
+const logoTex = new THREE.TextureLoader().load("logo/trollbox-logo-alpha.png"); logoTex.colorSpace = THREE.SRGBColorSpace;
+const poster = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.17), new THREE.MeshBasicMaterial({ map: logoTex, transparent: true, toneMapped: false }));
+poster.position.set(ROOM.w / 2 - 0.03, 1.9, 1.2); poster.rotation.y = -Math.PI / 2; scene.add(poster);
+eggs.push({ pos: new THREE.Vector3(ROOM.w / 2 - 1.3, EYE, 1.2), label: "read the sign", info: true });
+
+
+// ---------------------------------------------------------------------------
+// Solemn's pieces on the walls (v2): framed art, each one later a portal
+// to its collection. Files in art/ are stills of real pieces.
+// ---------------------------------------------------------------------------
+// One feature piece only (Solemn, 2026-10-07: "too much art, just one piece on a feature side wall").
+// Swap the entry to hang a different one; stills for the others are still in art/.
+const ART = [
+  { file: "art/the-ord-lot.jpg",  name: "THE ORD LOT",  sub: "the crowd · ordinals",   wall: "right", at: 5.6 },
+];
+const texLoader = new THREE.TextureLoader();
+const frameMat = M({ color: "#2a2033", roughness: 0.6 });
+const matteMat = M({ color: "#efe6d6", roughness: 0.9 });
+const FRAME_W = 2.2, FRAME_H = 2.2, FRAME_Y = 1.75;
+function hangArt(a) {
+  const g = new THREE.Group();
+  // wall placement: position + facing
+  const inset = 0.04;
+  if (a.wall === "back")  { g.position.set(a.at, FRAME_Y, -ROOM.d / 2 + inset); g.rotation.y = 0; }
+  if (a.wall === "front") { g.position.set(a.at, FRAME_Y,  ROOM.d / 2 - inset); g.rotation.y = Math.PI; }
+  if (a.wall === "left")  { g.position.set(-ROOM.w / 2 + inset, FRAME_Y, a.at); g.rotation.y = Math.PI / 2; }
+  if (a.wall === "right") { g.position.set( ROOM.w / 2 - inset, FRAME_Y, a.at); g.rotation.y = -Math.PI / 2; }
+  scene.add(g);
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(FRAME_W + 0.16, FRAME_H + 0.16, 0.07), frameMat); g.add(frame);
+  const matte = new THREE.Mesh(new THREE.PlaneGeometry(FRAME_W + 0.02, FRAME_H + 0.02), matteMat); matte.position.z = 0.036; g.add(matte);
+  const tex = texLoader.load(a.file); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  const pic = new THREE.Mesh(new THREE.PlaneGeometry(FRAME_W - 0.12, FRAME_H - 0.12), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+  pic.position.z = 0.04; g.add(pic);
+  // picture light: a thin warm bar above the frame
+  const lamp = new THREE.Mesh(new THREE.BoxGeometry(FRAME_W * 0.6, 0.03, 0.12), new THREE.MeshBasicMaterial({ color: "#ffd9a0" }));
+  lamp.position.set(0, FRAME_H / 2 + 0.11, 0.08); g.add(lamp);
+  // the little label plaque
+  const plaque = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.24),
+    new THREE.MeshBasicMaterial({ map: textTex([a.name, a.sub], { w: 512, h: 112, font: "bold 40px 'Courier New', monospace", color: "#f4ecdf", glow: "#000", bg: "#120a1c" }), toneMapped: false }));
+  plaque.position.set(0, -FRAME_H / 2 - 0.22, 0.04); g.add(plaque);
+  // walk-up prompt: names the piece, opens nothing yet
+  const fwd = new THREE.Vector3(0, 0, 1).applyEuler(g.rotation);
+  const pos = g.position.clone().addScaledVector(fwd, 1.1); pos.y = EYE;
+  eggs.push({ pos, label: a.name.toLowerCase(), msg: a.name + " · " + a.sub + ". opens later." });
+}
+ART.forEach(hangArt);
+
+// ---------------------------------------------------------------------------
+// Player: first-person walk, pointer lock on desktop, joystick + drag on touch
+// ---------------------------------------------------------------------------
+// Two front doors into the same room (Solemn, 2026-10-07):
+//   cafe.html           = the café parent: you start at the bar, the troll station is off in the corner.
+//   cafe.html?trollbox  = the Trollbox parent: you start sat at the station, on the screen. Standing up = the Easter egg.
+const DOOR = new URLSearchParams(location.search).has("trollbox") ? "trollbox" : "cafe";
+const player = DOOR === "trollbox" ? { x: -7.6, z: -6.0, yaw: 0, pitch: -0.04 } : { x: 1.5, z: -3.2, yaw: 0, pitch: -0.04 };
+const keys = {};
+addEventListener("keydown", e => { keys[e.code] = true; if (e.code === "KeyE") useNearest(); if (e.code === "Escape" && mode === "use" && DOOR !== "trollbox") standUp(); });
+let eggFound = false, overScroll = 0;
+addEventListener("keyup", e => keys[e.code] = false);
+
+let mode = "intro";  // intro | walk | use
+const canvas = renderer.domElement;
+function lockPointer() { try { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+canvas.addEventListener("click", () => { if (mode === "walk" && !TOUCH && document.pointerLockElement !== canvas) lockPointer(); });
+addEventListener("mousemove", e => {
+  if (mode !== "walk" || document.pointerLockElement !== canvas) return;
+  player.yaw -= e.movementX * 0.0022;
+  player.pitch = Math.max(-1.2, Math.min(1.2, player.pitch - e.movementY * 0.0022));
+});
+
+// touch: left half = joystick, right half = look
+const joy = { id: null, x: 0, y: 0, dx: 0, dy: 0 }, look = { id: null, x: 0, y: 0 };
+if (TOUCH) {
+  canvas.addEventListener("touchstart", e => {
+    for (const t of e.changedTouches) {
+      if (t.clientX < innerWidth / 2 && joy.id === null) { joy.id = t.identifier; joy.x = t.clientX; joy.y = t.clientY; joy.dx = joy.dy = 0; }
+      else if (look.id === null) { look.id = t.identifier; look.x = t.clientX; look.y = t.clientY; }
+    }
+  }, { passive: true });
+  canvas.addEventListener("touchmove", e => {
+    for (const t of e.changedTouches) {
+      if (t.identifier === joy.id) { joy.dx = Math.max(-1, Math.min(1, (t.clientX - joy.x) / 50)); joy.dy = Math.max(-1, Math.min(1, (t.clientY - joy.y) / 50)); }
+      if (t.identifier === look.id) {
+        player.yaw -= (t.clientX - look.x) * 0.005;
+        player.pitch = Math.max(-1.2, Math.min(1.2, player.pitch - (t.clientY - look.y) * 0.004));
+        look.x = t.clientX; look.y = t.clientY;
+      }
+    }
+  }, { passive: true });
+  canvas.addEventListener("touchend", e => {
+    for (const t of e.changedTouches) { if (t.identifier === joy.id) { joy.id = null; joy.dx = joy.dy = 0; } if (t.identifier === look.id) look.id = null; }
+  }, { passive: true });
+}
+
+// collision: room bounds + boxes + table circles
+const boxes = [
+  { x0: -9.3, x1: -5.9, z0: -8.2, z1: -6.7 },                        // troll station desk
+  { x0: -1.9, x1: 4.9, z0: -9, z1: -6.95 },                          // the bar
+  { x0: -10.5, x1: -9.4, z0: -4.1, z1: 0.1 },                        // cabinets
+  { x0: 9.4, x1: 10.5, z0: -5.6, z1: -4.4 },                         // jukebox
+];
+function blocked(x, z) {
+  const m = 0.3;
+  if (x < -ROOM.w / 2 + m || x > ROOM.w / 2 - m || z < -ROOM.d / 2 + m || z > ROOM.d / 2 - m) return true;
+  for (const b of boxes) if (x > b.x0 - m && x < b.x1 + m && z > b.z0 - m && z < b.z1 + m) return true;
+  for (const t of tables) if (Math.hypot(x - t.x, z - t.z) < t.r * 0.55 + m) return true;
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// Interaction: the Trollbox + Easter eggs
+// ---------------------------------------------------------------------------
+const screenWorld = new THREE.Vector3(), screenNormal = new THREE.Vector3(0, 0, 1);
+function updateScreenWorld() { pc.screenMesh.getWorldPosition(screenWorld); }
+let nearest = null;
+function findNearest() {
+  const fx = -Math.sin(player.yaw), fz = -Math.cos(player.yaw);
+  let best = null, bestD = 2.4;
+  const cands = [{ pos: new THREE.Vector3(screenWorld.x, EYE, screenWorld.z + 0.6), label: "use the trollbox", trollbox: true }, ...eggs];
+  for (const c of cands) {
+    const dx = c.pos.x - player.x, dz = c.pos.z - player.z, d = Math.hypot(dx, dz);
+    const facing = d < 0.4 ? 1 : (dx * fx + dz * fz) / d;
+    if (d < bestD && facing > 0.5) { best = c; bestD = d; }
+  }
+  return best;
+}
+function useNearest() {
+  if (mode !== "walk" || !nearest) return;
+  if (nearest.trollbox) return sitDown();
+  if (nearest.info) return openInfo();
+  toast(nearest.msg);
+}
+$("prompt").addEventListener("click", useNearest);
+let toastT = 0;
+function toast(msg) { $("toast").textContent = msg; $("toast").style.display = "block"; toastT = 2.2; }
+
+// sit at the Trollbox: camera glides in front of the screen
+const anim = { t: 1, from: null, to: null };
+const looker = new THREE.PerspectiveCamera();
+let useZoom = 1;
+function fitDist() {
+  const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  return Math.max(0.43 / tanV, 0.56 / (tanV * camera.aspect));
+}
+function camPose() { return { pos: camera.position.clone(), quat: camera.quaternion.clone() }; }
+function usePose() {
+  const p = screenWorld.clone().addScaledVector(screenNormal, fitDist() * useZoom);
+  p.y += (useZoom - 1) * 0.25;
+  const o = looker; o.position.copy(p); o.lookAt(screenWorld.x, screenWorld.y - (useZoom - 1) * 0.2, screenWorld.z);
+  return { pos: p, quat: o.quaternion.clone() };
+}
+function sitDown() {
+  mode = "use"; useZoom = 1;
+  if (document.pointerLockElement) document.exitPointerLock();
+  anim.from = camPose(); anim.to = usePose(); anim.t = 0;
+  $("prompt").style.display = "none"; $("standBtn").style.display = "block"; $("cross").style.display = "none";
+  setHint();
+}
+function standUp() {
+  mode = "walk"; if (DOOR === "trollbox") eggFound = true;
+  anim.from = camPose(); anim.t = 0; anim.to = null;   // glide back to the player's eyes
+  $("standBtn").style.display = "none";
+  setHint();
+}
+$("standBtn").addEventListener("click", standUp);
+addEventListener("wheel", e => {
+  if (mode !== "use") return;
+  useZoom = Math.min(2, Math.max(1, useZoom + e.deltaY * 0.001));
+  // the Easter egg: lean all the way back and keep going, and you stand up into the café
+  if (DOOR === "trollbox" && useZoom >= 2 && e.deltaY > 0) { overScroll += e.deltaY; if (overScroll > 900) findTheRoom(); } else overScroll = 0;
+}, { passive: true });
+function findTheRoom() {
+  eggFound = true;
+  // stand up where you leaned back to, not forward at the desk: step back from the screen first
+  // step back from the desk and turn round: the reveal is the room behind you
+  player.x = screenWorld.x + 0.6; player.z = screenWorld.z + 2.6; player.pitch = -0.02;
+  player.yaw = Math.atan2(-(BAR.x - player.x), -(BAR.z - player.z));   // face the bar
+  standUp(); $("standBtn").style.display = "none";
+}
+if (TOUCH) {   // touch: hold a finger on the screen for 1.5 s
+  let holdT = null;
+  canvas.addEventListener("touchstart", () => { if (mode === "use" && DOOR === "trollbox") holdT = setTimeout(findTheRoom, 1500); }, { passive: true });
+  canvas.addEventListener("touchend", () => clearTimeout(holdT), { passive: true });
+  canvas.addEventListener("touchmove", () => clearTimeout(holdT), { passive: true });
+}
+
+// ---------------------------------------------------------------------------
+// UI
+// ---------------------------------------------------------------------------
+function setHint() {
+  $("hint").textContent = mode === "use"
+    ? (TOUCH || (DOOR === "trollbox" && !eggFound) ? "" : "scroll to lean back · esc to stand up")
+    : (TOUCH ? "left thumb: walk · right thumb: look" : "click to look · wasd to walk · e to use");
+  $("joy").style.display = TOUCH && mode === "walk" ? "block" : "none";
+}
+$("enterBtn").addEventListener("click", () => {
+  $("intro").style.display = "none"; mode = "walk"; setHint();
+  if (!TOUCH) { $("cross").style.display = "block"; lockPointer(); }
+});
+function openInfo() { $("info").style.display = "flex"; if (document.pointerLockElement) document.exitPointerLock(); }
+$("infoBtn").addEventListener("click", openInfo);
+$("closeInfo").addEventListener("click", () => { $("info").style.display = "none"; });
+
+addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ---------------------------------------------------------------------------
+// Loop
+// ---------------------------------------------------------------------------
+const clock = new THREE.Clock(); let last = 0;
+const eyeObj = new THREE.Object3D();
+const introCam = new THREE.PerspectiveCamera();  // cameras look down -z, so use one for lookAt
+function eyePose() {
+  eyeObj.position.set(player.x, EYE, player.z);
+  eyeObj.rotation.set(player.pitch, player.yaw, 0, "YXZ");
+  return { pos: eyeObj.position.clone(), quat: eyeObj.quaternion.clone() };
+}
+// intro: slow drift looking at the counter
+function introPose(t) {
+  const a = Math.sin(t * 0.15) * 0.35;
+  introCam.position.set(1.5 + Math.sin(a) * 8.5, 2.0, -7.5 + Math.cos(a) * 11);
+  introCam.lookAt(1.5, 1.6, -7.5);
+  return { pos: introCam.position.clone(), quat: introCam.quaternion.clone() };
+}
+
+function frame() {
+  const t = clock.getElapsedTime(), dt = Math.min(0.05, t - last); last = t;
+  TrollboxScreen.draw(t); pc.update(t);
+  eggs.forEach(e => e.draw && e.draw(t));
+  signLight.intensity = 10 + (Math.random() < 0.02 ? -6 : 0);
+  updateScreenWorld();
+
+  if (mode === "walk" && anim.t >= 1) {
+    let f = 0, s = 0;
+    if (keys.KeyW || keys.ArrowUp) f += 1; if (keys.KeyS || keys.ArrowDown) f -= 1;
+    if (keys.KeyD || keys.ArrowRight) s += 1; if (keys.KeyA || keys.ArrowLeft) s -= 1;
+    if (keys.ArrowLeft && document.pointerLockElement !== canvas) { s += 1; player.yaw += dt * 1.8; }
+    if (keys.ArrowRight && document.pointerLockElement !== canvas) { s -= 1; player.yaw -= dt * 1.8; }
+    f -= joy.dy; s += joy.dx;
+    const speed = (keys.ShiftLeft ? 4.2 : 2.6) * dt, len = Math.hypot(f, s) || 1;
+    const k = Math.min(1, Math.hypot(f, s)) * speed / len;
+    const dx = (-Math.sin(player.yaw) * f + Math.cos(player.yaw) * s) * k;
+    const dz = (-Math.cos(player.yaw) * f - Math.sin(player.yaw) * s) * k;
+    if (!blocked(player.x + dx, player.z)) player.x += dx;
+    if (!blocked(player.x, player.z + dz)) player.z += dz;
+
+    nearest = findNearest();
+    $("prompt").style.display = nearest ? "block" : "none";
+    if (nearest) $("prompt").textContent = (TOUCH ? "tap: " : "e: ") + nearest.label;
+  }
+
+  let target;
+  if (mode === "intro") target = introPose(t);
+  else if (mode === "use") target = usePose();
+  else target = eyePose();
+  if (anim.t < 1) {
+    anim.t = Math.min(1, anim.t + dt / 0.9);
+    const e = anim.t < 0.5 ? 2 * anim.t * anim.t : 1 - Math.pow(-2 * anim.t + 2, 2) / 2;
+    camera.position.lerpVectors(anim.from.pos, target.pos, e);
+    camera.quaternion.slerpQuaternions(anim.from.quat, target.quat, e);
+  } else {
+    if (mode === "use") { camera.position.lerp(target.pos, 0.1); camera.quaternion.slerp(target.quat, 0.1); }
+    else { camera.position.copy(target.pos); camera.quaternion.copy(target.quat); }
+  }
+
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) $("toast").style.display = "none"; }
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+setHint();
+if (DOOR === "trollbox") {
+  $("intro").style.display = "none";
+  scene.updateMatrixWorld(true); updateScreenWorld();
+  mode = "use"; useZoom = 1;
+  const p0 = usePose(); camera.position.copy(p0.pos); camera.quaternion.copy(p0.quat);
+  anim.t = 1; setHint();   // no stand-up button, no hint: the room is a full Easter egg
+}
+frame();
+</script>
+</body>
+</html>

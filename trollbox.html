@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TROLLBOX</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #07060a; overflow: hidden; }
+  canvas { display: block; }
+  #hint { position: fixed; left: 12px; bottom: 10px; font: 11px/1.4 monospace; color: #6d6a78; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="hint">scroll to zoom · drag to look</div>
+<!-- On-chain: swap this for a recursive /content/<id> Three.js inscription -->
+<script src="three.min.js"></script>
+<script src="trollbox-screen.js?v=1791401740"></script>
+<script src="trollbox-computer.js?v=1791401740"></script>
+<script>
+// ---------------------------------------------------------------------------
+// 3D scene: desk, the Trollbox computer, dark room with a neon strip.
+// ---------------------------------------------------------------------------
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#07060a");
+scene.fog = new THREE.Fog("#07060a", 6, 14);
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.05, 50);
+
+scene.add(new THREE.AmbientLight("#4a4060", 0.9));
+const lamp = new THREE.PointLight("#ffcf9a", 6, 8); lamp.position.set(-1.6, 2.2, 1.2); scene.add(lamp);
+const neonLight = new THREE.PointLight("#b04bff", 5, 7); neonLight.position.set(0, 2.6, -1.4); scene.add(neonLight);
+
+const wood = new THREE.MeshStandardMaterial({ color: "#3b2a20", roughness: 0.6 });
+const desk = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.08, 1.6), wood);
+desk.position.set(0, 0.6, 0.1); scene.add(desk);
+[[-1.55, -0.55], [1.55, -0.55], [-1.55, 0.75], [1.55, 0.75]].forEach(([x, z]) => {
+  const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.6, 0.08), wood);
+  leg.position.set(x, 0.3, z); scene.add(leg);
+});
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color: "#120f18", roughness: 1 }));
+floor.rotation.x = -Math.PI / 2; scene.add(floor);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(20, 8), new THREE.MeshStandardMaterial({ color: "#16121e", roughness: 1 }));
+wall.position.set(0, 4, -1.6); scene.add(wall);
+const neon = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.04, 0.04), new THREE.MeshBasicMaterial({ color: "#c46bff" }));
+neon.position.set(0, 2.7, -1.55); scene.add(neon);
+
+const pc = makeTrollboxComputer(THREE, TrollboxScreen.canvas);
+pc.group.position.set(0, 0.64, 0); scene.add(pc.group);
+TrollboxScreen.setKeystroke(pc.press);
+
+// ---------------------------------------------------------------------------
+// Camera: locked on the screen, small zoom out, a little look-around.
+// ---------------------------------------------------------------------------
+const target = new THREE.Vector3(0, 1.34, 0.13);
+const ZOOM_MIN = 1, ZOOM_MAX = 2.2;
+let dist = 1, distGoal = 1, yaw = 0, pitch = 0, yawGoal = 0, pitchGoal = 0;
+addEventListener("wheel", e => { distGoal = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, distGoal + e.deltaY * 0.0012)); }, { passive: true });
+let drag = null;
+addEventListener("pointerdown", e => drag = { x: e.clientX, y: e.clientY, yaw: yawGoal, pitch: pitchGoal });
+addEventListener("pointerup", () => drag = null);
+addEventListener("pointermove", e => {
+  if (!drag) return;
+  yawGoal = Math.max(-0.35, Math.min(0.35, drag.yaw - (e.clientX - drag.x) * 0.003));
+  pitchGoal = Math.max(-0.1, Math.min(0.3, drag.pitch + (e.clientY - drag.y) * 0.002));
+});
+// pinch zoom on touch
+let pinch = null;
+addEventListener("touchmove", e => {
+  if (e.touches.length !== 2) return;
+  const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  if (pinch) distGoal = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, distGoal + (pinch - d) * 0.003));
+  pinch = d;
+}, { passive: true });
+addEventListener("touchend", () => pinch = null);
+
+function fitDistance() {
+  // distance at which the screen (plus a margin) fills the view, for any aspect ratio
+  const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  return Math.max(0.43 / tanV, 0.56 / (tanV * camera.aspect));
+}
+
+addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+const clock = new THREE.Clock();
+function frame() {
+  const t = clock.getElapsedTime();
+  TrollboxScreen.draw(t);
+  pc.update(t);
+
+  dist += (distGoal - dist) * 0.08; yaw += (yawGoal - yaw) * 0.08; pitch += (pitchGoal - pitch) * 0.08;
+  const d = dist * fitDistance();
+  camera.position.set(
+    target.x + Math.sin(yaw) * d,
+    target.y + Math.sin(pitch) * d + (dist - 1) * 0.3,
+    target.z + Math.cos(yaw) * Math.cos(pitch) * d
+  );
+  camera.lookAt(target.x, target.y - (dist - 1) * 0.25, target.z);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>

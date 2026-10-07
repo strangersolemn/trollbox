@@ -1,0 +1,64 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Trollbox flow</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--
+  Trollbox flow graphic. Real rolled trolls (build/trolls.json) drift slowly across a 4:3 stage, all typing.
+  Rows alternate direction and speed. Neighbours never share a body colour or a background.
+  URL options:  ?box=0 (no logo box)  ?w=1366&h=1024 (stage size)  ?tile=230 (troll size)  ?speed=1.5  ?seed=7
+-->
+<style>
+html,body{margin:0;height:100%;background:#0b0b0b;overflow:hidden}
+#wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+canvas#c{display:block;background:#fbf7f1}
+#box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fbf7f1;border:6px solid #000;box-shadow:18px 18px 0 #000;padding:28px 44px;display:flex;align-items:center;justify-content:center}
+#box img{display:block;height:100%;width:auto}
+</style></head><body><div id="wrap"><canvas id="c"></canvas><div id="box"><img src="logo/trollbox-logo-alpha.png" alt="TROLLBOX"></div></div>
+<script src="recolor.js"></script><script>
+const Q=new URLSearchParams(location.search);
+const W=+Q.get('w')||1366, H=+Q.get('h')||1024, TILE=+Q.get('tile')||230, GAP=16, SPEED=+(Q.get('speed')||1), SEED=+(Q.get('seed')||3);
+if(Q.get('box')==='0')document.getElementById('box').remove();
+let s=SEED*9301+49297; const rnd=()=>(s=(s*9301+49297)%233280)/233280;
+const c=document.getElementById('c'); c.width=W; c.height=H; const g=c.getContext('2d');
+function fit(){const k=Math.min(innerWidth/W,innerHeight/H);c.style.width=W*k+'px';c.style.height=H*k+'px';const b=document.getElementById('box');if(b){b.style.height=Math.round(H*k*.22)+'px';b.style.borderWidth=Math.max(3,6*k)+'px';b.style.boxShadow=`${18*k}px ${18*k}px 0 #000`;b.style.padding=`${28*k}px ${44*k}px`;}}
+addEventListener('resize',fit);fit();
+const load=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(i);i.src=src;});
+const small=(im,n)=>{const k=document.createElement('canvas');k.width=k.height=n;k.getContext('2d').drawImage(im,0,0,n,n);return k;};
+(async()=>{
+  const [M,trolls]=await Promise.all([fetch('traits-avif/manifest.json?'+Date.now()).then(r=>r.json()),fetch('build/trolls.json?'+Date.now()).then(r=>r.json())]);
+  const base='traits-avif/', R=512;                      // compose at 512, draw at TILE
+  const cache={}; const master=async(g,f)=>cache[g+f]||(cache[g+f]=small(await load(base+g+'/'+f),R));
+  const HANDS=await Promise.all(M.hands.map(f=>master('hands',f))), TV=await Promise.all(M['tv screen'].map(f=>master('tv screen',f)));
+  const layer=async(g,f,col)=>{const im=await master(g,f);if(!col)return im;const m=M._meta[g+'/'+f];return recolor(im,M._palette[col],m.hue,m.val_mul);};
+  // rows that fit the stage, each row a full loop of tiles wider than the stage
+  const rows=Math.ceil((H+GAP)/(TILE+GAP))+1, perRow=Math.ceil(W/(TILE+GAP))+2, need=rows*perRow;
+  // pick trolls: no same body colour or background among the last few picked, no glitch (needs network)
+  const pool=trolls.filter(t=>!t.background_glitch).sort(()=>rnd()-.5), chosen=[], recent=[];
+  for(const t of pool){ if(chosen.length>=need)break; const key=[t.body_color||t.body_file,t.background];
+    if(recent.some(k=>k[0]===key[0]||k[1]===key[1]))continue; chosen.push(t);recent.push(key);if(recent.length>3)recent.shift();}
+  while(chosen.length<need)chosen.push(pool[Math.floor(rnd()*pool.length)]);
+  // place on a grid: neighbours above (and the one before) must differ in body colour and background
+  const grid=[];const bad=(t,r,i)=>{const n=[grid[r]&&grid[r][i-1],grid[r-1]&&grid[r-1][i],grid[r-1]&&grid[r-1][i-1],grid[r-1]&&grid[r-1][i+1]].filter(Boolean);return n.some(u=>(u.body_color||u.body_file)===(t.body_color||t.body_file)||u.background===t.background||(u.headwear_color&&u.headwear_color===t.headwear_color)||(u.headwear_file&&u.headwear_file===t.headwear_file));};
+  let left=chosen.slice();
+  for(let r=0;r<rows;r++){grid[r]=[];for(let i=0;i<perRow;i++){let j=left.findIndex(t=>!bad(t,r,i));if(j<0)j=0;grid[r][i]=left.splice(j,1)[0];}}
+  // compose each troll: A = body (under the tv), B = eyes + mouth + headwear (over it)
+  const sprites=new Map();
+  for(const t of chosen){const A=document.createElement('canvas');A.width=A.height=R;const B=document.createElement('canvas');B.width=B.height=R;
+    A.getContext('2d').drawImage(await layer('bodies',t.body_file,t.body_color),0,0);
+    const gb=B.getContext('2d');gb.drawImage(await layer('eyes',t.eyes_file,t.eyes_color),0,0);gb.drawImage(await layer('mouths',t.mouth_file),0,0);
+    if(t.headwear_file)gb.drawImage(await layer('headwear',t.headwear_file,t.headwear_color),0,0);
+    sprites.set(t,{A,B,bg:t.background_hex,hf:Math.floor(rnd()*HANDS.length),typing:rnd()<.6,until:0});}
+  const loop=perRow*(TILE+GAP);
+  const lanes=grid.map((row,r)=>({row,y:r*(TILE+GAP)-GAP/2,dir:r%2?1:-1,v:(10+rnd()*10)*SPEED,x:rnd()*loop}));
+  let last=performance.now(),tick=0,tv=0;
+  function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;tick+=dt;
+    const step=tick>.12; if(step){tick=0;tv^=1;}
+    g.fillStyle='#fbf7f1';g.fillRect(0,0,W,H);
+    for(const l of lanes){l.x=(l.x+l.dir*l.v*dt+loop)%loop;
+      for(let i=0;i<l.row.length;i++){const t=l.row[i],sp=sprites.get(t);let x=(i*(TILE+GAP)+l.x)%loop-(TILE+GAP);
+        if(step){if(now>sp.until){sp.typing=!sp.typing;sp.until=now+(sp.typing?1000+Math.random()*2000:1000+Math.random()*3000);} if(sp.typing)sp.hf=(sp.hf+1)%HANDS.length;}
+        if(x>W||x+TILE<0)continue;
+        g.fillStyle=sp.bg;g.fillRect(x,l.y,TILE,TILE);
+        g.drawImage(HANDS[sp.hf],x,l.y,TILE,TILE);g.drawImage(sp.A,x,l.y,TILE,TILE);g.drawImage(TV[tv],x,l.y,TILE,TILE);g.drawImage(sp.B,x,l.y,TILE,TILE);}}
+    requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+})();
+</script></body></html>

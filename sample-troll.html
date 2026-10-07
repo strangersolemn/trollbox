@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Troll 1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>html,body{margin:0;height:100%;background:#000;display:flex;align-items:center;justify-content:center}
+#t{position:relative;width:100vmin;height:100vmin;overflow:hidden;background:#e9c3f2}
+#t img,#t canvas,#t iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;visibility:hidden}
+#t .on{visibility:visible}</style></head><body><div id="t"></div>
+<script>
+// Troll 1 — Trollbox. layers bottom to top: background, hands (typing), body, tv screen (cycling), eyes, mouth, headwear.
+// Each src is one inscribed trait master; c = palette colour applied in code (h = the master's hue, m = brightness).
+var T={"name":"Troll 1","glitch":null,"P":{},"hands":["traits-avif/hands/hands-f1.avif","traits-avif/hands/hands-f2.avif","traits-avif/hands/hands-f3.avif","traits-avif/hands/hands-f4.avif","traits-avif/hands/hands-f5.avif"],"tv":["traits-avif/tv screen/tv-f1.avif","traits-avif/tv screen/tv-f2.avif"],"body":{"s":"traits-avif/bodies/grey-hoodie.avif"},"layers":[{"s":"traits-avif/eyes/eye-01.avif"},{"s":"traits-avif/mouths/mouth-05.avif"}]};
+function recolor(img, p, hue0, vmul) { var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height; var c = document.createElement('canvas'); c.width = w; c.height = h; var g = c.getContext('2d'); g.drawImage(img, 0, 0, w, h); if (p.hue !== 'grey' && Math.abs(p.hue - hue0) < 1 && (vmul || 1) === 1) return c; var d = g.getImageData(0, 0, w, h), a = d.data, vm = vmul || 1; for (var i = 0; i < a.length; i += 4) { if (!a[i + 3]) continue; var r = a[i] / 255, gg = a[i + 1] / 255, b = a[i + 2] / 255; var mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), v = mx, s = mx ? (mx - mn) / mx : 0; if (s <= .3 || v <= .1) continue; var dd = mx - mn, hh = mx === r ? ((gg - b) / dd) % 6 : mx === gg ? (b - r) / dd + 2 : (r - gg) / dd + 4; hh *= 60; if (hh < 0) hh += 360; if (Math.abs(((hh - hue0) + 540) % 360 - 180) > 20) continue; var grey = p.hue === 'grey', h2 = grey ? hh : p.hue, s2 = grey ? 0 : Math.min(1, s * p.sat); var v2 = Math.min(1, p.val[0] + p.val[1] * v * vm); var C = v2 * s2, X = C * (1 - Math.abs((h2 / 60) % 2 - 1)), m = v2 - C, k = (h2 / 60) | 0; var R = [C, X, 0, 0, X, C][k], G = [X, C, C, X, 0, 0][k], B = [0, 0, X, C, C, X][k]; a[i] = (R + m) * 255; a[i + 1] = (G + m) * 255; a[i + 2] = (B + m) * 255; } g.putImageData(d, 0, 0); return c; }
+var S=document.getElementById('t'),H=[],V=[];
+function put(l,arr){var i=new Image();i.src=l.s;i.onload=function(){var e=i;if(l.c){e=recolor(i,T.P[l.c],l.h,l.m);}e.className=arr?'':'on';S.insertBefore(e,l.after||null);if(arr){arr.push(e);if(arr.length===1)e.className='on';}};}
+if(T.glitch){var f=document.createElement('iframe');f.src=T.glitch;f.setAttribute('sandbox','allow-scripts');f.className='on';S.appendChild(f);}
+var slots=[];for(var k=0;k<T.hands.length+1+T.tv.length+T.layers.length;k++){var d=document.createElement('i');S.appendChild(d);slots.push(d);}
+var n=0;T.hands.forEach(function(s){put({s:s,after:slots[n++]},H)});put({s:T.body.s,c:T.body.c,h:T.body.h,m:T.body.m,after:slots[n++]});
+T.tv.forEach(function(s){put({s:s,after:slots[n++]},V)});T.layers.forEach(function(l){l.after=slots[n++];put(l)});
+var h=0,v=0,typing=true,until=Date.now()+1500;
+setInterval(function(){var now=Date.now();if(now>until){typing=!typing;until=now+(typing?1000+Math.random()*2000:1000+Math.random()*3000);}
+if(V.length){V[v].className='';v=(v+1)%V.length;V[v].className='on';}
+if(typing&&H.length){H[h].className='';h=(h+1)%H.length;H[h].className='on';}},120);
+</script></body></html>

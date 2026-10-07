@@ -1,0 +1,641 @@
+{
+ "bodies": [
+  "anon.avif",
+  "clown.avif",
+  "grey-hoodie.avif",
+  "parka-hoodie.avif",
+  "puffer.avif",
+  "rage-farmer.avif",
+  "suit.avif",
+  "tshirt.avif"
+ ],
+ "hands": [
+  "hands-f1.avif",
+  "hands-f2.avif",
+  "hands-f3.avif",
+  "hands-f4.avif",
+  "hands-f5.avif"
+ ],
+ "tv screen": [
+  "tv-f1.avif",
+  "tv-f2.avif"
+ ],
+ "eyes": [
+  "eye-01.avif",
+  "eye-02.avif",
+  "eye-03.avif",
+  "eye-04.avif",
+  "glasses.avif",
+  "shades-b.avif",
+  "shades.avif"
+ ],
+ "mouths": [
+  "mouth-02.avif",
+  "mouth-03.avif",
+  "mouth-04.avif",
+  "mouth-05.avif",
+  "mouth-06.avif",
+  "mouth-07.avif",
+  "mouth-08.avif",
+  "mouth-09.avif",
+  "mouth-10.avif",
+  "mouth-11.avif",
+  "mouth-12.avif",
+  "mouth-13.avif",
+  "mouth-14.avif",
+  "mouth-17.avif"
+ ],
+ "headwear": [
+  "afro.avif",
+  "backbun.avif",
+  "baghead.avif",
+  "baseball.avif",
+  "beanie-grey.avif",
+  "beanie-rasta.avif",
+  "bucket-bitcoin-og.avif",
+  "bucket-bitcoin.avif",
+  "bucket-teal.avif",
+  "chef-hat.avif",
+  "curlers.avif",
+  "dreads.avif",
+  "fedora.avif",
+  "fez.avif",
+  "frontbun.avif",
+  "knit.avif",
+  "messy.avif",
+  "pigtails-black.avif",
+  "pigtails-blonde.avif",
+  "punk.avif",
+  "spike.avif",
+  "white-locks.avif"
+ ],
+ "_version": 2,
+ "_size": 1000,
+ "_order": [
+  "background",
+  "hands",
+  "bodies",
+  "tv screen",
+  "eyes",
+  "mouths",
+  "headwear"
+ ],
+ "_palette": {
+  "red": {
+   "hue": null,
+   "sat": 1.0,
+   "val": [
+    0,
+    1.0
+   ],
+   "hex": "#9a2d41",
+   "name": "Red"
+  },
+  "blue": {
+   "hue": 220,
+   "sat": 1.0,
+   "val": [
+    0,
+    1.07
+   ],
+   "hex": "#3b58c8",
+   "name": "Blue"
+  },
+  "green": {
+   "hue": 135,
+   "sat": 0.93,
+   "val": [
+    0,
+    0.97
+   ],
+   "hex": "#2f9a52",
+   "name": "Green"
+  },
+  "yellow": {
+   "hue": 48,
+   "sat": 0.89,
+   "val": [
+    0,
+    1.38
+   ],
+   "hex": "#e6c54d",
+   "name": "Yellow"
+  },
+  "grey": {
+   "hue": "grey",
+   "sat": 0.0,
+   "val": [
+    0,
+    0.82
+   ],
+   "hex": "#8d8d8d",
+   "name": "Grey"
+  },
+  "pink": {
+   "hue": 330,
+   "sat": 0.93,
+   "val": [
+    0,
+    1.3
+   ],
+   "hex": "#e26aa5",
+   "name": "Pink"
+  },
+  "purple": {
+   "hue": 275,
+   "sat": 0.93,
+   "val": [
+    0,
+    1.02
+   ],
+   "hex": "#7b47c7",
+   "name": "Purple"
+  },
+  "charcoal": {
+   "hue": "grey",
+   "sat": 0.0,
+   "val": [
+    0.08,
+    0.3
+   ],
+   "hex": "#2c2c2c",
+   "name": "Charcoal"
+  }
+ },
+ "_mask": {
+  "hue_tolerance": 20,
+  "min_sat": 0.3,
+  "min_val": 0.1
+ },
+ "_meta": {
+  "hands/hands-f1.avif": {
+   "name": "hands frame 1",
+   "family": "hands",
+   "frame": 1,
+   "group": "hands",
+   "file": "hands-f1.avif"
+  },
+  "hands/hands-f2.avif": {
+   "name": "hands frame 2",
+   "family": "hands",
+   "frame": 2,
+   "group": "hands",
+   "file": "hands-f2.avif"
+  },
+  "hands/hands-f3.avif": {
+   "name": "hands frame 3",
+   "family": "hands",
+   "frame": 3,
+   "group": "hands",
+   "file": "hands-f3.avif"
+  },
+  "hands/hands-f4.avif": {
+   "name": "hands frame 4",
+   "family": "hands",
+   "frame": 4,
+   "group": "hands",
+   "file": "hands-f4.avif"
+  },
+  "hands/hands-f5.avif": {
+   "name": "hands frame 5",
+   "family": "hands",
+   "frame": 5,
+   "group": "hands",
+   "file": "hands-f5.avif"
+  },
+  "tv screen/tv-f1.avif": {
+   "name": "tv frame 1",
+   "family": "tv",
+   "frame": 1,
+   "group": "tv screen",
+   "file": "tv-f1.avif"
+  },
+  "tv screen/tv-f2.avif": {
+   "name": "tv frame 2",
+   "family": "tv",
+   "frame": 2,
+   "group": "tv screen",
+   "file": "tv-f2.avif"
+  },
+  "bodies/grey-hoodie.avif": {
+   "name": "Grey Hoodie",
+   "hood": true,
+   "family": "grey-hoodie",
+   "color": null,
+   "group": "bodies",
+   "file": "grey-hoodie.avif"
+  },
+  "bodies/tshirt.avif": {
+   "name": "T-Shirt",
+   "family": "tshirt",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "tshirt.avif"
+  },
+  "bodies/anon.avif": {
+   "name": "Anon",
+   "family": "anon",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "anon.avif"
+  },
+  "bodies/puffer.avif": {
+   "name": "Bubble",
+   "family": "puffer",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "puffer.avif"
+  },
+  "bodies/clown.avif": {
+   "name": "Clown Mode",
+   "family": "clown",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "clown.avif"
+  },
+  "bodies/parka-hoodie.avif": {
+   "name": "Nosey Parker",
+   "hood": true,
+   "family": "parka-hoodie",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "parka-hoodie.avif"
+  },
+  "bodies/rage-farmer.avif": {
+   "name": "Rage Farmer",
+   "family": "rage-farmer",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "rage-farmer.avif"
+  },
+  "bodies/suit.avif": {
+   "name": "Smart Suit",
+   "family": "suit",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "suit.avif"
+  },
+  "eyes/eye-01.avif": {
+   "name": "Eye",
+   "family": "eye-01",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-01.avif"
+  },
+  "eyes/eye-02.avif": {
+   "name": "Side Eye",
+   "family": "eye-02",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-02.avif"
+  },
+  "eyes/eye-03.avif": {
+   "name": "Dead Stare",
+   "family": "eye-03",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-03.avif"
+  },
+  "eyes/eye-04.avif": {
+   "name": "Squint",
+   "family": "eye-04",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-04.avif"
+  },
+  "eyes/shades.avif": {
+   "name": "Shades",
+   "eyewear": true,
+   "family": "shades",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "eyes",
+   "file": "shades.avif"
+  },
+  "eyes/glasses.avif": {
+   "name": "Glasses",
+   "eyewear": true,
+   "family": "glasses",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "eyes",
+   "file": "glasses.avif"
+  },
+  "eyes/shades-b.avif": {
+   "name": "Black Shades",
+   "eyewear": true,
+   "family": "shades-b",
+   "color": null,
+   "group": "eyes",
+   "file": "shades-b.avif"
+  },
+  "mouths/mouth-02.avif": {
+   "name": "Mouth 2",
+   "family": "mouth-02",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-02.avif"
+  },
+  "mouths/mouth-03.avif": {
+   "name": "Mouth 3",
+   "family": "mouth-03",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-03.avif"
+  },
+  "mouths/mouth-04.avif": {
+   "name": "Mouth 4",
+   "family": "mouth-04",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-04.avif"
+  },
+  "mouths/mouth-05.avif": {
+   "name": "Mouth 5",
+   "family": "mouth-05",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-05.avif"
+  },
+  "mouths/mouth-06.avif": {
+   "name": "Mouth 6",
+   "family": "mouth-06",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-06.avif"
+  },
+  "mouths/mouth-07.avif": {
+   "name": "Mouth 7",
+   "family": "mouth-07",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-07.avif"
+  },
+  "mouths/mouth-08.avif": {
+   "name": "Mouth 8",
+   "family": "mouth-08",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-08.avif"
+  },
+  "mouths/mouth-09.avif": {
+   "name": "Mouth 9",
+   "family": "mouth-09",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-09.avif"
+  },
+  "mouths/mouth-10.avif": {
+   "name": "Mouth 10",
+   "family": "mouth-10",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-10.avif"
+  },
+  "mouths/mouth-11.avif": {
+   "name": "Mouth 11",
+   "family": "mouth-11",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-11.avif"
+  },
+  "mouths/mouth-12.avif": {
+   "name": "Mouth 12",
+   "family": "mouth-12",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-12.avif"
+  },
+  "mouths/mouth-13.avif": {
+   "name": "Mouth 13",
+   "family": "mouth-13",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-13.avif"
+  },
+  "mouths/mouth-14.avif": {
+   "name": "Mouth 14",
+   "family": "mouth-14",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-14.avif"
+  },
+  "mouths/mouth-17.avif": {
+   "name": "Mouth 17",
+   "family": "mouth-17",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-17.avif"
+  },
+  "headwear/afro.avif": {
+   "name": "Fuzz",
+   "family": "afro",
+   "color": null,
+   "group": "headwear",
+   "file": "afro.avif"
+  },
+  "headwear/pigtails-black.avif": {
+   "name": "Flick",
+   "family": "pigtails-black",
+   "color": null,
+   "group": "headwear",
+   "file": "pigtails-black.avif"
+  },
+  "headwear/pigtails-blonde.avif": {
+   "name": "Barbie",
+   "family": "pigtails-blonde",
+   "color": null,
+   "group": "headwear",
+   "file": "pigtails-blonde.avif"
+  },
+  "headwear/dreads.avif": {
+   "name": "Locks",
+   "family": "dreads",
+   "color": null,
+   "group": "headwear",
+   "file": "dreads.avif"
+  },
+  "headwear/white-locks.avif": {
+   "name": "White Locks",
+   "family": "white-locks",
+   "color": null,
+   "group": "headwear",
+   "file": "white-locks.avif"
+  },
+  "headwear/curlers.avif": {
+   "name": "Curl",
+   "family": "curlers",
+   "color": null,
+   "group": "headwear",
+   "file": "curlers.avif"
+  },
+  "headwear/fedora.avif": {
+   "name": "Wannabee",
+   "family": "fedora",
+   "color": null,
+   "group": "headwear",
+   "file": "fedora.avif"
+  },
+  "headwear/chef-hat.avif": {
+   "name": "Chef",
+   "family": "chef-hat",
+   "color": null,
+   "group": "headwear",
+   "file": "chef-hat.avif"
+  },
+  "headwear/beanie-grey.avif": {
+   "name": "Beanie",
+   "family": "beanie-grey",
+   "color": null,
+   "group": "headwear",
+   "file": "beanie-grey.avif"
+  },
+  "headwear/beanie-rasta.avif": {
+   "name": "Rasta",
+   "family": "beanie-rasta",
+   "color": null,
+   "group": "headwear",
+   "file": "beanie-rasta.avif"
+  },
+  "headwear/baghead.avif": {
+   "name": "Baghead",
+   "covers_face": true,
+   "family": "baghead",
+   "color": null,
+   "group": "headwear",
+   "file": "baghead.avif"
+  },
+  "headwear/bucket-bitcoin-og.avif": {
+   "name": "BTC Bucket (OG)",
+   "family": "bucket-bitcoin-og",
+   "color": null,
+   "group": "headwear",
+   "file": "bucket-bitcoin-og.avif"
+  },
+  "headwear/bucket-bitcoin.avif": {
+   "name": "BTC Bucket",
+   "family": "bucket-bitcoin",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "bucket-bitcoin.avif"
+  },
+  "headwear/bucket-teal.avif": {
+   "name": "Troll Bucket",
+   "val_mul": 1.3,
+   "family": "bucket",
+   "recolor": true,
+   "hue": 180.0,
+   "color": null,
+   "group": "headwear",
+   "file": "bucket-teal.avif"
+  },
+  "headwear/baseball.avif": {
+   "name": "Baseball",
+   "family": "baseball",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "baseball.avif"
+  },
+  "headwear/fez.avif": {
+   "name": "Fez",
+   "family": "fez",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "fez.avif"
+  },
+  "headwear/knit.avif": {
+   "name": "Knit",
+   "family": "knit",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "knit.avif"
+  },
+  "headwear/messy.avif": {
+   "name": "Basement",
+   "family": "messy",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "messy.avif"
+  },
+  "headwear/punk.avif": {
+   "name": "Punk",
+   "family": "punk",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "punk.avif"
+  },
+  "headwear/frontbun.avif": {
+   "name": "Front Bun",
+   "family": "frontbun",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "frontbun.avif"
+  },
+  "headwear/backbun.avif": {
+   "name": "Back Bun",
+   "family": "backbun",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "backbun.avif"
+  },
+  "headwear/spike.avif": {
+   "name": "Spike",
+   "family": "spike",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "spike.avif"
+  }
+ }
+}

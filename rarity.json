@@ -1,0 +1,66 @@
+{
+  "_readme": [
+    "Rarity weights for generate.py. Bigger number = more common. Weights are relative inside each block.",
+    "A family (e.g. 'tshirt') that comes in colours is picked first, then its colour from 'colors'.",
+    "Any family in the manifest that is missing here gets weight 1 and the generator prints a warning.",
+    "Set a weight to 0 to switch a trait off."
+  ],
+  "seed": 2222,
+  "count": 2222,
+
+  "clean_set_rate": 0.10,
+  "glitch_rate": 0.03,
+  "no_headwear_rate": 0.08,
+  "eyewear_rate": 0.35,
+
+  "colors": {
+    "red": 10, "blue": 10, "green": 10, "yellow": 9, "grey": 7, "pink": 9, "purple": 9, "charcoal": 6
+  },
+
+  "backgrounds": {
+    "periwinkle": { "hex": "#c9ccff", "weight": 10 },
+    "lilac":      { "hex": "#c9b4ec", "weight": 10 },
+    "pink":       { "hex": "#e9c3f2", "weight": 10 },
+    "salmon":     { "hex": "#ffc5c5", "weight": 10 },
+    "mint":       { "hex": "#c7efd9", "weight": 8 },
+    "butter":     { "hex": "#fbe7a1", "weight": 8 },
+    "sky":        { "hex": "#bfe3f7", "weight": 8 },
+    "sand":       { "hex": "#efe2c8", "weight": 8 },
+    "navy":       { "hex": "#141830", "weight": 4 },
+    "plum":       { "hex": "#2a1a33", "weight": 4 },
+    "charcoal":   { "hex": "#1e1e1e", "weight": 3 },
+    "palette red":    { "hex": "#9a2d41", "weight": 3, "color": "red" },
+    "palette blue":   { "hex": "#3b58c8", "weight": 3, "color": "blue" },
+    "palette green":  { "hex": "#2f9a52", "weight": 3, "color": "green" },
+    "palette yellow": { "hex": "#e6c54d", "weight": 3, "color": "yellow" },
+    "palette grey":   { "hex": "#8d8d8d", "weight": 3, "color": "grey" },
+    "palette pink":   { "hex": "#e26aa5", "weight": 3, "color": "pink" },
+    "palette purple": { "hex": "#7b47c7", "weight": 3, "color": "purple" },
+    "palette charcoal": { "hex": "#2c2c2c", "weight": 2, "color": "charcoal" }
+  },
+  "glitch_backgrounds": {
+    "GL1TCH C0DE 2": { "id": "ec19445f6994cf2ff7bd3582a3ad474442f5fe75a3034474f3846f74856b612di0", "weight": 1, "preview": { "bg": "#000000", "fg": "#ffffff" } },
+    "GL1TCH C0DE 3": { "id": "0f34b3b81c9580926694378e22e267cd234802b44cfc10517d70675378e83eaai0", "weight": 1, "preview": { "bg": "#0a0a1b", "fg": "#ff3600" } }
+  },
+
+  "bodies": {
+    "tshirt": 14, "anon": 10, "puffer": 10, "parka-hoodie": 8, "rage-farmer": 7, "suit": 6, "clown": 4, "grey-hoodie": 6
+  },
+
+  "headwear": {
+    "baseball": 10, "beanie-grey": 8, "bucket": 8, "frontbun": 8, "backbun": 8, "spike": 7, "messy": 7,
+    "knit": 7, "afro": 6, "pigtails-black": 6, "pigtails-blonde": 5, "dreads": 5, "white-locks": 4,
+    "punk": 5, "fez": 4, "fedora": 5, "chef-hat": 3, "beanie-rasta": 4, "curlers": 3, "baghead": 2,
+    "bucket-bitcoin": 4, "bucket-bitcoin-og": 2
+  },
+
+  "eyes": {
+    "eye-01": 10, "eye-02": 8, "eye-03": 8, "eye-04": 6,
+    "shades": 6, "glasses": 6, "shades-b": 4
+  },
+
+  "mouths": {
+    "mouth-02": 1, "mouth-03": 1, "mouth-04": 1, "mouth-05": 1, "mouth-06": 1, "mouth-07": 1, "mouth-08": 1,
+    "mouth-09": 1, "mouth-10": 1, "mouth-11": 1, "mouth-12": 1, "mouth-13": 1, "mouth-14": 1, "mouth-17": 1
+  }
+}
