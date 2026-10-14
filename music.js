@@ -1,12 +1,10 @@
 // Trollbox site music (2026-10-14, Solemn: "play right away, always a floating button to turn it off").
 // Solemn's 2nd track (~/Projects/trollz/Strange Café new .m4a → audio/trollbox-track.m4a, AAC 128k), looped.
-// Tries to play on load; browsers block that until the first tap/click/key/scroll, so it starts on the first one.
-// The floating button turns it off/on; the choice is remembered per visitor (localStorage, may be unavailable).
+// 2026-10-15, Solemn: "turn off the music" → it never starts on its own; the floating button starts/stops it.
 (() => {
   const SRC = (document.currentScript && document.currentScript.dataset.src) || "audio/trollbox-track.m4a";
-  const KEY = "trollbox-music";
-  let off = false; try { off = localStorage.getItem(KEY) === "off"; } catch (e) {}
-  const a = new Audio(SRC); a.loop = true; a.volume = 0.6; a.preload = "auto";
+  let off = true;
+  const a = new Audio(SRC); a.loop = true; a.volume = 0.6; a.preload = "none";   // nothing downloads until someone presses the button
   const css = document.createElement("style");
   css.textContent = `#tbMusic{position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;align-items:center;gap:8px;font:20px/1 "Mansalva","Comic Sans MS",cursive;
     padding:10px 14px 8px;background:#fbe7a1;color:#0b0b0b;border:4px solid #0b0b0b;box-shadow:5px 5px 0 #0b0b0b;cursor:pointer;user-select:none;transition:transform .12s,box-shadow .12s}
@@ -21,13 +19,11 @@
   const show = () => { b.classList.toggle("off", off); b.classList.toggle("wait", !off && a.paused); b.querySelector(".t").textContent = off ? "sound off" : "sound on";
     b.setAttribute("aria-label", off ? "turn the music on" : "turn the music off"); b.setAttribute("aria-pressed", String(!off)); };
   const play = () => { if (off) return; a.play().then(show, show); };
-  const first = () => { ["pointerdown", "keydown", "touchstart", "scroll", "wheel"].forEach(e => removeEventListener(e, first, true)); play(); };
   b.addEventListener("click", e => {
-    e.stopPropagation(); off = !off; try { localStorage.setItem(KEY, off ? "off" : "on"); } catch (err) {}
+    e.stopPropagation(); off = !off;
     if (off) a.pause(); else play(); show();
   });
-  ["pointerdown", "keydown", "touchstart", "scroll", "wheel"].forEach(e => addEventListener(e, first, { capture: true, passive: true }));
   a.addEventListener("playing", show); a.addEventListener("pause", show);
-  const mount = () => { document.body.appendChild(b); show(); play(); };
+  const mount = () => { document.body.appendChild(b); show(); };
   document.body ? mount() : addEventListener("DOMContentLoaded", mount);
 })();

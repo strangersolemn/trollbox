@@ -54,23 +54,19 @@ input:focus,select:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
 <main class="page"><div class="wrap">
   <span class="eyebrow">trollbox · collabs</span>
   <h1>collab spots</h1>
-  <p class="lead">run a community? every collab gets the same: 10 guaranteed spots + 10 first come first served. you post the announcement, run the giveaway in your server, and send us the winners.</p>
+  <p class="lead">if you've got this link, solemn sent it to you. your people get 10 guaranteed spots + 10 first come. tell us who you are and how to reach you.</p>
 
   <div class="grid">
     <form class="card" id="form" novalidate>
-      <h2>apply</h2>
+      <h2>who are you</h2>
       <div class="f">
-        <label class="wide">project name<input name="project" required maxlength="200" autocomplete="organization"></label>
-        <label>x handle<input name="x" required maxlength="200" placeholder="@yourproject"></label>
-        <label>discord invite<input name="discord" maxlength="200" placeholder="discord.gg/…"></label>
-        <label class="wide">contact <small>who we talk to: discord or x handle</small><input name="contact" required maxlength="200"></label>
-        <label>chain<select name="chain"><option>bitcoin</option><option>ethereum</option><option>solana</option><option>base</option><option>other</option></select></label>
-        <label>collection<input name="collection" maxlength="200" placeholder="name or link"></label>
-        <label>rough holder count<input name="holders" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 800"></label>
-        <div class="alloc"><b>your spots</b>10 guaranteed + 10 fcfs</div>
+        <label class="wide">name <small>project, group or just you</small><input name="project" required maxlength="200" autocomplete="organization"></label>
+        <label class="wide">direct contact <small>x or telegram handle</small><input name="contact" required maxlength="200" placeholder="@you"></label>
+        <label class="wide">where your people are <small>x, discord, telegram, a group chat…</small><input name="discord" maxlength="200" placeholder="e.g. our telegram group"></label>
+        <label>rough number of people<input name="holders" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 50"></label>
+        <div class="alloc"><b>your spots</b>10 guaranteed + 10 first come</div>
       </div>
       <label class="hp" aria-hidden="true">leave this empty<input name="hp" tabindex="-1" autocomplete="off"></label>
-      <label class="tick"><input type="checkbox" name="agree" required> we'll post the trollbox announcement and run the giveaway in our server.</label>
       <div class="send"><button class="btn red" type="submit">send it</button><span id="msg" aria-live="polite"></span></div>
     </form>
 
@@ -78,18 +74,16 @@ input:focus,select:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
       <div class="card post">
         <h2>the post</h2>
         <div class="tpl" id="tpl">we've got 10 guaranteed + 10 fcfs spots for trollbox by @strangersolemn. 2,222 anonymous trolls on bitcoin, shielded by the protocol, coming to @Ord_Dropz. drop your taproot address below.</div>
-        <p>use this one, word for word.</p>
+        <p>post it wherever your people are. change the words if you like.</p>
         <div class="btns"><button class="btn small yellow" id="copy" type="button">copy the post</button></div>
       </div>
       <div class="card rules">
-        <h3>how it runs</h3>
+        <h3>how it goes</h3>
         <ol>
-          <li>send the form. we reply on the contact you gave.</li>
-          <li>post the announcement above on x.</li>
-          <li>run the giveaway in your server.</li>
-          <li>send us the winners' taproot addresses. they land on the allowlist.</li>
+          <li>send this. we message you on your direct contact.</li>
+          <li>share the post with your people.</li>
+          <li>send us their taproot addresses. they land on the allowlist.</li>
         </ol>
-        <p class="note">guaranteed is never over-allocated: every guaranteed spot has its troll held.</p>
       </div>
     </div>
   </div>
@@ -112,17 +106,17 @@ input:focus,select:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     var d = Object.fromEntries(new FormData(form)), int = function (v) { v = parseInt(v, 10); return isFinite(v) ? v : null; };
-    var body = { project: (d.project || '').trim(), x: (d.x || '').trim(), discord: (d.discord || '').trim(), contact: (d.contact || '').trim(),
-      chain: d.chain || '', collection: (d.collection || '').trim(), holders: int(d.holders), spots: 20, agree: !!d.agree, hp: d.hp || '' };
-    if (!body.project || !body.x || !body.contact) return say('err', 'project name, x handle and contact are needed.');
-    if (!body.agree) return say('err', 'tick the box: posting the announcement and running the giveaway is the deal.');
+    var body = { project: (d.project || '').trim(), contact: (d.contact || '').trim(), discord: (d.discord || '').trim(), chain: '', collection: '',
+      holders: int(d.holders), spots: 20, agree: true, hp: d.hp || '' };
+    body.x = body.contact;   // the bot wants an x field; the direct contact fills it
+    if (!body.project || !body.contact) return say('err', 'a name and a direct contact are needed.');
     say('', 'sending…');
     try {
       var r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
       var j = await r.json().catch(function () { return {}; });
       if (!r.ok || !j.ok) return say('err', j.error || 'could not send. try again in a minute.');
       form.reset();
-      say('ok', 'got it. we reply on the contact you gave.');
+      say('ok', 'got it. we\'ll message you.');
     } catch (err) { say('err', 'could not send. try again in a minute, or dm @strangersolemn.'); }
   });
 })();
