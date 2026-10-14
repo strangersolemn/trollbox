@@ -13,7 +13,7 @@ function makeTrollboxComputer(THREE, screenCanvas) {
   const back = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.78, 0.55), beigeDark); back.position.z = -0.15; head.add(back);
   const bezel = new THREE.Mesh(new THREE.PlaneGeometry(1.02, 0.8), new THREE.MeshStandardMaterial({ color: "#1a1a17", roughness: 0.4 }));
   bezel.position.set(0, 0.04, 0.331); head.add(bezel);
-  const tex = new THREE.CanvasTexture(screenCanvas); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  const tex = new THREE.CanvasTexture(screenCanvas); if ("colorSpace" in tex) tex.colorSpace = THREE.SRGBColorSpace; else tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;   // r149 (OCM) has no colorSpace
   const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.94, 0.705), new THREE.MeshBasicMaterial({ map: tex }));
   screenMesh.position.set(0, 0.04, 0.334); head.add(screenMesh);
   const led = new THREE.Mesh(new THREE.CircleGeometry(0.012, 12), new THREE.MeshBasicMaterial({ color: "#5cff7a" }));

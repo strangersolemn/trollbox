@@ -3,9 +3,23 @@
 (function () {
 // ---------------------------------------------------------------------------
 // COMMENT SOURCE — the one swappable piece.
-// Demo: sample lines + generated troll faces.
-// Live: replace loadComments() with Ob1's shielded comment lookup.
-// Each comment: { id, text } — id picks the troll PFP; text = null means switched off.
+// Each comment: { id, text } — id = troll number (picks the face); text = "" / null = switched off.
+//
+// Two sources:
+//   demo  — SAMPLE_LINES below (no config → this). What the site pages show today.
+//   feed  — ONE feed sat, held by Ob1's relay wallet (spec: signet/SPEC.md). Every comment is a reinscription on it:
+//             {"p":"trollbox","v":1,"troll":N,"text":"..."}      text "" = troll N switched off
+//           The box reads the sat's inscription list, keeps the LATEST valid entry per troll, hides trolls whose
+//           latest is "", and ignores anything that doesn't match the schema.
+//             /r/sat/<sat>/<page>            → {"ids":[…],"more":bool}  100 per page, oldest first (finds the count)
+//             /r/sat/<sat>/at/<i>/content    → inscription i on the sat, read newest first
+//           Config = window.TROLLBOX_CONFIG or URL params:
+//             ord=<base url>  (default https://ordinals.com; "" = same origin, i.e. the inscribed parent)
+//             feed=<sat>      the feed sat number — turns the feed source on
+//             mock=<path/>    serve the same endpoints from static files (signet/mock/) — no node needed
+//             max=<n>         read at most the newest n inscriptions on the sat (default 5000)
+//             refresh=<s>     poll for new lines every s seconds (default 60, 0 = off; only new indices are fetched)
+//           TROLLBOX_CONFIG.face = async n => canvas   draws troll N's real face (else a seeded composite)
 // ---------------------------------------------------------------------------
 const SAMPLE_LINES = [
   "floor is lava and you are the floor",
@@ -37,8 +51,79 @@ const SAMPLE_LINES = [
   "this is the only honest chat on chain",
   "if you can read this you're already too late",
 ];
+const CFG = (() => {
+  const c = Object.assign({ ord: "https://ordinals.com", feed: null, mock: null, max: 5000, refresh: 60 }, window.TROLLBOX_CONFIG || {});
+  try { new URLSearchParams(location.search).forEach((v, k) => { if (k in c) c[k] = v; }); } catch (e) {}
+  c.max = +c.max || 5000; c.refresh = +c.refresh || 0;
+  if (c.mock === "0" || c.mock === "false" || c.mock === "" || c.mock === false) c.mock = null;
+  else if (c.mock === "1" || c.mock === true) c.mock = "signet/mock/";
+  if (c.feed === "" || c.feed === "0") c.feed = null;
+  if (c.ord && c.ord !== "" && !/\/$/.test(c.ord)) c.ord += "/";
+  return c;
+})();
+const log = (...a) => { try { (CFG.onLog || (() => {}))(...a); } catch (e) {} };
+// One GET against ord. In mock mode, JSON endpoints live as "<path>.json" files; content stays as is.
+async function ordGet(path, asJson) {
+  let url;
+  if (CFG.mock) url = CFG.mock + path + (asJson && !/(^|\/)content(\/|$)/.test(path) ? ".json" : "");
+  else url = CFG.ord + path;
+  const t0 = performance.now();
+  const r = await fetch(url, { cache: "no-store" });
+  const body = r.ok ? (asJson ? await r.json() : await r.text()) : null;
+  log({ url, status: r.status, ms: Math.round(performance.now() - t0), body });
+  if (!r.ok) throw new Error(r.status + " " + url);
+  return body;
+}
+// The schema. Anything else on the sat is ignored.
+const TROLLS = 2222, MAXLEN = 280, PAGE = 100;
+function parseLine(s) {
+  let j; try { j = JSON.parse(s); } catch (e) { return null; }
+  if (!j || j.p !== "trollbox" || j.v !== 1) return null;
+  if (!Number.isInteger(j.troll) || j.troll < 1 || j.troll > TROLLS) return null;
+  if (typeof j.text !== "string" || j.text.length > MAXLEN) return null;
+  return { troll: j.troll, text: j.text.trim() };
+}
+const FEED = { total: 0, lastPage: 0, at: new Map() };    // at: index → parsed entry | null (cached; the sat only grows)
+// How many inscriptions sit on the feed sat: gallop over the pages from the last known one.
+async function feedTotal() {
+  let lo = FEED.lastPage, pg = await ordGet("r/sat/" + CFG.feed + "/" + lo, true), step = 1;
+  while (pg.more) {
+    const n = await ordGet("r/sat/" + CFG.feed + "/" + (lo + step), true);
+    if (n.ids.length) { lo += step; pg = n; step *= 2; } else step = Math.max(1, step >> 1);
+  }
+  FEED.lastPage = lo;
+  return lo * PAGE + pg.ids.length;
+}
+async function loadFeed() {
+  const total = await feedTotal();
+  let floor = Math.max(0, total - CFG.max, FEED.floor || 0);
+  // newest first; only indices not read before; once all 2,222 trolls have a latest entry, nothing older matters
+  const todo = [];
+  for (let i = total - 1; i >= floor; i--) if (!FEED.at.has(i)) todo.push(i);
+  const seen = new Set();
+  for (let k = 0; k < todo.length; k += 16) {
+    const batch = todo.slice(k, k + 16);
+    await Promise.all(batch.map(i => ordGet("r/sat/" + CFG.feed + "/at/" + i + "/content", false)
+      .then(parseLine, () => null).then(e => FEED.at.set(i, e))));
+    batch.forEach(i => { const e = FEED.at.get(i); if (e) seen.add(e.troll); });
+    if (seen.size >= TROLLS) { floor = FEED.floor = batch[batch.length - 1]; break; }
+  }
+  FEED.total = total;
+  // latest valid entry per troll wins; "" = off
+  const latest = new Map();
+  for (let i = total - 1; i >= floor; i--) { const e = FEED.at.get(i); if (e && !latest.has(e.troll)) latest.set(e.troll, { id: e.troll, text: e.text, i }); }
+  const all = [...latest.values()].sort((a, b) => a.i - b.i);       // oldest first, like a chat log
+  const shown = all.filter(l => l.text !== "");
+  const ignored = [...FEED.at.values()].filter(e => e === null).length;
+  log({ summary: `${total} on the sat → ${latest.size} trolls → ${shown.length} shown · off: ${all.filter(l => l.text === "").map(l => "#" + l.id).join(", ") || "none"} · ignored (not the schema): ${ignored}` });
+  return shown;
+}
+const placeholders = () => SAMPLE_LINES.map((text, i) => ({ id: (i * 157 + 23) % 2222 + 1, text }));
+// No feed sat yet, or a feed sat nobody has written to: placeholder lines. The first real line on the feed
+// replaces them on the next refresh, automatically (Solemn, 2026-10-11).
 function loadComments() {
-  return SAMPLE_LINES.map((text, i) => ({ id: (i * 157 + 23) % 4444, text }));
+  if (!CFG.feed) return Promise.resolve(placeholders());
+  return loadFeed().then(shown => shown.length ? shown : placeholders());
 }
 
 // ---------------------------------------------------------------------------
@@ -82,33 +167,32 @@ const PHOS = "#7dff9a", DIM = "#2f7a44";
 const LINE_H = 30, AV = 24, PAD = 40, HEADER = 92, FOOTER = 54;
 const FONT = "22px 'Courier New', monospace";
 
-const comments = loadComments().filter(c => c.text);
+let comments = [], entries = [];
 const avatars = new Map();
-comments.forEach(c => avatars.set(c.id, drawTroll(c.id, AV)));
+let manifest = null;
+const TRAITS = window.TROLLBOX_TRAITS || "traits-avif/";
+fetch(TRAITS + "manifest.json").then(r => r.json()).then(M => { manifest = M; comments.forEach(realAvatar); }).catch(() => {});
 // Real trolls: build each avatar from the trait art (seeded by id), head crop, swapped in once loaded.
-// On-chain this becomes the troll's own inscription content; here it reads traits-avif/.
-(function realAvatars() {
-  const base = (window.TROLLBOX_TRAITS || "traits-avif/") ;
-  fetch(base + "manifest.json").then(r => r.json()).then(M => {
-    const pickFrom = (list, r) => list[Math.floor(r() * list.length)];
-    comments.forEach(c => {
-      const r = rng(c.id * 7 + 3);
-      const body = pickFrom(M.bodies, r), hood = /hoodie/.test(body);
-      const eyes = pickFrom(hood ? M.eyes.filter(e => !/shades|glasses/.test(e)) : M.eyes, r);
-      const layers = ["hands/hands-f1.avif", "bodies/" + body, "tv screen/tv-f1.avif", "eyes/" + eyes, "mouths/" + pickFrom(M.mouths, r)];
-      if (!hood) layers.push("headwear/" + pickFrom(M.headwear, r));
-      Promise.all(layers.map(f => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = base + f; })))
-        .then(ims => {
-          const big = document.createElement("canvas"); big.width = big.height = 1000; const g = big.getContext("2d");
-          g.fillStyle = "#1e1e1e"; g.fillRect(0, 0, 1000, 1000);
-          ims.forEach(im => im && g.drawImage(im, 0, 0, 1000, 1000));
-          const out = document.createElement("canvas"); out.width = out.height = AV * 2; // 2x for crisp texture
-          out.getContext("2d").drawImage(big, 300, 0, 520, 520, 0, 0, AV * 2, AV * 2);   // head crop
-          avatars.set(c.id, out);
-        });
+// On-chain this becomes the troll's own inscription content (/content/<troll id>); here it reads traits-avif/.
+function realAvatar(c) {
+  if (CFG.face) { Promise.resolve(CFG.face(c.id)).then(cv => { if (cv) avatars.set(c.id, cv); }, () => {}); return; }
+  const M = manifest; if (!M) return;
+  const pickFrom = (list, r) => list[Math.floor(r() * list.length)];
+  const r = rng(c.id * 7 + 3);
+  const body = pickFrom(M.bodies, r), hood = /hoodie/.test(body);
+  const eyes = pickFrom(hood ? M.eyes.filter(e => !/shades|glasses/.test(e)) : M.eyes, r);
+  const layers = ["hands/hands-f1.avif", "bodies/" + body, "tv screen/tv-f1.avif", "eyes/" + eyes, "mouths/" + pickFrom(M.mouths, r)];
+  if (!hood) layers.push("headwear/" + pickFrom(M.headwear, r));
+  Promise.all(layers.map(f => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = TRAITS + f; })))
+    .then(ims => {
+      const big = document.createElement("canvas"); big.width = big.height = 1000; const g = big.getContext("2d");
+      g.fillStyle = "#1e1e1e"; g.fillRect(0, 0, 1000, 1000);
+      ims.forEach(im => im && g.drawImage(im, 0, 0, 1000, 1000));
+      const out = document.createElement("canvas"); out.width = out.height = AV * 2; // 2x for crisp texture
+      out.getContext("2d").drawImage(big, 300, 0, 520, 520, 0, 0, AV * 2, AV * 2);   // head crop
+      avatars.set(c.id, out);
     });
-  }).catch(() => {});
-})();
+}
 
 // pre-wrap each comment into rows
 sg.font = FONT;
@@ -122,24 +206,37 @@ function wrap(text) {
   if (line) rows.push(line);
   return rows;
 }
-const entries = comments.map(c => ({ ...c, rows: wrap(c.text) }));
+// Swap the whole list (first load, or a refresh that found new lines). Typing continues where it was.
+function setComments(list) {
+  const fresh = list.filter(c => c.text);
+  if (fresh.length === comments.length && fresh.every((c, i) => c.id === comments[i].id && c.text === comments[i].text)) return;
+  comments = fresh;
+  comments.forEach(c => { if (!avatars.has(c.id)) { avatars.set(c.id, drawTroll(c.id, AV)); realAvatar(c); } });
+  sg.font = FONT;
+  entries = comments.map(c => ({ ...c, rows: wrap(c.text) }));
+  if (history.length === 0) history.push(...entries.slice(-8)); // pre-fill so the screen isn't empty
+}
+let loadError = null, loaded = false;
+function refresh() { return loadComments().then(l => { loaded = true; loadError = null; setComments(l); }, e => { loadError = e; log({ error: String(e) }); }); }
 // ---------------------------------------------------------------------------
 // Typewriter: each comment is typed out one character at a time at the bottom,
 // then the whole log rolls up a line, like an old terminal.
 // ---------------------------------------------------------------------------
-const history = entries.slice(-8); // finished entries, oldest first (pre-filled so the screen isn't empty)
+const history = [];            // finished entries, oldest first
 let nextIdx = 0, cur = null;   // cur = { e, n, rows, phase, wait }
+const pending = [];            // lines pushed by the page (say()), typed next, before the loop carries on
 let shift = 0, lastT = 0;
 let onKeystroke = () => {};    // set by whoever owns the keyboard
 const entryH = rowsN => rowsN * LINE_H + 12;
 const rowsShown = (e, n) => { let left = n, k = 0; for (const r of e.rows) { if (left <= 0) break; k++; left -= r.length + 1; } return Math.max(1, k); };
 
 function startNext() {
-  const e = entries[nextIdx++ % entries.length];
+  const e = pending.length ? pending.shift() : entries[nextIdx++ % entries.length];
   cur = { e, n: 0, rowsN: 1, phase: "arrive", wait: 0.35 };
   shift += entryH(1);          // everything rolls up to make room
 }
 function stepTyper(dt) {
+  if (!entries.length && !pending.length) return;
   if (!cur) startNext();
   cur.wait -= dt;
   if (cur.wait > 0) return;
@@ -166,7 +263,7 @@ function stepTyper(dt) {
 }
 
 function drawEntry(e, y, n, cursorOn) {
-  sg.drawImage(avatars.get(e.id), PAD, y, AV, AV);
+  const av = avatars.get(e.id); if (av) sg.drawImage(av, PAD, y, AV, AV);
   sg.fillStyle = DIM; sg.fillText("#" + String(e.id).padStart(4, "0"), PAD + AV + 12, y + 20);
   sg.fillStyle = PHOS;
   let left = n, cx = PAD + AV + 110, cy = y + 20;
@@ -192,7 +289,8 @@ function drawScreen(t) {
   sg.font = "bold 26px 'Courier New', monospace"; sg.fillStyle = PHOS;
   sg.fillText("TROLLBOX v1.0", PAD, 50);
   sg.font = "18px 'Courier New', monospace"; sg.fillStyle = DIM;
-  sg.fillText("SHIELDED  ·  " + comments.length + " TROLLS ONLINE  ·  SENDER: UNKNOWN", PAD, 76);
+  const status = comments.length ? comments.length + " LINES ONLINE" : loadError ? "FEED UNREACHABLE" : loaded ? "NO LINES YET" : "READING THE FEED...";
+  sg.fillText("SHIELDED  ·  " + status + "  ·  SENDER: UNKNOWN", PAD, 76);
   sg.fillRect(PAD, HEADER - 6, SW - PAD * 2, 2);
 
   // the log, bottom-anchored, clipped between header and footer
@@ -226,11 +324,18 @@ function drawScreen(t) {
 }
 
 
+refresh();
+if (CFG.feed && CFG.refresh > 0) setInterval(refresh, CFG.refresh * 1000);
+
 window.TrollboxScreen = {
   canvas: screen,
   draw: drawScreen,
   setKeystroke: fn => { onKeystroke = fn; },
   count: () => comments.length,
   avatars,
+  config: CFG,
+  refresh,
+  // type one line next on this screen only (site preview of the troll station; nothing is sent anywhere)
+  say(text, id) { sg.font = FONT; const c = { id: id || 1 + Math.floor(Math.random() * 2222), text: String(text) }; if (!avatars.has(c.id)) { avatars.set(c.id, drawTroll(c.id, AV)); realAvatar(c); } pending.push({ ...c, rows: wrap(c.text) }); },
 };
 })();

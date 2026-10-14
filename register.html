@@ -1,0 +1,295 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Register · Trollbox</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--
+  TROLLBOX allowlist registration. Three steps on one page:
+    1. paste the bitcoin taproot address you will mint with (bc1p…, checked with bech32m right here)
+    2. prove you hold the work: sign one message with an ethereum wallet (FRONTRUN etc.) and/or a bitcoin
+       ordinals wallet (any verified holding → GTD, Solemn 2026-10-12)
+    3. we record { mint address, tier } server-side (never shown) and, if you came from /register in
+       Discord (#t=token in the url), give you the GTD role.
+  The API lives in the Strange Bot (frontrun-discord-bot on Vercel, api/trollbox.js). Same paper-and-ink style as mint.html.
+-->
+<style>
+:root{--paper:#fbf7f1;--ink:#0b0b0b;--red:#e2194b;--peri:#c9ccff;--lilac:#c9b4ec;--pink:#e9c3f2;--salmon:#ffc5c5;--mint:#c7efd9;--butter:#fbe7a1;--sky:#bfe3f7;--mute:#6b6560}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper) radial-gradient(circle,#d9d3c8 1.4px,transparent 1.6px) 0 0/26px 26px;color:var(--ink);font:16px/1.5 "Courier New",monospace;overflow-x:hidden}
+h1,h2,h3{font-family:Georgia,serif;font-weight:normal;margin:0;letter-spacing:-.02em}
+a{color:inherit}
+.wrap{width:min(900px,100% - 32px);margin:0 auto}
+.card{background:#fff;border:4px solid var(--ink);box-shadow:10px 10px 0 var(--ink)}
+.btn{display:inline-block;position:relative;overflow:hidden;font:bold 14px/1 "Courier New",monospace;letter-spacing:.08em;text-transform:uppercase;padding:16px 26px;border:4px solid var(--ink);background:#fff;color:var(--ink);text-decoration:none;box-shadow:6px 6px 0 var(--ink);cursor:pointer;transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
+.btn.red{background:var(--red);color:#fff}.btn.mint{background:var(--mint)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.tag{display:inline-block;font:bold 11px/1 "Courier New",monospace;letter-spacing:.14em;text-transform:uppercase;padding:7px 10px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);background:#fff}
+.eyebrow{font:bold 12px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+nav{position:sticky;top:14px;z-index:50;margin:14px auto 0;width:min(1180px,100% - 32px);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 12px 10px 18px;background:#fff;border:4px solid var(--ink);border-radius:999px;box-shadow:6px 6px 0 var(--ink)}
+nav .logo{display:flex;align-items:center;gap:12px;font-family:Georgia,serif;font-size:22px;text-decoration:none}
+nav .logo img{height:34px}
+nav .links{display:flex;gap:22px;font:bold 12px/1 "Courier New",monospace;letter-spacing:.14em;text-transform:uppercase}
+nav .links a{text-decoration:none}
+@media(max-width:760px){nav .links{display:none}}
+header{padding:60px 0 20px}
+header h1{font-size:clamp(44px,8vw,92px);line-height:.95;margin:14px 0 18px}
+header h1 em{font-style:italic;color:var(--red)}
+header p{max-width:600px;color:#333}
+.steps{display:grid;gap:34px;margin:30px 0 60px}
+.step{padding:26px;position:relative;transform:rotate(var(--r,0))}
+.step:nth-child(1){background:var(--peri);--r:-.6deg}.step:nth-child(2){background:var(--salmon);--r:.5deg}.step:nth-child(3){background:var(--sky);--r:-.4deg}
+.step h2{font-size:34px;margin-bottom:8px}
+.step p{margin:6px 0 14px;font-size:14px}
+.num{position:absolute;left:-18px;top:-22px;width:52px;height:52px;border:4px solid var(--ink);background:#fff;box-shadow:4px 4px 0 var(--ink);display:grid;place-items:center;font:bold 22px Georgia,serif}
+input[type=text]{width:100%;font:15px/1.4 "Courier New",monospace;padding:14px;border:4px solid var(--ink);background:#fff;outline:none}
+input[type=text]:focus{box-shadow:4px 4px 0 var(--ink)}
+textarea{width:100%;min-height:90px;font:13px/1.4 "Courier New",monospace;padding:12px;border:4px solid var(--ink);background:#fff}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.msg{margin-top:12px;font-size:13px;min-height:20px}
+.msg.bad{color:var(--red);font-weight:bold}.msg.good{color:#1f7a3d;font-weight:bold}
+.proof{display:inline-flex;gap:8px;align-items:center;background:#fff;border:3px solid var(--ink);padding:8px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)}
+.result{padding:30px;text-align:center}
+.result h2{font-size:clamp(34px,6vw,64px)}
+.result .tier{display:inline-block;margin:14px 0;padding:14px 22px;border:4px solid var(--red);color:var(--red);font:bold 28px/1 "Courier New",monospace;letter-spacing:.2em;transform:rotate(-4deg);background:#fff}
+details{margin:16px 0 0;font-size:13px}
+summary{cursor:pointer;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+pre{white-space:pre-wrap;word-break:break-all;background:#fff;border:3px solid var(--ink);padding:10px;font-size:12px}
+footer{margin:40px 0 60px;text-align:center}
+footer small{display:block;margin-top:14px;color:var(--mute);font-size:12px}
+.fine{font-size:12px;color:var(--mute)}
+.check{margin:0 0 60px;padding:22px}
+.check h3{font-size:24px;margin-bottom:6px}
+</style></head><body>
+
+<nav>
+  <a class="logo" href="index.html"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
+  <div class="links"><a href="index.html#how">how it works</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">café</a></div>
+  <a class="btn mint" href="https://discord.gg/3cAwmXFF7u">discord</a>
+</nav>
+
+<header><div class="wrap">
+  <div class="eyebrow">trollbox · allowlist registration</div>
+  <h1>get on the <em>list.</em></h1>
+  <p>hold the work, drop the bitcoin address you will mint with. every verified holder of solemn's work, bitcoin or ethereum, is guaranteed. you sign one message. nothing moves.</p>
+  <p class="fine" id="discord-note" hidden>you came from discord: your GTD role lands when this goes through.</p>
+</div></header>
+
+<main class="wrap">
+<div class="steps" id="steps">
+
+  <section class="card step">
+    <div class="num">1</div>
+    <h2>the address you will mint with</h2>
+    <p>a bitcoin taproot address, the one in your unisat or xverse. starts with <b>bc1p</b>. this is where the troll goes. not a vault, not an exchange.</p>
+    <input type="text" id="btc" placeholder="bc1p…" autocomplete="off" spellcheck="false">
+    <div class="msg" id="btc-msg"></div>
+  </section>
+
+  <section class="card step">
+    <div class="num">2</div>
+    <h2>prove you hold the work</h2>
+    <p>connect the wallet that holds it and sign. ethereum for frontrun, renascent, strangers, editions and the rest. bitcoin for the ordinals. do both if you hold on both chains; the better tier wins.</p>
+    <div class="row">
+      <span class="eyebrow">ethereum</span>
+      <button class="btn" data-eth="injected">metamask / rabby / any wallet</button>
+    </div>
+    <div class="row">
+      <span class="eyebrow">bitcoin</span>
+      <button class="btn" data-btc="unisat">unisat</button>
+      <button class="btn" data-btc="xverse">xverse</button>
+      <button class="btn" data-btc="leather">leather</button>
+      <button class="btn" data-btc="magiceden">magic eden</button>
+      <button class="btn" data-btc="manual">paste a signature</button>
+    </div>
+    <div id="manual" hidden>
+      <p>sign this exact text with the wallet that holds the work (bip-322), then paste the address and the signature.</p>
+      <pre id="manual-text"></pre>
+      <input type="text" id="manual-addr" placeholder="bc1p… (the holding address)" spellcheck="false">
+      <div style="height:10px"></div>
+      <textarea id="manual-sig" placeholder="signature"></textarea>
+      <div class="row"><button class="btn" id="manual-go">add this proof</button></div>
+    </div>
+    <div class="row" id="proofs"></div>
+    <div class="msg" id="proof-msg"></div>
+  </section>
+
+  <section class="card step">
+    <div class="num">3</div>
+    <h2>register</h2>
+    <p>we check what the signing wallets hold, work out your tier and keep the address. the list is never shown to anyone but ob1 at mint time.</p>
+    <div class="row"><button class="btn red" id="go" disabled>register</button><span class="fine" id="go-why">fill in 1 and 2 first</span></div>
+    <div class="msg" id="go-msg"></div>
+  </section>
+
+</div>
+
+<section class="card result" id="result" hidden>
+  <div class="eyebrow">registered</div>
+  <h2 id="result-h">you're on the list.</h2>
+  <div class="tier" id="result-tier">GTD</div>
+  <p id="result-p"></p>
+  <p class="fine">registered the wrong address? sign again with the same wallet and the newer one replaces it.</p>
+</section>
+
+<section class="card check">
+  <h3>already registered? check an address</h3>
+  <p class="fine">tells you yes or no for one address. it does not show the list.</p>
+  <div class="row"><input type="text" id="chk" placeholder="bc1p…" spellcheck="false" style="flex:1;min-width:240px"><button class="btn" id="chk-go">check</button></div>
+  <div class="msg" id="chk-msg"></div>
+</section>
+
+<details><summary>the small print</summary>
+<p>the wallet-drop winners and naka minters are first come first served, loaded from their own lists. you don't need this page for that. check your address on the <a href="allowlist.html">allowlist page</a>.</p>
+<p>one registration per holding wallet. signing again replaces it. the same bitcoin address can be registered by more than one holder; it goes on the list once, at the best tier.</p>
+<p>mint is on ord dropz with a normal bitcoin wallet. guaranteed means a spot is held for you during the gtd window. first come first served means you can mint while supply lasts after that.</p>
+<p>nobody from trollbox or strange labs will ever dm you first or ask for a seed phrase. this page never asks you to send a transaction.</p>
+</details>
+</main>
+
+<footer><div class="wrap">
+  <a class="btn" href="trollbox.html">back to the trollbox</a>
+  <small>trollbox · strangersolemn · 2026 · built on ob1's ord dropz</small>
+</div></footer>
+
+<script>
+(function () {
+  var API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.search.indexOf('api=local') > -1
+    ? 'http://localhost:3000/api/trollbox' : 'https://frontrun-discord-bot.vercel.app/api/trollbox';
+  var $ = function (id) { return document.getElementById(id); };
+  var token = (location.hash.match(/t=([^&]+)/) || [])[1] || '';
+  if (token) $('discord-note').hidden = false;
+
+  // ---- bech32m taproot check, same maths as the server ----
+  var CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  function polymod(v) { var G = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3], chk = 1; for (var i = 0; i < v.length; i++) { var top = chk >>> 25; chk = ((chk & 0x1ffffff) << 5) ^ v[i]; for (var j = 0; j < 5; j++) if ((top >>> j) & 1) chk ^= G[j]; } return chk >>> 0; }
+  function isTaproot(a) {
+    a = String(a || '').trim(); if (a !== a.toLowerCase() && a !== a.toUpperCase()) return false; a = a.toLowerCase();
+    if (!/^bc1p[02-9ac-hj-np-z]{58}$/.test(a)) return false;
+    var v = [], hrp = 'bc'; for (var i = 0; i < hrp.length; i++) v.push(hrp.charCodeAt(i) >>> 5); v.push(0); for (i = 0; i < hrp.length; i++) v.push(hrp.charCodeAt(i) & 31);
+    for (i = 3; i < a.length; i++) { var k = CHARSET.indexOf(a[i]); if (k < 0) return false; v.push(k); }
+    return polymod(v) === 0x2bc830a3;
+  }
+
+  // ---- state ----
+  var nonce = Array.from(crypto.getRandomValues(new Uint8Array(8)), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+  var ts = Math.floor(Date.now() / 1000);
+  var proofs = [];
+  function btc() { return $('btc').value.trim().toLowerCase(); }
+  function message() { return 'trollbox.strangersolemn.art\nRegister for the TROLLBOX mint\nmint address: ' + btc() + '\nnonce: ' + nonce + '\ntime: ' + ts; }
+  function show(id, ok, text) { var m = $(id); m.className = 'msg ' + (ok ? 'good' : 'bad'); m.textContent = text || ''; }
+  function refresh() {
+    var okBtc = isTaproot(btc());
+    var why = !okBtc ? 'step 1: a valid bc1p address' : !proofs.length ? 'step 2: sign with the wallet that holds the work' : '';
+    $('go').disabled = !!why; $('go-why').textContent = why;
+    $('proofs').innerHTML = proofs.map(function (p) { return '<span class="proof">' + p.chain + ' · ' + p.address.slice(0, 8) + '…' + p.address.slice(-5) + ' ✓</span>'; }).join('');
+  }
+  $('btc').addEventListener('input', function () {
+    var v = btc();
+    if (!v) show('btc-msg', true, '');
+    else if (isTaproot(v)) show('btc-msg', true, 'looks right.');
+    else show('btc-msg', false, v.indexOf('bc1q') === 0 ? 'that is a segwit address (bc1q). we need taproot (bc1p): the ordinals address in unisat / xverse.' : 'not a valid bc1p address. check for typos.');
+    if (proofs.length) { proofs = []; show('proof-msg', false, 'address changed: sign again, the signature covers the address.'); }
+    refresh();
+  });
+  function needBtc() { if (!isTaproot(btc())) { show('proof-msg', false, 'step 1 first: the signature covers the mint address.'); return false; } return true; }
+  function addProof(p) { proofs = proofs.filter(function (x) { return x.chain !== p.chain; }).concat([p]); show('proof-msg', true, p.chain + ' signature added.'); refresh(); }
+
+  // ---- ethereum: personal_sign with any injected wallet ----
+  document.querySelector('[data-eth]').onclick = async function () {
+    if (!needBtc()) return;
+    try {
+      if (!window.ethereum) throw new Error('no ethereum wallet found in this browser.');
+      var accts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      var address = String(accts[0]).toLowerCase();
+      var msg = message();
+      var hex = '0x' + Array.from(new TextEncoder().encode(msg), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      var signature = await window.ethereum.request({ method: 'personal_sign', params: [hex, address] });
+      addProof({ chain: 'eth', address: address, signature: signature });
+    } catch (e) { show('proof-msg', false, (e && e.message) || String(e)); }
+  };
+
+  // ---- bitcoin: BIP-322 with the usual wallets, or a pasted signature ----
+  async function connectOrdinals(p, purposeText) {
+    var a = await p.request('getAccounts', { purposes: ['ordinals'], message: purposeText });
+    var list = (a.result && a.result.addresses) || a.result || [];
+    var ord = list.find(function (x) { return x.purpose === 'ordinals'; }) || list[0];
+    if (!ord) throw new Error('no ordinals address returned.');
+    return ord;
+  }
+  var wallets = {
+    unisat: async function (msg) {
+      if (!window.unisat) throw new Error('unisat is not installed in this browser.');
+      var accts = await window.unisat.requestAccounts();
+      var sig = await window.unisat.signMessage(msg, 'bip322-simple');
+      return { address: accts[0], signature: sig };
+    },
+    xverse: async function (msg) {
+      var p = window.XverseProviders && window.XverseProviders.BitcoinProvider;
+      if (!p) throw new Error('xverse is not installed in this browser.');
+      var ord = await connectOrdinals(p, 'Register for the TROLLBOX mint');
+      var s = await p.request('signMessage', { address: ord.address, message: msg, protocol: 'BIP322' });
+      if (!s.result) throw new Error(s.error && s.error.message || 'signing was cancelled.');
+      return { address: ord.address, signature: s.result.signature };
+    },
+    leather: async function (msg) {
+      var p = window.LeatherProvider;
+      if (!p) throw new Error('leather is not installed in this browser.');
+      var a = await p.request('getAddresses');
+      var ord = (a.result.addresses || []).find(function (x) { return x.symbol === 'BTC' && x.type === 'p2tr'; });
+      if (!ord) throw new Error('no taproot address returned.');
+      var s = await p.request('signMessage', { message: msg, paymentType: 'p2tr' });
+      return { address: ord.address, signature: s.result.signature };
+    },
+    magiceden: async function (msg) {
+      var p = window.magicEden && window.magicEden.bitcoin;
+      if (!p) throw new Error('magic eden wallet is not installed in this browser.');
+      var ord = await connectOrdinals(p, 'Register for the TROLLBOX mint');
+      var s = await p.request('signMessage', { address: ord.address, message: msg, protocol: 'BIP322' });
+      return { address: ord.address, signature: s.result.signature };
+    }
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('[data-btc]'), function (b) {
+    b.onclick = async function () {
+      if (!needBtc()) return;
+      var kind = b.dataset.btc, msg = message();
+      if (kind === 'manual') { $('manual').hidden = false; $('manual-text').textContent = msg; return; }
+      $('manual').hidden = true;
+      try { var out = await wallets[kind](msg); addProof({ chain: 'btc', address: out.address, signature: out.signature }); }
+      catch (e) { show('proof-msg', false, (e && e.message) || String(e)); }
+    };
+  });
+  $('manual-go').onclick = function () {
+    var a = $('manual-addr').value.trim(), s = $('manual-sig').value.trim();
+    if (!a || !s) return show('proof-msg', false, 'address and signature, both.');
+    addProof({ chain: 'btc', address: a, signature: s });
+  };
+
+  // ---- register ----
+  $('go').onclick = async function () {
+    $('go').disabled = true; show('go-msg', true, 'checking the chain…');
+    try {
+      var r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ btc: btc(), nonce: nonce, ts: ts, token: token || undefined, proofs: proofs }) });
+      var j = await r.json();
+      if (!j.ok) { show('go-msg', false, j.error || 'something went wrong.'); $('go').disabled = false; return; }
+      $('steps').hidden = true; $('result').hidden = false;
+      $('result-tier').textContent = j.tier;
+      $('result-p').textContent = (j.tier === 'GTD' ? 'guaranteed. a troll is held for ' : 'first come first served. mint while supply lasts with ') + j.btc + '.' +
+        (j.role ? ' your discord role ' + j.role + ' is on.' : (j.discord ? ' discord roles switch on at launch.' : '')) +
+        ' via ' + (j.source || []).map(function (s) { return s.replace(/^eth:/, ''); }).join(', ') + '.';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) { show('go-msg', false, 'could not reach the server. try again in a minute.'); $('go').disabled = false; }
+  };
+
+  // ---- public check ----
+  $('chk-go').onclick = async function () {
+    var a = $('chk').value.trim().toLowerCase();
+    if (!isTaproot(a)) return show('chk-msg', false, 'not a valid bc1p address.');
+    show('chk-msg', true, 'looking…');
+    try {
+      var j = await (await fetch(API + '?check=' + encodeURIComponent(a))).json();
+      show('chk-msg', !!j.onList, j.onList ? 'yes. ' + j.tier + '.' : 'not on the list.');
+    } catch (e) { show('chk-msg', false, 'could not reach the server.'); }
+  };
+  refresh();
+})();
+</script>
+</body></html>

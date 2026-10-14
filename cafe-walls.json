@@ -1,0 +1,134 @@
+{
+ "interval": 15,
+ "rule": "Bitcoin only: every piece hangs from its real inscription (/content/<id>). Nothing off-chain, nothing inscribed for the walls.",
+ "frames": [
+  {
+   "id": "L",
+   "wall": "front",
+   "at": -2.4,
+   "size": 1.8,
+   "pieces": [
+    {
+     "collection": "The Ord Lot",
+     "title": "Satoshi",
+     "chain": "bitcoin",
+     "id": "8edfba618e0af54beb5d60b3b9c6c2ffbb792297674b3c27d3031d225d7c57e3i0",
+     "kind": "html"
+    },
+    {
+     "collection": "Block Clocks",
+     "title": "The Solemn Stranger",
+     "chain": "bitcoin",
+     "id": "711f2f43186dd861aea98d3d2950871856f1aa5011ec6825f21e6eb6f41c73bdi0",
+     "kind": "html"
+    },
+    {
+     "collection": "GL1TCH C0DE5",
+     "title": "GL1TCH C0DE #02",
+     "chain": "bitcoin",
+     "id": "ec19445f6994cf2ff7bd3582a3ad474442f5fe75a3034474f3846f74856b612di0",
+     "kind": "html"
+    },
+    {
+     "collection": "Fiat Mafia",
+     "title": "FIAT MAFIA #01",
+     "chain": "bitcoin",
+     "id": "a65f7c2d446c8706d4957b8b6fa1dcc2578be2c3079b1b16d45b9b6ca8e528cfi0",
+     "kind": "html"
+    },
+    {
+     "collection": "A Solemn Rose",
+     "title": "A SOLEMN ROSE #1",
+     "chain": "bitcoin",
+     "id": "d196b4eb8e1568126696bcba6610e2d31295c0f15bf91d4a70a497b363a72ff7i0",
+     "kind": "html"
+    },
+    {
+     "collection": "DOOM",
+     "title": "DOOM #1",
+     "chain": "bitcoin",
+     "id": "24246f4c6c2b39bce3e0b0fb5515513bbbd88958b90a94ee9378e575b9e85c7ei6",
+     "kind": "html"
+    },
+    {
+     "collection": "Leverage",
+     "title": "LEVERAGE",
+     "chain": "bitcoin",
+     "id": "6b7acd542176318c71c8e028161965ec2cdd2150452e6f6e8269c29ef8bedee1i0",
+     "kind": "html"
+    },
+    {
+     "collection": "The Acid Family",
+     "title": "Mr 303 #1",
+     "chain": "bitcoin",
+     "id": "37deceaf45623e1d5c02c5dbb65fd28b0f92ddae9979254aa465fef1b608f637i0",
+     "kind": "html"
+    }
+   ]
+  },
+  {
+   "id": "R",
+   "wall": "front",
+   "at": 5.4,
+   "size": 1.8,
+   "pieces": [
+    {
+     "collection": "The Masters",
+     "title": "LEGACY",
+     "chain": "bitcoin",
+     "id": "2c762a593dc60bcd92169b07de5a60d588a94819d165178ca317d45e4eeb2b11i0",
+     "kind": "image"
+    },
+    {
+     "collection": "Block Party",
+     "title": "Parrot #01",
+     "chain": "bitcoin",
+     "id": "0b931dacca96fc17dd7038232bd57708cd3f6a6d897532420ac3327d9160442ai0",
+     "kind": "html"
+    },
+    {
+     "collection": "GL1TCH PACK",
+     "title": "Obyor #1",
+     "chain": "bitcoin",
+     "id": "28ca9d41b7c06c5720206f3e2c87c80ed068c6403e9b5bb24cf1cad792ddd25bi41",
+     "kind": "html"
+    },
+    {
+     "collection": "BTC Editions",
+     "title": "GL1TCH GAREE #1",
+     "chain": "bitcoin",
+     "id": "0ec7d889c5ce06ab0c8677ec4008c14b8dfb5e0a989b2b94e36ef229baf38641i0",
+     "kind": "html"
+    },
+    {
+     "collection": "Deliverance",
+     "title": "DELIVERANCE #01",
+     "chain": "bitcoin",
+     "id": "e7d54f68fedc1071d5968b6b2e935a80d8b4c7f54917f782889290449afccf01i0",
+     "kind": "html"
+    },
+    {
+     "collection": "DRONEBTC",
+     "title": "DRONEBTC #1",
+     "chain": "bitcoin",
+     "id": "0610813e3becd78bef54818f47fc7d1200080bcc62249d1e911732f4cf5f3463i0",
+     "kind": "html"
+    },
+    {
+     "collection": "Ordinal Party",
+     "title": "Ordinal Party #1",
+     "chain": "bitcoin",
+     "id": "7a4ba52f2d673c08308cad23e3c30af02d2f533d650c73c7ab4cc999675a22c7i0",
+     "kind": "image"
+    },
+    {
+     "collection": "Gamma Prints",
+     "title": "CYPHERPUNK",
+     "chain": "bitcoin",
+     "id": "ed686dd5f79495b0dbca1251d7a9d86f2dab31e6a6b5a6b81a47bcbc93e44010i0",
+     "kind": "html"
+    }
+   ]
+  }
+ ]
+}

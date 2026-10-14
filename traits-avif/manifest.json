@@ -1,13 +1,39 @@
 {
  "bodies": [
+  "angel.avif",
   "anon.avif",
+  "cafe-uniform.avif",
+  "chef-whites.avif",
   "clown.avif",
+  "devil.avif",
+  "dungarees.avif",
+  "fur-coat.avif",
   "grey-hoodie.avif",
+  "leather.avif",
+  "naked.avif",
   "parka-hoodie.avif",
+  "pimp.avif",
+  "police.avif",
   "puffer.avif",
   "rage-farmer.avif",
+  "robe-cape.avif",
+  "robe-red-cape.avif",
+  "robe-red.avif",
+  "robe-white.avif",
+  "robe.avif",
+  "smart-shirt-red.avif",
+  "smart-shirt.avif",
+  "south-side.avif",
+  "sprayway.avif",
+  "strange-goose.avif",
   "suit.avif",
-  "tshirt.avif"
+  "sweat-shopper.avif",
+  "tracksuit.avif",
+  "troll-suit.avif",
+  "tshirt.avif",
+  "wife-beater-white.avif",
+  "wife-beater.avif",
+  "wizard-robe.avif"
  ],
  "hands": [
   "hands-f1.avif",
@@ -25,8 +51,15 @@
   "eye-02.avif",
   "eye-03.avif",
   "eye-04.avif",
+  "eye-bored.avif",
+  "eye-half.avif",
+  "eye-red.avif",
+  "eye-square.avif",
+  "eye-stare.avif",
   "glasses.avif",
   "shades-b.avif",
+  "shades-black.avif",
+  "shades-v2.avif",
   "shades.avif"
  ],
  "mouths": [
@@ -34,40 +67,61 @@
   "mouth-03.avif",
   "mouth-04.avif",
   "mouth-05.avif",
-  "mouth-06.avif",
   "mouth-07.avif",
   "mouth-08.avif",
   "mouth-09.avif",
+  "mouth-09b.avif",
   "mouth-10.avif",
+  "mouth-10b.avif",
   "mouth-11.avif",
+  "mouth-11b.avif",
   "mouth-12.avif",
+  "mouth-12b.avif",
   "mouth-13.avif",
   "mouth-14.avif",
-  "mouth-17.avif"
+  "mouth-17.avif",
+  "mouth-bottom-heavy.avif",
+  "mouth-cig.avif",
+  "mouth-pout.avif",
+  "mouth-sleazy-cig.avif"
  ],
  "headwear": [
   "afro.avif",
   "backbun.avif",
+  "backfro.avif",
   "baghead.avif",
+  "bandana.avif",
   "baseball.avif",
   "beanie-grey.avif",
   "beanie-rasta.avif",
+  "bobby.avif",
+  "bow.avif",
   "bucket-bitcoin-og.avif",
   "bucket-bitcoin.avif",
   "bucket-teal.avif",
+  "bucket.avif",
+  "cap-front.avif",
   "chef-hat.avif",
+  "coconut.avif",
+  "crown.avif",
   "curlers.avif",
   "dreads.avif",
   "fedora.avif",
   "fez.avif",
   "frontbun.avif",
+  "girl-next-door.avif",
+  "halo.avif",
+  "horns.avif",
   "knit.avif",
   "messy.avif",
   "pigtails-black.avif",
-  "pigtails-blonde.avif",
+  "pigtails.avif",
+  "pimp-hat.avif",
   "punk.avif",
+  "sideswipe.avif",
   "spike.avif",
-  "white-locks.avif"
+  "wild.avif",
+  "wizard-hat.avif"
  ],
  "_version": 2,
  "_size": 1000,
@@ -82,7 +136,7 @@
  ],
  "_palette": {
   "red": {
-   "hue": null,
+   "hue": 350,
    "sat": 1.0,
    "val": [
     0,
@@ -112,14 +166,14 @@
    "name": "Green"
   },
   "yellow": {
-   "hue": 48,
-   "sat": 0.89,
+   "hue": 56,
+   "sat": 0.85,
    "val": [
     0,
-    1.38
+    1.45
    ],
-   "hex": "#e6c54d",
-   "name": "Yellow"
+   "hex": "#dfd659",
+   "name": "Lemon"
   },
   "grey": {
    "hue": "grey",
@@ -160,6 +214,16 @@
    ],
    "hex": "#2c2c2c",
    "name": "Charcoal"
+  },
+  "darkgrey": {
+   "hue": "grey",
+   "sat": 0.0,
+   "val": [
+    0.03,
+    0.52
+   ],
+   "hex": "#555555",
+   "name": "Lurker Grey"
   }
  },
  "_mask": {
@@ -173,67 +237,635 @@
    "family": "hands",
    "frame": 1,
    "group": "hands",
-   "file": "hands-f1.avif"
+   "file": "hands-f1.avif",
+   "inscribed": "now-batch-1"
   },
   "hands/hands-f2.avif": {
    "name": "hands frame 2",
    "family": "hands",
    "frame": 2,
    "group": "hands",
-   "file": "hands-f2.avif"
+   "file": "hands-f2.avif",
+   "inscribed": "now-batch-1"
   },
   "hands/hands-f3.avif": {
    "name": "hands frame 3",
    "family": "hands",
    "frame": 3,
    "group": "hands",
-   "file": "hands-f3.avif"
+   "file": "hands-f3.avif",
+   "inscribed": "now-batch-1"
   },
   "hands/hands-f4.avif": {
    "name": "hands frame 4",
    "family": "hands",
    "frame": 4,
    "group": "hands",
-   "file": "hands-f4.avif"
+   "file": "hands-f4.avif",
+   "inscribed": "now-batch-1"
   },
   "hands/hands-f5.avif": {
    "name": "hands frame 5",
    "family": "hands",
    "frame": 5,
    "group": "hands",
-   "file": "hands-f5.avif"
+   "file": "hands-f5.avif",
+   "inscribed": "now-batch-1"
   },
   "tv screen/tv-f1.avif": {
    "name": "tv frame 1",
    "family": "tv",
    "frame": 1,
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
    "group": "tv screen",
-   "file": "tv-f1.avif"
+   "file": "tv-f1.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
   },
   "tv screen/tv-f2.avif": {
    "name": "tv frame 2",
    "family": "tv",
    "frame": 2,
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
    "group": "tv screen",
-   "file": "tv-f2.avif"
+   "file": "tv-f2.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
   },
   "bodies/grey-hoodie.avif": {
-   "name": "Grey Hoodie",
+   "name": "Lurker Hoodie",
    "hood": true,
    "family": "grey-hoodie",
    "color": null,
    "group": "bodies",
-   "file": "grey-hoodie.avif"
+   "file": "grey-hoodie.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "eyes/eye-01.avif": {
+   "name": "Anon Eye",
+   "family": "eye-01",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-01.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/eye-02.avif": {
+   "name": "Side Eye",
+   "family": "eye-02",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-02.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/eye-03.avif": {
+   "name": "Thousand Yard Scroll",
+   "family": "eye-03",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-03.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/eye-04.avif": {
+   "name": "Algorithm Brain",
+   "family": "eye-04",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-04.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/shades.avif": {
+   "name": "Deal With It (retired v1)",
+   "eyewear": true,
+   "family": "shades",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "eyes",
+   "file": "shades.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/glasses.avif": {
+   "name": "Keyboard Specs",
+   "eyewear": true,
+   "family": "glasses",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "eyes",
+   "file": "glasses.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/shades-b.avif": {
+   "name": "Black Shades (retired)",
+   "eyewear": true,
+   "family": "shades-b",
+   "color": null,
+   "group": "eyes",
+   "file": "shades-b.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "mouths/mouth-02.avif": {
+   "name": "Lurker",
+   "family": "mouth-02",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-02.avif",
+   "inscribed": "now-batch-1"
+  },
+  "mouths/mouth-03.avif": {
+   "name": "Reply Guy",
+   "family": "mouth-03",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-03.avif",
+   "inscribed": "now-batch-1"
+  },
+  "mouths/mouth-04.avif": {
+   "name": "Smoke Break",
+   "family": "mouth-04",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-04.avif",
+   "inscribed": "now-batch-1"
+  },
+  "mouths/mouth-05.avif": {
+   "name": "Seething",
+   "family": "mouth-05",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-05.avif",
+   "inscribed": "now-batch-1"
+  },
+  "mouths/mouth-07.avif": {
+   "name": "Cope Cig",
+   "family": "mouth-07",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-07.avif",
+   "inscribed": "now-batch-1"
+  },
+  "mouths/mouth-08.avif": {
+   "name": "Smug",
+   "family": "mouth-08",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-08.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-09.avif": {
+   "name": "Malding",
+   "family": "mouth-09",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-09.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-10.avif": {
+   "name": "No Comment",
+   "family": "mouth-10",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-10.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-11.avif": {
+   "name": "Drooling Degen",
+   "family": "mouth-11",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-11.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-12.avif": {
+   "name": "Cringe",
+   "family": "mouth-12",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-12.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-13.avif": {
+   "name": "Tight Lipped",
+   "family": "mouth-13",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-13.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-14.avif": {
+   "name": "Copium Leak",
+   "family": "mouth-14",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-14.avif",
+   "inscribed": "now-batch-2"
+  },
+  "mouths/mouth-17.avif": {
+   "name": "Troll Face",
+   "family": "mouth-17",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-17.avif",
+   "inscribed": "now-batch-2"
+  },
+  "headwear/pigtails-black.avif": {
+   "name": "Flick",
+   "family": "pigtails-black",
+   "color": null,
+   "group": "headwear",
+   "file": "pigtails-black.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/curlers.avif": {
+   "name": "Getting Ready (Live)",
+   "family": "curlers",
+   "color": null,
+   "group": "headwear",
+   "file": "curlers.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/fedora.avif": {
+   "name": "M'lady",
+   "family": "fedora",
+   "color": null,
+   "group": "headwear",
+   "file": "fedora.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/chef-hat.avif": {
+   "name": "Let Him Cook",
+   "family": "chef-hat",
+   "color": null,
+   "group": "headwear",
+   "file": "chef-hat.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/beanie-grey.avif": {
+   "name": "Lurker Beanie",
+   "family": "beanie-grey",
+   "color": null,
+   "group": "headwear",
+   "file": "beanie-grey.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/beanie-rasta.avif": {
+   "name": "Rasta",
+   "family": "beanie-rasta",
+   "color": null,
+   "group": "headwear",
+   "file": "beanie-rasta.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/baghead.avif": {
+   "name": "Undoxxed",
+   "covers_face": true,
+   "family": "baghead",
+   "color": null,
+   "group": "headwear",
+   "file": "baghead.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/bucket-bitcoin-og.avif": {
+   "name": "OG HODL Bucket",
+   "family": "bucket-bitcoin-og",
+   "color": null,
+   "group": "headwear",
+   "file": "bucket-bitcoin-og.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/bucket-bitcoin.avif": {
+   "name": "HODL Bucket",
+   "family": "bucket-bitcoin",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "bucket-bitcoin.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/bucket-teal.avif": {
+   "name": "OG Troll Bucket",
+   "family": "bucket-teal",
+   "color": null,
+   "group": "headwear",
+   "file": "bucket-teal.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/baseball.avif": {
+   "name": "No Cap",
+   "family": "baseball",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "baseball.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/fez.avif": {
+   "name": "Fez",
+   "family": "fez",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "fez.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/knit.avif": {
+   "name": "Knit Wit",
+   "family": "knit",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "knit.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/messy.avif": {
+   "name": "Basement Hair",
+   "family": "messy",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "messy.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/punk.avif": {
+   "name": "Edgelord",
+   "family": "punk",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "punk.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/frontbun.avif": {
+   "name": "Front Bun",
+   "family": "frontbun",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "frontbun.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/backbun.avif": {
+   "name": "Hot Take Bun",
+   "family": "backbun",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "backbun.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/spike.avif": {
+   "name": "Spiked",
+   "family": "spike",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "spike.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/coconut.avif": {
+   "name": "Coconutter",
+   "family": "coconut",
+   "color": null,
+   "group": "headwear",
+   "file": "coconut.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/sideswipe.avif": {
+   "name": "Side Swipe",
+   "family": "sideswipe",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "sideswipe.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/wild.avif": {
+   "name": "Terminally Online",
+   "family": "wild",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "wild.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/afro.avif": {
+   "name": "Fuzz",
+   "family": "afro",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "afro.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/backfro.avif": {
+   "name": "Backfro",
+   "family": "backfro",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "backfro.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/pigtails.avif": {
+   "name": "Pigtails",
+   "family": "pigtails",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "pigtails.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/horns.avif": {
+   "name": "Devilish",
+   "family": "horns",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "horns.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/girl-next-door.avif": {
+   "name": "Girl Next Door",
+   "family": "girl-next-door",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "girl-next-door.avif",
+   "inscribed": "now-batch-1"
+  },
+  "headwear/dreads.avif": {
+   "name": "Locks",
+   "family": "dreads",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "dreads.avif",
+   "inscribed": "now-batch-1"
+  },
+  "mouths/mouth-pout.avif": {
+   "name": "Thirst Trap",
+   "family": "mouth-pout",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-pout.avif",
+   "inscribed": "now-batch-2"
+  },
+  "eyes/eye-square.avif": {
+   "name": "Glowie",
+   "family": "eye-square",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-square.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
   },
   "bodies/tshirt.avif": {
-   "name": "T-Shirt",
+   "name": "Basement Dweller",
    "family": "tshirt",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "bodies",
-   "file": "tshirt.avif"
+   "file": "tshirt.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/dungarees.avif": {
+   "name": "Exit Liquidity",
+   "family": "dungarees",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "dungarees.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "bodies/robe.avif": {
+   "name": "Work From Bed",
+   "family": "robe",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "robe.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/devil.avif": {
+   "name": "Devil's Advocate",
+   "family": "devil",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "devil.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "bodies/leather.avif": {
+   "name": "Main Character",
+   "family": "leather",
+   "color": null,
+   "group": "bodies",
+   "file": "leather.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "bodies/naked.avif": {
+   "name": "Nothing To Hide",
+   "family": "naked",
+   "color": null,
+   "group": "bodies",
+   "file": "naked.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "bodies/pimp.avif": {
+   "name": "Pimp & Dump",
+   "family": "pimp",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "pimp.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "bodies/wife-beater.avif": {
+   "name": "Keyboard Warrior",
+   "family": "wife-beater",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "wife-beater.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "bodies/wife-beater-white.avif": {
+   "name": "Keyboard Warrior (White)",
+   "family": "wife-beater-white",
+   "color": null,
+   "group": "bodies",
+   "file": "wife-beater-white.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "headwear/pimp-hat.avif": {
+   "name": "Whale Hat",
+   "family": "pimp-hat",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "pimp-hat.avif",
+   "inscribed": "now-batch-1"
+  },
+  "eyes/eye-red.avif": {
+   "name": "3am Red Eye",
+   "family": "eye-red",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-red.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
   },
   "bodies/anon.avif": {
    "name": "Anon",
@@ -243,27 +875,19 @@
    "val_mul": 1.0,
    "color": "red",
    "group": "bodies",
-   "file": "anon.avif"
+   "file": "anon.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
   "bodies/puffer.avif": {
-   "name": "Bubble",
+   "name": "Echo Chamber",
    "family": "puffer",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "bodies",
-   "file": "puffer.avif"
-  },
-  "bodies/clown.avif": {
-   "name": "Clown Mode",
-   "family": "clown",
-   "recolor": true,
-   "hue": 350.0,
-   "val_mul": 1.0,
-   "color": "red",
-   "group": "bodies",
-   "file": "clown.avif"
+   "file": "puffer.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
   "bodies/parka-hoodie.avif": {
    "name": "Nosey Parker",
@@ -274,7 +898,8 @@
    "val_mul": 1.0,
    "color": "red",
    "group": "bodies",
-   "file": "parka-hoodie.avif"
+   "file": "parka-hoodie.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
   "bodies/rage-farmer.avif": {
    "name": "Rage Farmer",
@@ -284,358 +909,393 @@
    "val_mul": 1.0,
    "color": "red",
    "group": "bodies",
-   "file": "rage-farmer.avif"
+   "file": "rage-farmer.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
   "bodies/suit.avif": {
-   "name": "Smart Suit",
+   "name": "Thought Leader",
    "family": "suit",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "bodies",
-   "file": "suit.avif"
+   "file": "suit.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
   },
-  "eyes/eye-01.avif": {
-   "name": "Eye",
-   "family": "eye-01",
-   "color": null,
-   "group": "eyes",
-   "file": "eye-01.avif"
-  },
-  "eyes/eye-02.avif": {
-   "name": "Side Eye",
-   "family": "eye-02",
-   "color": null,
-   "group": "eyes",
-   "file": "eye-02.avif"
-  },
-  "eyes/eye-03.avif": {
-   "name": "Dead Stare",
-   "family": "eye-03",
-   "color": null,
-   "group": "eyes",
-   "file": "eye-03.avif"
-  },
-  "eyes/eye-04.avif": {
-   "name": "Squint",
-   "family": "eye-04",
-   "color": null,
-   "group": "eyes",
-   "file": "eye-04.avif"
-  },
-  "eyes/shades.avif": {
-   "name": "Shades",
-   "eyewear": true,
-   "family": "shades",
+  "bodies/sprayway.avif": {
+   "name": "Touch Grass",
+   "family": "sprayway",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
-   "group": "eyes",
-   "file": "shades.avif"
+   "group": "bodies",
+   "file": "sprayway.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
   },
-  "eyes/glasses.avif": {
-   "name": "Glasses",
-   "eyewear": true,
-   "family": "glasses",
+  "bodies/clown.avif": {
+   "name": "Clown World",
+   "family": "clown",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
-   "group": "eyes",
-   "file": "glasses.avif"
+   "group": "bodies",
+   "file": "clown.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
-  "eyes/shades-b.avif": {
-   "name": "Black Shades",
-   "eyewear": true,
-   "family": "shades-b",
+  "bodies/angel.avif": {
+   "name": "Angel Investor",
+   "family": "angel",
    "color": null,
-   "group": "eyes",
-   "file": "shades-b.avif"
+   "group": "bodies",
+   "file": "angel.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
-  "mouths/mouth-02.avif": {
-   "name": "Mouth 2",
-   "family": "mouth-02",
+  "bodies/robe-white.avif": {
+   "name": "Mod Robes",
+   "family": "robe-white",
    "color": null,
-   "group": "mouths",
-   "file": "mouth-02.avif"
+   "group": "bodies",
+   "file": "robe-white.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
   },
-  "mouths/mouth-03.avif": {
-   "name": "Mouth 3",
-   "family": "mouth-03",
+  "bodies/robe-cape.avif": {
+   "name": "Super Troll (White)",
+   "family": "robe-cape",
    "color": null,
-   "group": "mouths",
-   "file": "mouth-03.avif"
+   "group": "bodies",
+   "file": "robe-cape.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
   },
-  "mouths/mouth-04.avif": {
-   "name": "Mouth 4",
-   "family": "mouth-04",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-04.avif"
-  },
-  "mouths/mouth-05.avif": {
-   "name": "Mouth 5",
-   "family": "mouth-05",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-05.avif"
-  },
-  "mouths/mouth-06.avif": {
-   "name": "Mouth 6",
-   "family": "mouth-06",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-06.avif"
-  },
-  "mouths/mouth-07.avif": {
-   "name": "Mouth 7",
-   "family": "mouth-07",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-07.avif"
-  },
-  "mouths/mouth-08.avif": {
-   "name": "Mouth 8",
-   "family": "mouth-08",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-08.avif"
-  },
-  "mouths/mouth-09.avif": {
-   "name": "Mouth 9",
-   "family": "mouth-09",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-09.avif"
-  },
-  "mouths/mouth-10.avif": {
-   "name": "Mouth 10",
-   "family": "mouth-10",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-10.avif"
-  },
-  "mouths/mouth-11.avif": {
-   "name": "Mouth 11",
-   "family": "mouth-11",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-11.avif"
-  },
-  "mouths/mouth-12.avif": {
-   "name": "Mouth 12",
-   "family": "mouth-12",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-12.avif"
-  },
-  "mouths/mouth-13.avif": {
-   "name": "Mouth 13",
-   "family": "mouth-13",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-13.avif"
-  },
-  "mouths/mouth-14.avif": {
-   "name": "Mouth 14",
-   "family": "mouth-14",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-14.avif"
-  },
-  "mouths/mouth-17.avif": {
-   "name": "Mouth 17",
-   "family": "mouth-17",
-   "color": null,
-   "group": "mouths",
-   "file": "mouth-17.avif"
-  },
-  "headwear/afro.avif": {
-   "name": "Fuzz",
-   "family": "afro",
-   "color": null,
-   "group": "headwear",
-   "file": "afro.avif"
-  },
-  "headwear/pigtails-black.avif": {
-   "name": "Flick",
-   "family": "pigtails-black",
-   "color": null,
-   "group": "headwear",
-   "file": "pigtails-black.avif"
-  },
-  "headwear/pigtails-blonde.avif": {
-   "name": "Barbie",
-   "family": "pigtails-blonde",
-   "color": null,
-   "group": "headwear",
-   "file": "pigtails-blonde.avif"
-  },
-  "headwear/dreads.avif": {
-   "name": "Locks",
-   "family": "dreads",
-   "color": null,
-   "group": "headwear",
-   "file": "dreads.avif"
-  },
-  "headwear/white-locks.avif": {
-   "name": "White Locks",
-   "family": "white-locks",
-   "color": null,
-   "group": "headwear",
-   "file": "white-locks.avif"
-  },
-  "headwear/curlers.avif": {
-   "name": "Curl",
-   "family": "curlers",
-   "color": null,
-   "group": "headwear",
-   "file": "curlers.avif"
-  },
-  "headwear/fedora.avif": {
-   "name": "Wannabee",
-   "family": "fedora",
-   "color": null,
-   "group": "headwear",
-   "file": "fedora.avif"
-  },
-  "headwear/chef-hat.avif": {
-   "name": "Chef",
-   "family": "chef-hat",
-   "color": null,
-   "group": "headwear",
-   "file": "chef-hat.avif"
-  },
-  "headwear/beanie-grey.avif": {
-   "name": "Beanie",
-   "family": "beanie-grey",
-   "color": null,
-   "group": "headwear",
-   "file": "beanie-grey.avif"
-  },
-  "headwear/beanie-rasta.avif": {
-   "name": "Rasta",
-   "family": "beanie-rasta",
-   "color": null,
-   "group": "headwear",
-   "file": "beanie-rasta.avif"
-  },
-  "headwear/baghead.avif": {
-   "name": "Baghead",
-   "covers_face": true,
-   "family": "baghead",
-   "color": null,
-   "group": "headwear",
-   "file": "baghead.avif"
-  },
-  "headwear/bucket-bitcoin-og.avif": {
-   "name": "BTC Bucket (OG)",
-   "family": "bucket-bitcoin-og",
-   "color": null,
-   "group": "headwear",
-   "file": "bucket-bitcoin-og.avif"
-  },
-  "headwear/bucket-bitcoin.avif": {
-   "name": "BTC Bucket",
-   "family": "bucket-bitcoin",
+  "bodies/robe-red.avif": {
+   "name": "Cult Leader",
+   "family": "robe-red",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
-   "group": "headwear",
-   "file": "bucket-bitcoin.avif"
+   "group": "bodies",
+   "file": "robe-red.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
   },
-  "headwear/bucket-teal.avif": {
+  "bodies/robe-red-cape.avif": {
+   "name": "Super Troll",
+   "family": "robe-red-cape",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "robe-red-cape.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/south-side.avif": {
+   "name": "Roadman",
+   "family": "south-side",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "south-side.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/sweat-shopper.avif": {
+   "name": "Sweat Shopper",
+   "family": "sweat-shopper",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "sweat-shopper.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/smart-shirt-red.avif": {
+   "name": "Per My Last Email",
+   "family": "smart-shirt-red",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "smart-shirt-red.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/smart-shirt.avif": {
+   "name": "Middle Manager",
+   "family": "smart-shirt",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "smart-shirt.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/cafe-uniform.avif": {
+   "name": "Café Staff",
+   "family": "cafe-uniform",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "cafe-uniform.avif",
+   "inscribed": "../traits-upload-rest/batch-1"
+  },
+  "bodies/strange-goose.avif": {
+   "name": "Strange Goose",
+   "family": "strange-goose",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "strange-goose.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/tracksuit.avif": {
+   "name": "Gym Tomorrow",
+   "family": "tracksuit",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "tracksuit.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "bodies/troll-suit.avif": {
+   "name": "Full Troll",
+   "family": "troll-suit",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "troll-suit.avif",
+   "inscribed": "../traits-upload-rest/batch-2"
+  },
+  "eyes/eye-bored.avif": {
+   "name": "Unbothered",
+   "family": "eye-bored",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-bored.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "eyes/eye-stare.avif": {
+   "name": "Doomscroller",
+   "family": "eye-stare",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-stare.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "headwear/bucket.avif": {
    "name": "Troll Bucket",
-   "val_mul": 1.3,
    "family": "bucket",
    "recolor": true,
-   "hue": 180.0,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "headwear",
+   "file": "bucket.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "headwear/crown.avif": {
+   "name": "King of the Comments",
+   "family": "crown",
    "color": null,
    "group": "headwear",
-   "file": "bucket-teal.avif"
+   "file": "crown.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
   },
-  "headwear/baseball.avif": {
-   "name": "Baseball",
-   "family": "baseball",
+  "headwear/bow.avif": {
+   "name": "E-Girl Bow",
+   "family": "bow",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "headwear",
-   "file": "baseball.avif"
+   "file": "bow.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
   },
-  "headwear/fez.avif": {
-   "name": "Fez",
-   "family": "fez",
+  "headwear/halo.avif": {
+   "name": "Halo",
+   "family": "halo",
+   "color": null,
+   "group": "headwear",
+   "file": "halo.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "mouths/mouth-bottom-heavy.avif": {
+   "name": "Lip Filler",
+   "family": "mouth-bottom-heavy",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-bottom-heavy.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "mouths/mouth-cig.avif": {
+   "name": "Influencer Cig",
+   "family": "mouth-cig",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-cig.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "mouths/mouth-sleazy-cig.avif": {
+   "name": "DM Slide",
+   "family": "mouth-sleazy-cig",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-sleazy-cig.avif",
+   "inscribed": "../traits-upload-rest/batch-3"
+  },
+  "bodies/fur-coat.avif": {
+   "name": "Whale Coat",
+   "family": "fur-coat",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "fur-coat.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "bodies/chef-whites.avif": {
+   "name": "Cooked",
+   "family": "chef-whites",
+   "color": null,
+   "group": "bodies",
+   "file": "chef-whites.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "bodies/police.avif": {
+   "name": "Thought Police",
+   "family": "police",
+   "color": null,
+   "group": "bodies",
+   "file": "police.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "eyes/eye-half.avif": {
+   "name": "Logged Off",
+   "family": "eye-half",
+   "color": null,
+   "group": "eyes",
+   "file": "eye-half.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "headwear/bandana.avif": {
+   "name": "Keyboard Rambo",
+   "family": "bandana",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "headwear",
-   "file": "fez.avif"
+   "file": "bandana.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
   },
-  "headwear/knit.avif": {
-   "name": "Knit",
-   "family": "knit",
+  "headwear/bobby.avif": {
+   "name": "Hall Monitor",
+   "family": "bobby",
+   "color": null,
+   "group": "headwear",
+   "file": "bobby.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "mouths/mouth-09b.avif": {
+   "name": "Flatline",
+   "family": "mouth-09b",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-09b.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "mouths/mouth-10b.avif": {
+   "name": "Lowkey",
+   "family": "mouth-10b",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-10b.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "mouths/mouth-11b.avif": {
+   "name": "Gotcha",
+   "family": "mouth-11b",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-11b.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "mouths/mouth-12b.avif": {
+   "name": "Smug Lurker",
+   "family": "mouth-12b",
+   "color": null,
+   "group": "mouths",
+   "file": "mouth-12b.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "bodies/wizard-robe.avif": {
+   "name": "Wzrd Cloak",
+   "family": "wizard-robe",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "bodies",
+   "file": "wizard-robe.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "headwear/wizard-hat.avif": {
+   "name": "Wzrd Hat",
+   "family": "wizard-hat",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "headwear",
-   "file": "knit.avif"
+   "file": "wizard-hat.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
   },
-  "headwear/messy.avif": {
-   "name": "Basement",
-   "family": "messy",
+  "eyes/shades-black.avif": {
+   "name": "Deal With It (Blackout)",
+   "eyewear": true,
+   "family": "shades-black",
+   "color": null,
+   "group": "eyes",
+   "file": "shades-black.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "eyes/shades-v2.avif": {
+   "name": "Deal With It",
+   "eyewear": true,
+   "family": "shades-v2",
+   "recolor": true,
+   "hue": 350.0,
+   "val_mul": 1.0,
+   "color": "red",
+   "group": "eyes",
+   "file": "shades-v2.avif",
+   "inscribed": "../traits-upload-rest/batch-4"
+  },
+  "headwear/cap-front.avif": {
+   "name": "Front Runner",
+   "family": "cap-front",
    "recolor": true,
    "hue": 350.0,
    "val_mul": 1.0,
    "color": "red",
    "group": "headwear",
-   "file": "messy.avif"
-  },
-  "headwear/punk.avif": {
-   "name": "Punk",
-   "family": "punk",
-   "recolor": true,
-   "hue": 350.0,
-   "val_mul": 1.0,
-   "color": "red",
-   "group": "headwear",
-   "file": "punk.avif"
-  },
-  "headwear/frontbun.avif": {
-   "name": "Front Bun",
-   "family": "frontbun",
-   "recolor": true,
-   "hue": 350.0,
-   "val_mul": 1.0,
-   "color": "red",
-   "group": "headwear",
-   "file": "frontbun.avif"
-  },
-  "headwear/backbun.avif": {
-   "name": "Back Bun",
-   "family": "backbun",
-   "recolor": true,
-   "hue": 350.0,
-   "val_mul": 1.0,
-   "color": "red",
-   "group": "headwear",
-   "file": "backbun.avif"
-  },
-  "headwear/spike.avif": {
-   "name": "Spike",
-   "family": "spike",
-   "recolor": true,
-   "hue": 350.0,
-   "val_mul": 1.0,
-   "color": "red",
-   "group": "headwear",
-   "file": "spike.avif"
+   "file": "cap-front.avif"
   }
- }
+ },
+ "_clash": {}
 }

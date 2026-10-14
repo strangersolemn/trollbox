@@ -1,0 +1,148 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Allowlist · Trollbox</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="check if your bitcoin address is on the trollbox allowlist.">
+<!--
+  TROLLBOX allowlist checker. Paste a bitcoin address, get yes/no + tier. Nothing else comes back: the list and
+  its size stay on the server (Strange Bot, api/trollbox.js, ?check=). The list fills itself from Discord
+  verifications (GTD), taproot addresses added by verified holders on register.html (GTD), and the uploaded
+  wallet-drop + Naka minter lists (FCFS). A fresh verification shows here within a few minutes.
+  Restyled to site v2 (tb.css) 2026-10-13; the checker script is unchanged (pre-restyle copy: allowlist.v1.html).
+-->
+<link rel="stylesheet" href="../tb.css">
+<style>
+.page{padding:56px 0 0}
+h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink);margin:0 0 14px}
+.lead{max-width:620px;margin:0 0 30px;font-size:19px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 14px 8px;display:inline-block}
+.checker{padding:26px;background:var(--butter);transform:rotate(-.5deg);max-width:820px}
+.checker h2{font-size:40px;margin:0 0 6px}
+.checker .row{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+.checker input{flex:1;min-width:220px;font:18px/1.4 var(--type);padding:14px 16px;border:4px solid var(--ink);background:#fff;outline:none}
+.checker input:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
+#result{margin-top:18px}
+.answer{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:14px 16px}
+.answer p{margin:0;flex:1;min-width:200px}
+.answer .stamp{font:34px/1 var(--hand);padding:8px 14px 4px;border:4px solid var(--ink);transform:rotate(-4deg);background:var(--salmon)}
+.answer.yes .stamp{background:var(--mint)}.answer.gtd .stamp{background:var(--green);color:#fff}
+.answer.err{background:var(--salmon)}
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:46px 0 0}
+@media(max-width:760px){.tiers{grid-template-columns:1fr}}
+.tier{padding:22px 24px}
+.tier:nth-child(1){background:var(--mint);--r:-1deg;transform:rotate(-1deg)}.tier:nth-child(2){background:var(--sky);transform:rotate(.8deg)}
+.tier .badge{display:inline-block;font:30px/1 var(--hand);padding:8px 14px 4px;border:4px solid var(--ink);background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.tier h3{font-size:34px;margin:14px 0 6px}
+.tier ul,.how ol{margin:0;padding-left:20px}.tier li,.how li{margin:6px 0}
+.how{margin:46px 0 0;padding:24px 26px;background:var(--pink)}
+.how h2{font-size:44px;margin:0 0 12px}
+.how .cta{display:flex;gap:14px;flex-wrap:wrap;margin:20px 0 6px}
+.note{font-size:15px;margin:14px 0 0}
+details{margin:40px 0 0;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:14px 18px;max-width:820px}
+summary{font:26px/1 var(--hand);cursor:pointer}
+details p{margin:12px 0 0;font-size:15px}
+</style></head><body>
+<div class="shapes" aria-hidden="true">
+  <div class="shape" style="right:-70px;top:90px;width:260px;height:320px;background:var(--lilac);--r:8deg"></div>
+  <div class="shape" style="left:-60px;top:46%;width:220px;height:300px;background:var(--salmon);--r:-6deg;animation-delay:.2s"></div>
+  <div class="shape" style="right:-40px;top:70%;width:220px;height:220px;background:var(--butter);--r:5deg;animation-delay:.35s"></div>
+</div>
+<nav>
+  <a class="logo" href="../index.html" aria-label="trollbox home"><img src="../logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
+  <div class="links"><a href="../index.html#station">troll station</a><a href="../roll.html">roll a troll</a><a href="../allowlist.html">allowlist</a><a href="../cafe.html">café</a></div>
+  <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
+</nav>
+<main class="page"><div class="wrap">
+  <span class="eyebrow">trollbox · allowlist</span>
+  <h1>are you on it?</h1>
+  <p class="lead">paste the bitcoin address you'll mint with. it says yes or no. that's all it says.</p>
+
+  <section class="card checker" aria-labelledby="chk-h">
+    <h2 id="chk-h">check an address</h2>
+    <div class="eyebrow">bitcoin address · bc1p… for most wallets</div>
+    <form class="row" id="form">
+      <input id="addr" type="text" placeholder="bc1p…" autocomplete="off" spellcheck="false" aria-label="bitcoin address">
+      <button class="btn red" type="submit">check</button>
+    </form>
+    <div id="result" aria-live="polite"></div>
+  </section>
+<section class="tiers" aria-label="the two lists">
+  <div class="card tier">
+    <div class="badge">GTD</div>
+    <h3>guaranteed</h3>
+    <ul>
+      <li>you hold solemn's work and verified it in the discord.</li>
+      <li>bitcoin holders: the wallet you verified is on the list.</li>
+      <li>ethereum holders (frontrun and the rest): verify, then add the taproot address you'll mint with.</li>
+      <li>ocm dimensions holders: you're on already. paste the wallet that holds your dimension.</li>
+    </ul>
+  </div>
+  <div class="card tier">
+    <div class="badge">FCFS</div>
+    <h3>first come first served</h3>
+    <ul>
+      <li>the 100 wallet-drop winners from x.</li>
+      <li>naka minters.</li>
+      <li>you can mint while supply lasts, after the guaranteed window.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="card how" id="how">
+  <h2>how to get on</h2>
+  <ol>
+    <li>join the discord and press <b>verify wallet</b> in #verify-here. you get a private link.</li>
+    <li>connect the wallet that holds the work and sign one message. signing only. nothing moves.</li>
+    <li>bitcoin wallet? you're done. ethereum wallet? open <a href="../register.html">add a taproot address</a>, sign with the same ethereum wallet, paste the bitcoin address you'll mint with.</li>
+    <li>come back here and check. it shows up within a few minutes.</li>
+  </ol>
+  <div class="cta">
+    <a class="btn mint" href="https://discord.gg/3cAwmXFF7u">join the discord</a>
+    <a class="btn" href="../register.html">add a taproot address</a>
+  </div>
+  <p class="note">mint is on ord dropz from a normal bitcoin wallet, unisat or xverse. use that wallet's address. not an exchange.</p>
+</section>
+
+<details>
+  <summary>the small print</summary>
+  <p>the list never leaves the server. this page only answers for the address you paste.</p>
+  <p>verified in discord a few minutes ago and it says no? give it five minutes and check again. still no? open a ticket in #help.</p>
+  <p>nobody from trollbox or strange labs will ever dm you first or ask for a seed phrase.</p>
+</details>
+
+</div></main>
+<footer><div class="wrap">
+  <div class="row"><img src="../logo/trollbox-logo-red.png" alt="TROLLBOX">
+    <div class="links"><a href="../index.html">home</a><a href="../roll.html">roll a troll</a><a href="../collab.html">collabs</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+  <small>trollbox · strangersolemn · 2026 · shielded on ob1's ord dropz</small>
+</div></footer>
+
+<script>
+(function () {
+  var API = 'https://frontrun-discord-bot.vercel.app/api/trollbox';
+  var $ = function (id) { return document.getElementById(id); };
+  var looksBtc = function (a) { return /^(bc1[a-z0-9]{20,90}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/.test(a); };
+  var norm = function (a) { a = String(a || '').trim(); return /^bc1/i.test(a) ? a.toLowerCase() : a; };
+  function say(cls, stamp, text) {
+    var box = document.createElement('div');
+    box.className = 'answer ' + cls;
+    if (stamp) { var s = document.createElement('div'); s.className = 'stamp'; s.textContent = stamp; box.appendChild(s); }
+    var p = document.createElement('p'); p.textContent = text; box.appendChild(p);
+    $('result').replaceChildren(box);
+  }
+  $('form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var a = norm($('addr').value);
+    if (!a) return;
+    if (/^0x[0-9a-f]{40}$/i.test(a)) return say('err', '', "that's an ethereum address. paste the bitcoin address you'll mint with. ethereum holders: verify in the discord, then add a taproot address.");
+    if (!looksBtc(a)) return say('err', '', "that doesn't look like a bitcoin address. check for typos.");
+    say('no', '', 'looking…');
+    try {
+      var r = await fetch(API + '?check=' + encodeURIComponent(a), { cache: 'no-store' });
+      var j = await r.json();
+      if (!j.ok) return say('err', '', j.error || 'something went wrong. try again in a minute.');
+      if (j.tier === 'GTD') say('yes gtd', 'GTD', "you're on. guaranteed. a troll is held for this address in the guaranteed window.");
+      else if (j.tier === 'FCFS') say('yes', 'FCFS', "you're on. first come first served. mint while supply lasts.");
+      else say('no', 'NOPE', "not on the list. hold the work? verify in the discord. verified a minute ago? give it five and check again.");
+    } catch (err) { say('err', '', 'could not reach the list. try again in a minute.'); }
+  });
+})();
+</script>
+</body></html>

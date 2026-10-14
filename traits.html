@@ -26,9 +26,9 @@ button{font:inherit;font-weight:bold;padding:10px 16px;border:3px solid #000;bac
 <h1>trollbox traits</h1>
 <div id="stage"><div id="troll"></div><div><button id="roll">random troll</button><button id="anim">pause</button><p id="recipe"></p>
 <div id="colours"></div>
-<p>layers: background → hands → body → tv → eyes + mouth → headwear<br>rules: hooded bodies take no headwear and no shades/glasses · clean set ~10% · glitch codes rare<br>
+<p>layers: background → hands → body → tv → eyes + mouth → headwear (mouth over hair that hangs beside it, e.g. Girl Next Door)<br>rules: hooded bodies take no headwear and no shades/glasses · clean set ~10% · glitch codes rare<br>
 only the <b>masters</b> below get inscribed; colours are made in code (recolor.js) · <span id="count"></span></p></div></div>
-<h2>backgrounds <small>flats common · real glitch codes rare · never pure black</small></h2><div id="bgs" class="grid"></div><div id="groups"></div>
+<h2>backgrounds <small>flat colours only · never pure black</small></h2><div id="bgs" class="grid"></div><div id="groups"></div>
 </div><script src="recolor.js"></script><script>
 const ORDER=['bodies','headwear','eyes','mouths','hands','tv screen'];
 let M,R,BG=[],pick={},playing=true,frame=0,tvf=0,typing=true,burstEnd=Date.now()+2000,IMG={};
@@ -62,7 +62,7 @@ function roll(){
     pick={bg:Math.random()<R.glitch_rate?rnd(BG.filter(b=>b.rare)):rnd(BG.filter(b=>!b.rare)),bodies:rnd(M.bodies),mouths:rnd(M.mouths),clean:null};
     pick.bodies_c=randCol('bodies',pick.bodies);
     pick.eyes=Math.random()<R.eyewear_rate?rnd(M.eyes.filter(isEyewear)):rnd(M.eyes.filter(e=>!isEyewear(e))); pick.eyes_c=randCol('eyes',pick.eyes);
-    pick.headwear=Math.random()<R.no_headwear_rate?null:rnd(M.headwear); pick.headwear_c=randCol('headwear',pick.headwear);
+    pick.headwear=Math.random()<R.no_headwear_rate?null:rnd(M.headwear.filter(h=>!((R.exclude||{})[meta('bodies',pick.bodies).family]||[]).includes(meta('headwear',h).family))); pick.headwear_c=randCol('headwear',pick.headwear);
   }
   if(isHood(pick.bodies)){pick.headwear=null;pick.headwear_c=null; if(isEyewear(pick.eyes)){pick.eyes=rnd(M.eyes.filter(e=>!isEyewear(e)));pick.eyes_c=null;}}
   draw(true);
@@ -73,8 +73,9 @@ async function draw(rebuild){const T=document.getElementById('troll');
   if(rebuild||key!==built){built=key;const my=++gen;
     const layer=async(g,f,c)=>{const im=await load(g,f);if(!c)return im.cloneNode();const m=meta(g,f);return recolor(im,M._palette[c],m.hue,m.val_mul);};
     const els=[];for(const f of M.hands)els.push(['hand',await layer('hands',f)]);els.push(['on',await layer('bodies',pick.bodies,pick.bodies_c)]);
-    for(const f of M['tv screen'])els.push(['tv',await layer('tv screen',f)]);els.push(['on',await layer('eyes',pick.eyes,pick.eyes_c)]);els.push(['on',await layer('mouths',pick.mouths)]);
-    if(pick.headwear)els.push(['on',await layer('headwear',pick.headwear,pick.headwear_c)]);
+    for(const f of M['tv screen'])els.push(['tv',await layer('tv screen',f)]);els.push(['on',await layer('eyes',pick.eyes,pick.eyes_c)]);
+    const mo=pick.headwear&&meta('headwear',pick.headwear).mouth_over; if(!mo)els.push(['on',await layer('mouths',pick.mouths)]);
+    if(pick.headwear)els.push(['on',await layer('headwear',pick.headwear,pick.headwear_c)]); if(mo)els.push(['on',await layer('mouths',pick.mouths)]);
     if(my!==gen)return;
     T.innerHTML='';T.style.background=pick.bg.flat||pick.bg.pv.bg;
     if(pick.bg.gc){const fr=document.createElement('iframe');fr.src='https://ordinals.com/content/'+pick.bg.gc;fr.className='on';fr.style.pointerEvents='none';T.appendChild(fr);}

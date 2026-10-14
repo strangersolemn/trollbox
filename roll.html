@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roll a Troll</title>
+<meta name="description" content="roll one of the 2,222 trolls and wear it as your pfp.">
+<!-- Trollbox site v2: roll a random real troll from build/trolls.json, download it as a 1000×1000 PNG. ?n=123 opens a given troll. -->
+<link rel="stylesheet" href="tb.css">
+<style>
+.page{padding:60px 0 0}
+.grid{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:44px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr;gap:34px}}
+.frame{background:#fff;border:5px solid var(--ink);box-shadow:12px 12px 0 var(--ink);padding:14px;transform:rotate(-1deg)}
+.frame canvas{display:block;width:100%;aspect-ratio:1;border:4px solid var(--ink);background:var(--sand)}
+.frame .name{display:flex;justify-content:space-between;align-items:baseline;margin:12px 2px 0;font:30px/1 var(--hand)}
+.frame .name small{font:15px/1 var(--type)}
+h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink);margin:0 0 18px}
+.btns{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0 26px}
+.rules{background:var(--butter);border:5px solid var(--ink);box-shadow:10px 10px 0 var(--ink);padding:20px 22px;font-size:19px;transform:rotate(.6deg)}
+.rules p{margin:0}
+.rules .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px}
+.traits{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.traits li{background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:8px 12px 7px;font-size:15px}
+.traits li b{display:block;font:20px/1.1 var(--hand);font-weight:normal}
+@media(max-width:480px){.traits{grid-template-columns:1fr}}
+</style></head><body>
+<div class="shapes" aria-hidden="true">
+  <div class="shape" style="left:-60px;top:120px;width:260px;height:380px;background:var(--mint);--r:-7deg"></div>
+  <div class="shape" style="right:-70px;top:70px;width:260px;height:280px;background:var(--pink);--r:8deg;animation-delay:.2s"></div>
+  <div class="shape" style="right:4%;top:62%;width:220px;height:200px;background:var(--sky);--r:-5deg;animation-delay:.35s"></div>
+  <div class="shape" style="left:-40px;top:72%;width:200px;height:240px;background:var(--salmon);--r:6deg;animation-delay:.45s"></div>
+</div>
+<nav>
+  <a class="logo" href="index.html" aria-label="trollbox home"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
+  <div class="links"><a href="index.html#station">troll station</a><a href="roll.html">roll a troll</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">café</a></div>
+  <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
+</nav>
+
+<main class="page"><div class="wrap grid">
+  <div class="frame"><canvas id="pfp" width="1000" height="1000" aria-label="your rolled troll"></canvas>
+    <div class="name"><span id="name">rolling…</span><small>of 2,222</small></div></div>
+  <div>
+    <h1>roll a troll</h1>
+    <div class="btns"><button class="btn red" id="rollBtn">roll</button><button class="btn yellow" id="dlBtn">download pfp</button></div>
+    <div class="rules">
+      <p>wear it as your pfp and post your roll tagging @strangersolemn → fcfs. wear it till mint → gtd.</p>
+      <div class="cta"><a class="btn small" id="postBtn" href="https://x.com/intent/post" target="_blank" rel="noopener">post your roll</a><a class="btn small mint" href="https://discord.gg/3cAwmXFF7u">join the discord</a></div>
+    </div>
+    <ul class="traits" id="traits"></ul>
+  </div>
+</div></main>
+
+<footer><div class="wrap">
+  <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
+    <div class="links"><a href="index.html">home</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">strange café</a><a href="allowlist.html">allowlist</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+  <small>trollbox · strangersolemn · 2026 · shielded on ob1's ord dropz</small>
+</div></footer>
+
+<script src="recolor.js"></script><script src="troll-sprites.js"></script><script src="tb-site.js"></script>
+<script>
+const cv = document.getElementById("pfp"), $ = id => document.getElementById(id);
+let T, cur, stop = () => {};
+const ROWS = [["background", "background"], ["body", "body"], ["eyes", "eyes"], ["mouth", "mouth"], ["headwear", "headwear"], ["screen", "screen"]];
+async function show(t) {
+  stop(); $("name").textContent = "rolling…";
+  const sp = await T.sprite(t); cur = sp; stop = TB.animate(cv, T, sp);
+  $("name").textContent = t.name;
+  $("traits").innerHTML = ROWS.filter(([k]) => t[k]).map(([k, l]) => `<li><b>${t[k].toLowerCase()}</b>${l}</li>`).join("");
+  $("postBtn").href = "https://x.com/intent/post?text=" + encodeURIComponent(`rolled ${t.name.toLowerCase()} on the trollbox. wearing it till mint. @strangersolemn\n\nhttps://trollbox.strangersolemn.art/roll.html?n=${t.id}`);
+  try { history.replaceState(null, "", "?n=" + t.id); } catch (e) {}
+}
+const roll = () => show(T.trolls[Math.floor(Math.random() * T.trolls.length)]);
+TB.load(1000).then(t => {
+  T = t; const n = +new URLSearchParams(location.search).get("n");
+  (n >= 1 && n <= T.trolls.length) ? show(T.trolls[n - 1]) : roll();
+});
+$("rollBtn").onclick = () => T && roll();
+$("dlBtn").onclick = () => {
+  if (!cur) return;
+  const c = document.createElement("canvas"); c.width = c.height = 1000; TB.draw(c.getContext("2d"), T, cur, 0, 0, 1000, 0, 0);
+  c.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = cur.t.name.toLowerCase().replace(/\s+/g, "-") + "-pfp.png"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, "image/png");
+};
+</script></body></html>

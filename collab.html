@@ -1,0 +1,130 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Collabs · Trollbox</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="trollbox collab spots for communities: apply here.">
+<!--
+  Trollbox collab form (site v2, 2026-10-13). Posts JSON to the Strange Bot API (DISCORD chat's repo):
+    POST /api/trollbox?action=collab  {project, x, discord, contact, chain, collection, holders, spots, agree, hp}
+  Entries stay server-side; Solemn + BadBeast export them as CSV with GET ?action=collab-export (admin key).
+  hp = honeypot field, hidden from people.
+-->
+<link rel="stylesheet" href="tb.css">
+<style>
+.page{padding:56px 0 0}
+h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink);margin:0 0 14px}
+.lead{max-width:640px;margin:0 0 34px;font-size:19px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 14px 8px;display:inline-block}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:36px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+form.card{background:var(--butter);padding:24px;transform:rotate(-.4deg)}
+form h2,.post h2{font-size:40px;margin:0 0 14px}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+@media(max-width:560px){.f{grid-template-columns:1fr}}
+.f .wide{grid-column:1/-1}
+label{display:block;font:22px/1.1 var(--hand)}
+label small{font:13px/1 var(--type);margin-left:6px}
+input,select{width:100%;margin-top:6px;font:17px/1.3 var(--type);padding:11px 13px;border:4px solid var(--ink);background:#fff;color:var(--ink);outline:none;border-radius:0}
+input:focus,select:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
+.tick{display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;font:17px/1.4 var(--type);background:#fff;border:4px solid var(--ink);padding:12px 14px;cursor:pointer}
+.tick input{width:24px;height:24px;margin:2px 0 0;flex:none;accent-color:var(--red)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.send{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+#msg{font-size:16px}
+#msg.ok{background:var(--mint);border:3px solid var(--ink);padding:6px 10px 4px}
+#msg.err{background:var(--salmon);border:3px solid var(--ink);padding:6px 10px 4px}
+.post{background:var(--sky);padding:24px;transform:rotate(.6deg)}
+.post .tpl{background:#fff;border:4px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:16px 18px;font-size:19px;line-height:1.5;white-space:pre-wrap}
+.post .tpl b{background:var(--yellow);padding:0 4px;font-weight:normal}
+.post p{margin:14px 0 0;font-size:15px}
+.post .btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.rules{margin-top:30px;background:var(--mint);padding:20px 22px;transform:rotate(-.6deg)}
+.rules h3{font-size:30px;margin:0 0 8px}
+.alloc{font:17px/1.35 var(--type);background:#fff;border:4px solid var(--ink);padding:10px 13px;align-self:end}.alloc b{display:block;font:22px/1.1 var(--hand);font-weight:normal;margin-bottom:4px}
+.rules .note{margin:12px 0 0;font-size:15px}
+.rules ol{margin:0;padding-left:20px}.rules li{margin:6px 0}
+</style></head><body>
+<div class="shapes" aria-hidden="true">
+  <div class="shape" style="left:-70px;top:110px;width:260px;height:340px;background:var(--peri);--r:-7deg"></div>
+  <div class="shape" style="right:-60px;top:60px;width:240px;height:260px;background:var(--salmon);--r:9deg;animation-delay:.2s"></div>
+  <div class="shape" style="right:-50px;top:62%;width:220px;height:240px;background:var(--lilac);--r:-5deg;animation-delay:.35s"></div>
+</div>
+<nav>
+  <a class="logo" href="index.html" aria-label="trollbox home"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
+  <div class="links"><a href="index.html#station">troll station</a><a href="roll.html">roll a troll</a><a href="allowlist.html">allowlist</a><a href="cafe.html">café</a></div>
+  <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
+</nav>
+<main class="page"><div class="wrap">
+  <span class="eyebrow">trollbox · collabs</span>
+  <h1>collab spots</h1>
+  <p class="lead">run a community? every collab gets the same: 10 guaranteed spots (2 mints each) + 10 first come first served. you post the announcement, run the giveaway in your server, and send us the winners.</p>
+
+  <div class="grid">
+    <form class="card" id="form" novalidate>
+      <h2>apply</h2>
+      <div class="f">
+        <label class="wide">project name<input name="project" required maxlength="200" autocomplete="organization"></label>
+        <label>x handle<input name="x" required maxlength="200" placeholder="@yourproject"></label>
+        <label>discord invite<input name="discord" maxlength="200" placeholder="discord.gg/…"></label>
+        <label class="wide">contact <small>who we talk to: discord or x handle</small><input name="contact" required maxlength="200"></label>
+        <label>chain<select name="chain"><option>bitcoin</option><option>ethereum</option><option>solana</option><option>base</option><option>other</option></select></label>
+        <label>collection<input name="collection" maxlength="200" placeholder="name or link"></label>
+        <label>rough holder count<input name="holders" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 800"></label>
+        <div class="alloc"><b>your spots</b>10 guaranteed (2 mints each) + 10 fcfs</div>
+      </div>
+      <label class="hp" aria-hidden="true">leave this empty<input name="hp" tabindex="-1" autocomplete="off"></label>
+      <label class="tick"><input type="checkbox" name="agree" required> we'll post the trollbox announcement and run the giveaway in our server.</label>
+      <div class="send"><button class="btn red" type="submit">send it</button><span id="msg" aria-live="polite"></span></div>
+    </form>
+
+    <div>
+      <div class="card post">
+        <h2>the post</h2>
+        <div class="tpl" id="tpl">we've got 10 guaranteed + 10 fcfs spots for trollbox by @strangersolemn. 2,222 anonymous trolls on bitcoin, shielded by the protocol, coming to @Ord_Dropz. drop your taproot address below.</div>
+        <p>use this one, word for word.</p>
+        <div class="btns"><button class="btn small yellow" id="copy" type="button">copy the post</button></div>
+      </div>
+      <div class="card rules">
+        <h3>how it runs</h3>
+        <ol>
+          <li>send the form. we reply on the contact you gave.</li>
+          <li>post the announcement above on x.</li>
+          <li>run the giveaway in your server.</li>
+          <li>send us the winners' taproot addresses. they land on the allowlist.</li>
+        </ol>
+        <p class="note">naka minters come first on fcfs. guaranteed is never over-allocated: every guaranteed spot has its troll held.</p>
+      </div>
+    </div>
+  </div>
+</div></main>
+<footer><div class="wrap">
+  <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
+    <div class="links"><a href="index.html">home</a><a href="allowlist.html">allowlist</a><a href="roll.html">roll a troll</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+  <small>trollbox · strangersolemn · 2026 · shielded on ob1's ord dropz</small>
+</div></footer>
+<script>
+(function () {
+  var API = 'https://frontrun-discord-bot.vercel.app/api/trollbox?action=collab';
+  var $ = function (id) { return document.getElementById(id); }, form = $('form'), msg = $('msg');
+  var say = function (cls, t) { msg.className = cls; msg.textContent = t; };
+  $('copy').addEventListener('click', function () {
+    var t = $('tpl').textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('copy').textContent = 'copied'; }, function () { $('copy').textContent = 'select it and copy'; });
+    setTimeout(function () { $('copy').textContent = 'copy the post'; }, 1800);
+  });
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var d = Object.fromEntries(new FormData(form)), int = function (v) { v = parseInt(v, 10); return isFinite(v) ? v : null; };
+    var body = { project: (d.project || '').trim(), x: (d.x || '').trim(), discord: (d.discord || '').trim(), contact: (d.contact || '').trim(),
+      chain: d.chain || '', collection: (d.collection || '').trim(), holders: int(d.holders), spots: 20, agree: !!d.agree, hp: d.hp || '' };
+    if (!body.project || !body.x || !body.contact) return say('err', 'project name, x handle and contact are needed.');
+    if (!body.agree) return say('err', 'tick the box: posting the announcement and running the giveaway is the deal.');
+    say('', 'sending…');
+    try {
+      var r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      var j = await r.json().catch(function () { return {}; });
+      if (!r.ok || !j.ok) return say('err', j.error || 'could not send. try again in a minute.');
+      form.reset();
+      say('ok', 'got it. we reply on the contact you gave.');
+    } catch (err) { say('err', 'could not send. try again in a minute, or dm @strangersolemn.'); }
+  });
+})();
+</script>
+</body></html>
