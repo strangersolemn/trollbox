@@ -24,13 +24,17 @@ h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(
 .answer .stamp{font:34px/1 var(--hand);padding:8px 14px 4px;border:4px solid var(--ink);transform:rotate(-4deg);background:var(--salmon)}
 .answer.yes .stamp{background:var(--mint)}.answer.gtd .stamp{background:var(--green);color:#fff}
 .answer.err{background:var(--salmon)}
-.tiers{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:46px 0 0}
-@media(max-width:760px){.tiers{grid-template-columns:1fr}}
+.how ol{margin:0;padding-left:20px}.how li{margin:6px 0}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin:46px 0 0;align-items:start}
+@media(max-width:900px){.tiers{grid-template-columns:1fr}}
 .tier{padding:22px 24px}
-.tier:nth-child(1){background:var(--mint);--r:-1deg;transform:rotate(-1deg)}.tier:nth-child(2){background:var(--sky);transform:rotate(.8deg)}
+.tier:nth-child(1){background:var(--mint);transform:rotate(-1deg)}.tier:nth-child(2){background:var(--sky);transform:rotate(.8deg)}.tier:nth-child(3){background:var(--peri);transform:rotate(-.5deg)}
 .tier .badge{display:inline-block;font:30px/1 var(--hand);padding:8px 14px 4px;border:4px solid var(--ink);background:#fff;box-shadow:4px 4px 0 var(--ink)}
 .tier h3{font-size:34px;margin:14px 0 6px}
-.tier ul,.how ol{margin:0;padding-left:20px}.tier li,.how li{margin:6px 0}
+.tier .terms{margin:0 0 10px;font-size:15px;background:#fff;border:3px solid var(--ink);padding:5px 9px 3px;display:inline-block}
+.tier ul{margin:0;padding-left:20px}.tier li{margin:6px 0}
+.rulesline{margin:34px 0 0;font:30px/1.2 var(--hand);color:var(--red)}
+
 .how{margin:46px 0 0;padding:24px 26px;background:var(--pink)}
 .how h2{font-size:44px;margin:0 0 12px}
 .how .cta{display:flex;gap:14px;flex-wrap:wrap;margin:20px 0 6px}
@@ -63,39 +67,49 @@ details p{margin:12px 0 0;font-size:15px}
     </form>
     <div id="result" aria-live="polite"></div>
   </section>
-<section class="tiers" aria-label="the two lists">
+<section class="tiers" aria-label="the allowlist">
   <div class="card tier">
     <div class="badge">GTD</div>
     <h3>guaranteed</h3>
+    <p class="terms">opens 1 hour early · never over-allocated</p>
     <ul>
-      <li>you hold solemn's work and verified it in the discord.</li>
-      <li>bitcoin holders: the wallet you verified is on the list.</li>
-      <li>ethereum holders (frontrun and the rest): verify, then add the taproot address you'll mint with.</li>
-      <li>ocm dimensions holders: you're on already. paste the wallet that holds your dimension.</li>
+      <li>verified holders of solemn's art, btc or eth. verify in the discord. eth holders add a taproot (bc1p) address in the eth channel.</li>
+      <li>ocm dimensions holders.</li>
+      <li>frontrun holders.</li>
+      <li>the 30 early-access control group.</li>
+      <li>collab winners (10 per collab).</li>
     </ul>
   </div>
   <div class="card tier">
     <div class="badge">FCFS</div>
-    <h3>first come first served</h3>
+    <h3>first come</h3>
+    <p class="terms">while supply lasts</p>
     <ul>
-      <li>the 100 wallet-drop winners from x.</li>
-      <li>naka minters.</li>
-      <li>you can mint while supply lasts, after the guaranteed window.</li>
+      <li>naka minters (~2,100 wallets).</li>
+      <li>everyone who dropped a wallet on the wallet-drop post.</li>
+      <li>then the collab communities' fcfs spots.</li>
     </ul>
   </div>
+  <div class="card tier">
+    <div class="badge">PUBLIC</div>
+    <h3>if anything's left</h3>
+    <p class="terms">after first come</p>
+    <ul><li>open to everyone after first come.</li></ul>
+  </div>
 </section>
+<p class="rulesline">hold the art, claim the spot. trollbox is next on ord dropz, date soon.</p>
 
 <section class="card how" id="how">
   <h2>how to get on</h2>
   <ol>
     <li>join the discord and press <b>verify wallet</b> in #verify-here. you get a private link.</li>
     <li>connect the wallet that holds the work and sign one message. signing only. nothing moves.</li>
-    <li>bitcoin wallet? you're done. ethereum wallet? open <a href="../register.html">add a taproot address</a>, sign with the same ethereum wallet, paste the bitcoin address you'll mint with.</li>
+    <li>bitcoin wallet? you're done. ethereum wallet? add the taproot (bc1p) address you'll mint with in the eth channel.</li>
+    <li>ocm dimensions and frontrun holders: you're on already. paste the wallet that holds the piece.</li>
     <li>come back here and check. it shows up within a few minutes.</li>
   </ol>
   <div class="cta">
     <a class="btn mint" href="https://discord.gg/3cAwmXFF7u">join the discord</a>
-    <a class="btn" href="../register.html">add a taproot address</a>
   </div>
   <p class="note">mint is on ord dropz from a normal bitcoin wallet, unisat or xverse. use that wallet's address. not an exchange.</p>
 </section>
@@ -138,9 +152,9 @@ details p{margin:12px 0 0;font-size:15px}
       var r = await fetch(API + '?check=' + encodeURIComponent(a), { cache: 'no-store' });
       var j = await r.json();
       if (!j.ok) return say('err', '', j.error || 'something went wrong. try again in a minute.');
-      if (j.tier === 'GTD') say('yes gtd', 'GTD', "you're on. guaranteed. a troll is held for this address in the guaranteed window.");
-      else if (j.tier === 'FCFS') say('yes', 'FCFS', "you're on. first come first served. mint while supply lasts.");
-      else say('no', 'NOPE', "not on the list. hold the work? verify in the discord. verified a minute ago? give it five and check again.");
+      if (j.tier === 'GTD') say('yes gtd', 'GTD', "guaranteed · opens 1 hour early");
+      else if (j.tier === 'FCFS') say('yes', 'FCFS', "first come");
+      else say('no', 'NOPE', "not on the list yet: verify in the discord");
     } catch (err) { say('err', '', 'could not reach the list. try again in a minute.'); }
   });
 })();

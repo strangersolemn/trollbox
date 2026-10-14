@@ -59,6 +59,15 @@
 .strip:hover .track{animation-play-state:paused}
 .strip canvas{width:clamp(130px,16vw,190px);aspect-ratio:1;display:block}
 @keyframes roll{to{transform:translateX(-50%)}}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin:46px 0 0;align-items:start}
+@media(max-width:900px){.tiers{grid-template-columns:1fr}}
+.tier{padding:22px 24px}
+.tier:nth-child(1){background:var(--mint);transform:rotate(-1deg)}.tier:nth-child(2){background:var(--sky);transform:rotate(.8deg)}.tier:nth-child(3){background:var(--peri);transform:rotate(-.5deg)}
+.tier .badge{display:inline-block;font:30px/1 var(--hand);padding:8px 14px 4px;border:4px solid var(--ink);background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.tier h3{font-size:34px;margin:14px 0 6px}
+.tier .terms{margin:0 0 10px;font-size:15px;background:#fff;border:3px solid var(--ink);padding:5px 9px 3px;display:inline-block}
+.tier ul{margin:0;padding-left:20px}.tier li{margin:6px 0}
+.rulesline{margin:34px 0 0;font:30px/1.2 var(--hand);color:var(--red)}
 .endcta{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:40px 0 0}
 .endcta .chip{align-self:center}
 </style></head><body>
@@ -123,8 +132,41 @@
 
 <section id="trolls" style="padding-bottom:0"><div class="wrap"><div class="head"><h2>the 2,222</h2><span class="eyebrow">real trolls from the collection</span></div></div>
   <div class="strip"><div class="track" id="track"></div></div>
+  <div class="wrap" id="allowlist" style="padding-top:60px"><div class="head" style="margin:0"><h2>the allowlist</h2></div><div class="tiers" style="margin-top:20px" aria-label="the allowlist">
+  <div class="card tier">
+    <div class="badge">GTD</div>
+    <h3>guaranteed</h3>
+    <p class="terms">opens 1 hour early · never over-allocated</p>
+    <ul>
+      <li>verified holders of solemn's art, btc or eth. verify in the discord. eth holders add a taproot (bc1p) address in the eth channel.</li>
+      <li>ocm dimensions holders.</li>
+      <li>frontrun holders.</li>
+      <li>the 30 early-access control group.</li>
+      <li>collab winners (10 per collab).</li>
+    </ul>
+  </div>
+  <div class="card tier">
+    <div class="badge">FCFS</div>
+    <h3>first come</h3>
+    <p class="terms">while supply lasts</p>
+    <ul>
+      <li>naka minters (~2,100 wallets).</li>
+      <li>everyone who dropped a wallet on the wallet-drop post.</li>
+      <li>then the collab communities' fcfs spots.</li>
+    </ul>
+  </div>
+  <div class="card tier">
+    <div class="badge">PUBLIC</div>
+    <h3>if anything's left</h3>
+    <p class="terms">after first come</p>
+    <ul><li>open to everyone after first come.</li></ul>
+  </div>
+</div>
+<p class="rulesline">hold the art, claim the spot. trollbox is next on ord dropz, date soon.</p>
+    <p style="margin:14px 0 0"><a class="btn small" href="allowlist.html">check your wallet</a></p>
+  </div>
   <div class="wrap endcta">
-    <span class="btn red" aria-disabled="true" id="mintBtn">mint · ord dropz</span><span class="chip">date tba</span>
+    <span class="btn red" aria-disabled="true" id="mintBtn">mint · ord dropz</span><span class="chip">date soon</span>
     <a class="btn mint" href="cafe.html">walk into the café</a>
   </div>
 </section>

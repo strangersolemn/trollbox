@@ -58,12 +58,15 @@ h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(
 <script>
 const cv = document.getElementById("pfp"), $ = id => document.getElementById(id);
 let T, cur, stop = () => {};
-const ROWS = [["background", "background"], ["body", "body"], ["eyes", "eyes"], ["mouth", "mouth"], ["headwear", "headwear"], ["screen", "screen"]];
+// the on-chain traits, exactly as inscribed (build/ob1/upload/traits.json → build/traits.json on deploy)
+const KEYS = ["Background", "Body", "Headwear", "Eyes", "Mouth", "Full Set"];
+let ONCHAIN = []; const onchain = fetch("build/traits.json").then(r => r.json()).then(j => ONCHAIN = j, () => {});
 async function show(t) {
   stop(); $("name").textContent = "rolling…";
   const sp = await T.sprite(t); cur = sp; stop = TB.animate(cv, T, sp);
   $("name").textContent = t.name;
-  $("traits").innerHTML = ROWS.filter(([k]) => t[k]).map(([k, l]) => `<li><b>${t[k].toLowerCase()}</b>${l}</li>`).join("");
+  await onchain; const a = ONCHAIN[t.id - 1] || {};
+  $("traits").innerHTML = KEYS.filter(k => a[k]).map(k => `<li><b>${a[k]}</b>${k}</li>`).join("");
   $("postBtn").href = "https://x.com/intent/post?text=" + encodeURIComponent(`rolled ${t.name.toLowerCase()} on the trollbox. wearing it till mint. @strangersolemn\n\nhttps://trollbox.strangersolemn.art/roll.html?n=${t.id}`);
   try { history.replaceState(null, "", "?n=" + t.id); } catch (e) {}
 }
