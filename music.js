@@ -24,6 +24,15 @@
     if (off) a.pause(); else play(); show();
   });
   a.addEventListener("playing", show); a.addEventListener("pause", show);
+  // data-autoplay (collab page, 2026-10-15, Solemn: "make it play"): sound starts on its own, or on the first tap / key / scroll if the browser blocks it
+  const auto = document.currentScript && document.currentScript.dataset.autoplay != null;
+  const start = () => { if (!off) return; off = false; a.play().then(show, () => { off = true; show(); }); };
+  if (auto) {
+    a.preload = "auto";
+    const first = e => { if (e && e.target && e.target.closest && e.target.closest("#tbMusic")) return;  ["pointerdown", "keydown", "touchstart", "wheel", "scroll"].forEach(ev => removeEventListener(ev, first, true)); start(); };
+    ["pointerdown", "keydown", "touchstart", "wheel", "scroll"].forEach(ev => addEventListener(ev, first, { capture: true, passive: true }));
+    off = false; a.play().then(() => { ["pointerdown", "keydown", "touchstart", "wheel", "scroll"].forEach(ev => removeEventListener(ev, first, true)); show(); }, () => { off = true; show(); });
+  }
   const mount = () => { document.body.appendChild(b); show(); };
   document.body ? mount() : addEventListener("DOMContentLoaded", mount);
 })();
