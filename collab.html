@@ -1,12 +1,12 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Collabs · Trollbox</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="trollbox collabs: posts, art, a collab image maker and the wallet form.">
+<meta name="description" content="trollbox collabs: some posts, art, a collab pic maker and the wallet form.">
 <!--
   Trollbox collab page (2026-10-15, Solemn: collabs are PEOPLE he knows, one public page, no private links).
   1 what to do · 2 what to say (posts + copy) · 3 collab image maker (canvas, nothing uploaded) · 4 the art (kit/files) · 5 the form.
-  Form → Strange Bot (DISCORD chat's repo): POST /api/trollbox?action=collab-submit
-    {name, x, own:{btc}, gtd:[{btc,x}] ≤10, fcfs:[{btc,x}] ≤20, hp}  → stored as PENDING, never fed to the checker.
-  Solemn approves from the CSV export (?action=collab-submit-export, admin key). Closes Sun 18 Oct 19:00 UTC.
+  Form → Strange Bot (DISCORD chat's repo): POST /api/trollbox?action=collab-submit (open form, live since bot 2db7e4f)
+    {name, x, own:{btc}, gtd:[{btc,x}] ≤10, fcfs:[{btc,x}] ≤20, hp}  → PENDING, never on the checker until Solemn approves.
+  One list per x handle (a resend replaces it). Export: ?action=collab-submit-export (admin key). Closes Sun 18 Oct 19:00 UTC. 429 after 6 sends / 10 min.
   Previous versions: collab.v1/v2/v3.html.
 -->
 <link rel="stylesheet" href="tb.css">
@@ -73,43 +73,35 @@ input:focus,textarea:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
 <nav>
   <a class="logo" href="index.html" aria-label="trollbox home"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
   <div class="links"><a href="index.html#station">troll station</a><a href="roll.html">roll a troll</a><a href="allowlist.html">allowlist</a><a href="cafe.html">café</a></div>
-  <a class="btn small yellow" href="#form">send your list</a>
+  <a class="btn small yellow" href="#formHead">wallets</a>
 </nav>
 <main class="page"><div class="wrap">
   <span class="eyebrow">trollbox · collabs</span>
-  <h1>collab with solemn</h1>
-  <p class="lead">you've got people. here's what to post, the art to use, and the form for your list.</p><br>
-  <p class="deadline">mint monday 19 october · 4pm utc · 12pm est · 9am pst · lists close sunday 18 october, 7pm utc</p>
+  <h1>thank you</h1>
+  <p class="lead">means a lot that you're in on this. here's some stuff if you want it. use any of it, or none. — solemn</p>
 
-  <h2 class="sec"><i>1</i> what to do</h2>
-  <div class="steps">
-    <div class="card step"><h3>post.</h3><p>pick a post below, add the art or make your collab image, and post it.</p></div>
-    <div class="card step"><h3>collect.</h3><p>your people reply with their taproot wallets (bc1p…).</p></div>
-    <div class="card step"><h3>send.</h3><p>fill the form at the bottom before sunday 7pm utc. solemn checks every list.</p></div>
-  </div>
-
-  <h2 class="sec"><i>2</i> what to say</h2>
-  <p class="eyebrow">copy one. change the words if you like.</p>
+  <h2 class="sec">some words</h2>
+  <p class="eyebrow">if you feel like posting. tweak them however.</p>
   <div class="posts" style="margin-top:16px">
     <div class="card postc"><div class="tpl">got trollbox spots for my people. 2,222 shielded trolls by @strangersolemn, minting monday 19 october on @Ord_Dropz. 4pm utc · 12pm est · 9am pst. drop your taproot below 👇</div><button class="btn small yellow copy" type="button">copy</button></div>
     <div class="card postc"><div class="tpl">trollbox x me. 2,222 shielded trolls by @strangersolemn: nobody sees who holds which troll. mint monday 4pm utc on @Ord_Dropz. reply with a taproot (bc1p) to get in.</div><button class="btn small yellow copy" type="button">copy</button></div>
     <div class="card postc"><div class="tpl">own a troll, write its line on the trollbox screen. 2,222 shielded trolls by @strangersolemn, monday 19 october, 4pm utc on @Ord_Dropz. i've got spots. taproot below.</div><button class="btn small yellow copy" type="button">copy</button></div>
   </div>
 
-  <h2 class="sec"><i>3</i> your collab image</h2>
+  <h2 class="sec">a collab pic</h2>
   <div class="maker">
     <div class="frame"><canvas id="mk" width="1200" height="1200" aria-label="collab image"></canvas></div>
     <div class="card ctl">
-      <p>solemn's troll on the left, yours on the right. add your pfp or any picture. it stays on your device, nothing gets uploaded.</p>
+      <p>my troll and yours. add your pfp or any picture. it stays on your device.</p>
       <label>your name on it <small>optional</small><input id="mkName" maxlength="24" placeholder="you"></label>
       <div class="btns" style="margin-top:16px"><button class="btn yellow" id="mkPick" type="button">add your image</button><button class="btn red" id="mkSave" type="button">download png</button></div>
       <input type="file" id="mkFile" accept="image/*">
-      <p class="note">square, 1200×1200, ready for x.</p>
+      <p class="note" style="margin-top:22px">square, 1200×1200, ready for x.</p>
     </div>
   </div>
 
-  <h2 class="sec"><i>4</i> the art <a class="btn small red" href="kit/trollbox-images.zip" download>all images · zip 7 mb</a></h2>
-  <p class="eyebrow">full-res. tap one to download.</p>
+  <h2 class="sec">pics and videos <a class="btn small red" href="kit/trollbox-images.zip" download>all images · zip 7 mb</a></h2>
+  <p class="eyebrow">full-res, tap to save.</p>
   <div class="kitgrid" style="margin-top:16px">
     <a class="card item wide" href="kit/files/trollbox-how-it-works.mp4" download><img src="kit/thumbs/trollbox-how-it-works.jpg" alt="how it works" loading="lazy"><span>how it works · mp4 1080p</span></a>
     <a class="card item" href="kit/files/nakas-x-trolls.mp4" download><img src="kit/thumbs/nakas-x-trolls.jpg" alt="nakas × trolls" loading="lazy"><span>nakas × trolls · mp4</span></a>
@@ -128,7 +120,8 @@ input:focus,textarea:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
     <a class="card item" href="kit/files/troll-2136.png" download><img src="kit/thumbs/troll-2136.jpg" alt="troll 2136" loading="lazy"><span>troll 2136 · 1000px</span></a>
   </div>
 
-  <h2 class="sec" id="formHead"><i>5</i> send your list</h2>
+  <h2 class="sec" id="formHead">your people's wallets</h2>
+  <p class="eyebrow">whenever you're ready, before sunday 7pm utc.</p>
   <form class="card" id="form" novalidate>
     <div class="f">
       <label>your name<input name="name" required maxlength="200" autocomplete="name"></label>
@@ -143,7 +136,7 @@ input:focus,textarea:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
     </div>
     <label class="hp" aria-hidden="true">leave this empty<input name="hp" tabindex="-1" autocomplete="off"></label>
     <div class="send"><button class="btn red" type="submit">send the list</button><span id="msg" aria-live="polite"></span></div>
-    <p class="note">taproot only (starts with bc1p). a wallet in two places counts once, at the highest spot. solemn checks every list before it goes on the allowlist. send again before sunday 7pm utc to replace yours.</p>
+    <p class="note">taproot wallets (bc1p…). send again any time to change it.</p>
   </form>
 </div></main>
 <footer><div class="wrap">
@@ -250,7 +243,7 @@ input:focus,textarea:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
       var res = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
       var j = await res.json().catch(function () { return {}; });
       if (!res.ok || !j.ok) return say('err', j.error || 'could not send. try again in a minute.');
-      say('ok', 'got it: your wallet, ' + body.gtd.length + ' guaranteed, ' + body.fcfs.length + ' first come. solemn checks it next.');
+      say('ok', 'sent, thank you. solemn reviews every list.');
     } catch (err) { say('err', 'could not send. try again in a minute, or dm @strangersolemn.'); }
   });
   check();
