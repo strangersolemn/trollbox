@@ -129,6 +129,30 @@
      "kind": "html"
     }
    ]
+  },
+  {
+   "id": "ordlot",
+   "wall": "right",
+   "at": 1.2,
+   "note": "Solemn 2026-10-15: landscape, swapped with the HOME OF THE TROLLBOX sign (now right wall, where the sign was)",
+   "pieces": [
+    {
+     "collection": "The Ord Lot",
+     "title": "The Crowd \u00b7 live",
+     "chain": "bitcoin",
+     "id": "b56f0ffad821a4b16b583f3f924df01d35ce0035c72ca82d85106735d44550d9i0",
+     "kind": "html"
+    }
+   ],
+   "w": 2.8,
+   "h": 1.575,
+   "y": 1.85,
+   "lazy": {
+    "near": 6,
+    "far": 9
+   },
+   "res": 0.6,
+   "posterSub": "the crowd \u00b7 100 characters \u00b7 walk up to watch it live"
   }
  ]
 }

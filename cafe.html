@@ -65,6 +65,15 @@
 #tbLogo img { position:relative; display:block; width:100%; }
 #tbCafe { right:14px; width:min(120px, 24vw); }
 #tbCafe img { display:block; width:100%; filter:drop-shadow(0 0 1px #fbf7f1) drop-shadow(0 0 1px #fbf7f1); }
+#soundBtn { position:fixed; right:14px; bottom:14px; z-index:7; font:12px 'Courier New', monospace; color:#d9fff0; background:rgba(10,8,16,.75);
+            border:1px solid #3fe0d0; border-radius:16px; padding:7px 12px; cursor:pointer; }
+#soundBtn.on { background:#3fe0d0; color:#07060a; }
+#jukebox { display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:8; }
+.jbCard { position:relative; width:min(380px, calc(100vw - 32px)); }
+.jbTrack { display:block; width:100%; text-align:left; margin:6px 0; padding:10px 12px; font:bold 14px 'Courier New', monospace; color:#f4ecdf;
+           background:#1a1426; border:1px solid #3a2f52; border-radius:8px; cursor:pointer; }
+.jbTrack:hover { border-color:#f7931a; }
+.jbTrack.now { background:#f7931a; color:#07060a; border-color:#f7931a; }
 </style>
 </head>
 <body>
@@ -74,6 +83,7 @@
 <div id="tbCafe" class="ui tbOnly"><img src="logo/strange-cafe-logo.png" alt="STRANGE CAFÉ"></div>
 <div id="logo" class="ui">STRANGE CAFÉ</div>
 <button id="infoBtn" class="ui" style="display:none">trollbox</button>
+<button id="soundBtn" class="ui" aria-label="sound on or off">♪ sound off</button>
 <div id="prompt" class="ui"></div>
 <div id="toast" class="ui"></div>
 <button id="standBtn" class="ui">stand up</button>
@@ -91,6 +101,15 @@
   </div>
 </div>
 
+<div id="jukebox" class="ui">
+  <div class="card jbCard">
+    <button id="jbClose" class="close">×</button>
+    <h1 style="font-size:22px;margin:0 0 4px">JUKEBOX</h1>
+    <p class="muted" style="margin:0 0 12px">pick a record. it plays from every speaker in the café.</p>
+    <div id="jbList"></div>
+    <button id="jbStop" class="jbTrack">■ stop</button>
+  </div>
+</div>
 <div id="piece" class="ui">
   <div class="card" style="max-width:720px">
     <button id="closePiece" class="close">×</button>
@@ -163,6 +182,7 @@ function canvasTex(w, h, draw, repeat) {
   if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
   return t;
 }
+const BTC_CARPET = new URLSearchParams(location.search).get("btc") !== "0";   // ₿ signs on the carpet (Solemn: "love the btc signs"); ?btc=0 = old squiggles
 // 90s café carpet: dark with neon squiggles, triangles and dots
 const carpetTex = canvasTex(512, 512, (g, w, h) => {
   g.fillStyle = "#0e0a16"; g.fillRect(0, 0, w, h);
@@ -171,7 +191,10 @@ const carpetTex = canvasTex(512, 512, (g, w, h) => {
   for (let i = 0; i < 120; i++) {
     g.strokeStyle = g.fillStyle = cols[Math.floor(r() * cols.length)];
     g.lineWidth = 3; const x = r() * w, y = r() * h, k = r();
-    if (k < 0.4) { g.beginPath(); g.moveTo(x, y); for (let j = 1; j < 4; j++) g.lineTo(x + j * 9, y + (j % 2 ? 8 : -8)); g.stroke(); }
+    if (k < 0.4) {
+      if (BTC_CARPET) { g.font = "bold 24px Arial, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("\u20BF", x + 13, y); }   // ₿ instead of the squiggle (?btc=1, Solemn 2026-10-15)
+      else { g.beginPath(); g.moveTo(x, y); for (let j = 1; j < 4; j++) g.lineTo(x + j * 9, y + (j % 2 ? 8 : -8)); g.stroke(); }
+    }
     else if (k < 0.7) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 12, y + 3); g.lineTo(x + 4, y + 13); g.closePath(); g.stroke(); }
     else { g.beginPath(); g.arc(x, y, 2.5, 0, 7); g.fill(); }
   }
@@ -372,6 +395,7 @@ cabinet(-0.4, "STATION 4", "#3fe0d0");
 // ---------------------------------------------------------------------------
 // Jukebox (right wall): another Easter-egg slot
 // ---------------------------------------------------------------------------
+let jukeboxSkin = null;   // set by the jukebox; the tracklist on the jukebox control sat may carry a "skin"
 (function jukebox() {
   const j = new THREE.Group(); j.position.set(ROOM.w / 2 - 0.45, 0, -5.0); j.rotation.y = -Math.PI / 2; scene.add(j);
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.4, 0.55), M({ color: "#2a1630", roughness: 0.5 })); body.position.y = 0.7; j.add(body);
@@ -381,7 +405,128 @@ cabinet(-0.4, "STATION 4", "#3fe0d0");
   arch2.position.set(0, 1.4, 0.29); j.add(arch2);
   const grill = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.5), M({ color: "#3a2a12", metalness: 0.6, roughness: 0.4 })); grill.position.set(0, 0.5, 0.28); j.add(grill);
   L("#f7931a", 2.5, 3, ROOM.w / 2 - 1.1, 1.3, -5.0);
-  eggs.push({ pos: new THREE.Vector3(ROOM.w / 2 - 1.2, EYE, -5.0), label: "use the jukebox", msg: "no records yet. opens later." });
+  // The records live in the shared MUSIC player below (sound button + jukebox + speakers). E = play / stop.
+  const egg = { pos: new THREE.Vector3(ROOM.w / 2 - 1.2, EYE, -5.0), label: "pick a record" };
+  egg.use = () => openJukebox();
+  const a1 = arch.material.color.clone(), a2 = arch2.material.color.clone();
+  // SKIN (Solemn 2026-10-15: "change skins"): the tracklist JSON on the jukebox control sat may carry
+  //   "skin": {"body": "#hex", "arch": "#hex", "arch2": "#hex", "grill": "#hex", "label": "PICK A RECORD"}
+  // so a reinscription of that one small file restyles the jukebox; no café update needed.
+  jukeboxSkin = (sk) => {
+    const ok = (c) => typeof c === "string" && /^#[0-9a-f]{3,8}$/i.test(c);
+    if (ok(sk.body)) body.material.color.set(sk.body);
+    if (ok(sk.grill)) grill.material.color.set(sk.grill);
+    if (ok(sk.arch)) { arch.material.color.set(sk.arch); a1.copy(arch.material.color); }
+    if (ok(sk.arch2)) { arch2.material.color.set(sk.arch2); a2.copy(arch2.material.color); }
+    if (typeof sk.label === "string" && sk.label.length < 40) egg.skinLabel = sk.label.toLowerCase();
+  };
+  egg.draw = (t) => {   // the arches pulse while music plays (no per-frame allocation)
+    egg.label = egg.skinLabel || "pick a record";
+    const k = MUSIC.on ? 0.55 + 0.45 * Math.abs(Math.sin(t * 3.2)) : 1;
+    arch.material.color.copy(a1).multiplyScalar(k); arch2.material.color.copy(a2).multiplyScalar(k);
+  };
+  eggs.push(egg);
+})();
+
+// ---------------------------------------------------------------------------
+// MUSIC (Solemn, 2026-10-15): his two Strange Café tracks (Ogg Opus, each its own inscription; the build maps these
+// paths to /content/<id>). Sound starts ONLY when the visitor turns it on (the floating button, or E at the jukebox).
+// It comes out of the jukebox and four corner speakers: WebAudio gain follows the distance to the nearest one, with a
+// base level everywhere and a gentle rise as you walk up. When a track ends, the next one starts.
+// ---------------------------------------------------------------------------
+const MUSIC = (() => {
+  // Baked-in fallback. The live list comes from the JUKEBOX CONTROL SAT: the latest inscription on it is a small JSON
+  //   {"p":"strange-cafe-jukebox","v":1,"tracks":[{"name":"COME ON IN","id":"<inscription id>"}, …]}
+  // so adding, renaming or reordering songs = reinscribe that JSON on its sat (the café and the galleries both read it).
+  let TRACKS = [
+    { name: "COME ON IN", src: "build/inscribe/audio/final/strange-cafe-new.opus" },
+    { name: "CROOKED SMILE", src: "build/inscribe/audio/final/strange-cafe.opus" },
+  ];
+  const JUKEBOX_SAT = "__JUKEBOX_SAT__";
+  // newest on the jukebox sat: a tracklist JSON, or (first) the jukebox PAGE itself → use the list embedded in it
+  const readList = (txt) => { try { return JSON.parse(txt); } catch (e) {}
+    const mm = /<script[^>]*id="jukebox-tracks"[^>]*>([\s\S]*?)<\/script>/.exec(txt || ""); try { return mm ? JSON.parse(mm[1]) : null; } catch (e) { return null; } };
+  if (/^\d+$/.test(JUKEBOX_SAT)) fetch("/r/sat/" + JUKEBOX_SAT + "/at/-1/content").then(r => r.ok ? r.text() : null).then(readList).then(j => {
+    if (j && Array.isArray(j.tracks) && j.tracks.length) { TRACKS = j.tracks.filter(t => t && t.id).map(t => ({ name: String(t.name || "untitled").toUpperCase(), src: "/content/" + t.id })); m.renderList(); }
+    if (j && j.skin && typeof j.skin === "object" && jukeboxSkin) jukeboxSkin(j.skin);
+  }).catch(() => {});
+  const el = new Audio(); el.preload = "none"; el.crossOrigin = "anonymous";
+  const can = el.canPlayType('audio/ogg; codecs="opus"');   // Safari only from 18.4 (iOS 18.4 / macOS 15.4)
+  let ctx = null, gain = null, track = 0;
+  const m = { on: false, sources: [] };
+  el.addEventListener("ended", () => { track = (track + 1) % TRACKS.length; el.src = TRACKS[track].src; el.play().catch(() => {}); m.renderList(); });
+  const btn = document.getElementById("soundBtn");
+  const paint = () => { btn.textContent = m.on ? "♪ sound on" : "♪ sound off"; btn.classList.toggle("on", m.on); if (m.renderList) m.renderList(); };
+  m.play = (i) => {   // pick a track (from the jukebox list)
+    if (!can) { toast("the music won't play here. it needs a newer browser (ogg opus)."); return; }
+    track = i; if (m.on) el.pause(); m.on = false; el.src = ""; m.toggle(false);
+  };
+  m.track = () => track;
+  m.renderList = () => {
+    const box = document.getElementById("jbList"); if (!box) return; box.innerHTML = "";
+    TRACKS.forEach((t, i) => {
+      const b = document.createElement("button"); b.className = "jbTrack" + (m.on && i === track ? " now" : "");
+      b.textContent = (m.on && i === track ? "♪ " : "▶ ") + t.name; b.onclick = (e) => { e.stopPropagation(); m.play(i); m.renderList(); };
+      box.appendChild(b);
+    });
+  };
+  m.toggle = (fromJukebox) => {
+    if (!can) { toast("the music won't play here. it needs a newer browser (ogg opus)."); return; }
+    if (m.on) { el.pause(); m.on = false; paint(); if (fromJukebox) { track = (track + 1) % TRACKS.length; toast("jukebox off."); } return; }
+    try {
+      if (!ctx) {   // made inside the tap / key press, as iOS needs
+        const AC = window.AudioContext || window.webkitAudioContext;
+        ctx = new AC(); gain = ctx.createGain(); gain.gain.value = 0.4;
+        ctx.createMediaElementSource(el).connect(gain); gain.connect(ctx.destination);
+      }
+      if (ctx.state === "suspended") ctx.resume();
+    } catch (e) { ctx = null; }   // no WebAudio: plain playback at a fixed level
+    if (!el.src || !el.src.includes(TRACKS[track].src.split("/").pop())) el.src = TRACKS[track].src;
+    el.play().then(() => { m.on = true; paint(); m.renderList(); toast("now playing: " + TRACKS[track].name.toLowerCase()); },
+                   () => toast("the music won't play here. it needs a newer browser (ogg opus)."));
+  };
+  // gain from the distance to the nearest speaker / the jukebox: base 0.35 everywhere, up to 1 within ~1.5 m, eased
+  m.update = (x, z) => {
+    if (!m.on || !gain) return;
+    let d = 1e9; for (const s of m.sources) d = Math.min(d, Math.hypot(x - s.x, z - s.z));
+    const near = Math.max(0, Math.min(1, 1 - (d - 1.5) / 9)); const g = 0.35 + 0.65 * near * near * (3 - 2 * near);
+    gain.gain.setTargetAtTime(g, ctx.currentTime, 0.25);
+  };
+  Object.defineProperty(m, "level", { get: () => gain ? +gain.gain.value.toFixed(3) : null });
+  btn.addEventListener("click", (e) => { e.stopPropagation(); m.toggle(false); });
+  paint();
+  return m;
+})();
+function openJukebox() { MUSIC.renderList(); $("jukebox").style.display = "flex"; if (document.pointerLockElement) document.exitPointerLock(); }
+function closeJukebox() { $("jukebox").style.display = "none"; }
+$("jbClose").addEventListener("click", closeJukebox);
+$("jbStop").addEventListener("click", (e) => { e.stopPropagation(); if (MUSIC.on) MUSIC.toggle(false); MUSIC.renderList(); });
+MUSIC.sources.push({ x: ROOM.w / 2 - 0.45, z: -5.0 });   // the jukebox
+// back in from the galleries with the music on (?sound=1): carry on. Browsers may want a gesture first, so if the
+// first try is refused, the first tap / key / click anywhere starts it.
+if (new URLSearchParams(location.search).get("sound") === "1") {
+  const resume = () => { if (!MUSIC.on) MUSIC.toggle(false); removeEventListener("pointerdown", resume, true); removeEventListener("keydown", resume, true); };
+  addEventListener("pointerdown", resume, true); addEventListener("keydown", resume, true);
+  setTimeout(() => { if (!MUSIC.on) MUSIC.toggle(false); }, 300);
+}
+// four speakers high in the corners, angled at the room
+(() => {
+  const cab = M({ color: "#2a2330", roughness: 0.6 }), cone = M({ color: "#3a3440", roughness: 0.4, metalness: 0.3 });
+  for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    const x = sx * (ROOM.w / 2 - 0.35), z = sz * (ROOM.d / 2 - 0.35);
+    const g = new THREE.Group(); g.position.set(x, ROOM.h - 0.55, z); scene.add(g);
+    g.lookAt(0, 1.4, 0);
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.62, 0.34), cab); g.add(box);
+    const woofer = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.02, 20), cone); woofer.rotation.x = Math.PI / 2; woofer.position.set(0, -0.1, 0.175); g.add(woofer);
+    const tweeter = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.02, 14), cone); tweeter.rotation.x = Math.PI / 2; tweeter.position.set(0, 0.17, 0.175); g.add(tweeter);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.135, 0.16, 28), new THREE.MeshBasicMaterial({ color: "#3fe0d0", toneMapped: false }));
+    ring.position.set(0, -0.1, 0.186); g.add(ring);   // a neon ring so the speakers read in the dark corners (no extra lights)
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.02, 0.02), new THREE.MeshBasicMaterial({ color: "#ff4fa3", toneMapped: false }));
+    edge.position.set(0, -0.32, 0.17); g.add(edge);
+    const ledM = new THREE.MeshBasicMaterial({ color: "#3a1a10" });
+    const led = new THREE.Mesh(new THREE.CircleGeometry(0.018, 10), ledM); led.position.set(0.15, 0.25, 0.172); g.add(led);
+    MUSIC.sources.push({ x, z, led: ledM });
+  }
 })();
 
 // ---------------------------------------------------------------------------
@@ -452,7 +597,7 @@ function brushSign() {
   return C;
 }
 const signTexWall = SRGB(new THREE.CanvasTexture(brushSign())); signTexWall.anisotropy = 8;
-const poster = new THREE.Group(); poster.position.set(ROOM.w / 2 - 0.03, 2.15, 1.2); poster.rotation.y = -Math.PI / 2; scene.add(poster);
+const poster = new THREE.Group(); poster.position.set(-9.72, 1.95, -ROOM.d / 2 + 0.03); poster.scale.setScalar(0.42); scene.add(poster);   // back wall, left of the Trollbox desk (swapped with the Ord Lot screen, 2026-10-15)
 (() => {
   const LW = 3.7, LH = LW * 700 / 2048, BW = LW * 0.8, BH = LH * 1.12;
   const flat = (w, h, color, x, y, z, map) => {
@@ -465,7 +610,7 @@ const poster = new THREE.Group(); poster.position.set(ROOM.w / 2 - 0.03, 2.15, 1
   flat(LW, LH, null, 0, 0, 0.026, signTexWall);          // the lettering, spilling past both sides
 })();
 L("#ff4fa3", 6, 6.5, 9.4, 2.9, 1.2);   // so the wall round the sign isn't black
-eggs.push({ pos: new THREE.Vector3(ROOM.w / 2 - 1.3, EYE, 1.2), label: "read the sign", info: true });
+eggs.push({ pos: new THREE.Vector3(-9.72, EYE, -ROOM.d / 2 + 1.3), label: "read the sign", info: true });
 
 
 // ---------------------------------------------------------------------------
@@ -485,7 +630,7 @@ const contentURL = (id) => "https://ordinals.com/content/" + id;
 const wallFrames = [];
 const IFR = 600;   // iframe css size before warping
 function hangFrame(f) {
-  const W = f.size, H = f.size, Y = 1.75, inset = 0.04, S = W - 0.12;
+  const W = f.w || f.size, H = f.h || f.size, Y = f.y || 1.75, inset = 0.04, Sw = W - 0.12, Sh = H - 0.12;
   const g = new THREE.Group();
   if (f.wall === "back")  { g.position.set(f.at, Y, -ROOM.d / 2 + inset); }
   if (f.wall === "front") { g.position.set(f.at, Y,  ROOM.d / 2 - inset); g.rotation.y = Math.PI; }
@@ -494,8 +639,8 @@ function hangFrame(f) {
   scene.add(g);
   g.add(new THREE.Mesh(new THREE.BoxGeometry(W + 0.16, H + 0.16, 0.07), frameMat));
   const matte = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.02, H + 0.02), matteMat); matte.position.z = 0.036; g.add(matte);
-  const pic = new THREE.Mesh(new THREE.PlaneGeometry(S, S), new THREE.MeshBasicMaterial({ color: "#111", transparent: true, opacity: 1, toneMapped: false })); pic.position.z = 0.04; g.add(pic);
-  const punch = new THREE.Mesh(new THREE.PlaneGeometry(S, S), punchMat); punch.position.z = 0.041; punch.visible = false; g.add(punch);
+  const pic = new THREE.Mesh(new THREE.PlaneGeometry(Sw, Sh), new THREE.MeshBasicMaterial({ color: "#111", transparent: true, opacity: 1, toneMapped: false })); pic.position.z = 0.04; g.add(pic);
+  const punch = new THREE.Mesh(new THREE.PlaneGeometry(Sw, Sh), punchMat); punch.position.z = 0.041; punch.visible = false; g.add(punch);
   const lamp = new THREE.Mesh(new THREE.BoxGeometry(W * 0.6, 0.03, 0.12), new THREE.MeshBasicMaterial({ color: "#ffd9a0" }));
   lamp.position.set(0, H / 2 + 0.11, 0.08); g.add(lamp);
   const pc = document.createElement("canvas"); pc.width = 512; pc.height = 112;
@@ -503,10 +648,11 @@ function hangFrame(f) {
   const plaque = new THREE.Mesh(new THREE.PlaneGeometry(W * 0.5, W * 0.11), new THREE.MeshBasicMaterial({ map: pt, toneMapped: false }));
   plaque.position.set(0, -H / 2 - 0.22, 0.04); g.add(plaque);
   // the picture's four corners (local), for warping the iframe onto it
-  const corners = [[-S / 2, S / 2], [S / 2, S / 2], [S / 2, -S / 2], [-S / 2, -S / 2]].map(([x, y]) => new THREE.Vector3(x, y, 0.041));
+  const corners = [[-Sw / 2, Sh / 2], [Sw / 2, Sh / 2], [Sw / 2, -Sh / 2], [-Sw / 2, -Sh / 2]].map(([x, y]) => new THREE.Vector3(x, y, 0.041));
+  const RES = f.res || 1, iw = Math.round(IFR * RES * Sw / Sh), ih = Math.round(IFR * RES);   // the live iframe keeps the frame's shape; f.res < 1 = fewer pixels to draw
   const fwd = new THREE.Vector3(0, 0, 1).applyEuler(g.rotation);
   const pos = g.position.clone().addScaledVector(fwd, 1.1); pos.y = EYE;
-  const wf = { f, g, pic, punch, pc, pt, corners, i: -1, t0: 0, stagger: 0, ifr: [], egg: { pos, label: "", piece: null } };
+  const wf = { f, g, pic, punch, pc, pt, corners, iw, ih, srcAdj: adj(basis([[0, 0], [iw, 0], [iw, ih], [0, ih]])), i: -1, t0: 0, stagger: 0, ifr: [], egg: { pos, label: "", piece: null } };
   eggs.push(wf.egg); wallFrames.push(wf);
   return wf;
 }
@@ -532,7 +678,7 @@ function showPiece(wf, i, now) {
     }, undefined, () => {});
   } else {
     wf.ifr = wf.ifr.filter(o => { if (o.style.opacity === "1") return true; o.src = "about:blank"; o.remove(); return false; });   // drop any that never loaded
-    const fr = document.createElement("iframe");
+    const fr = document.createElement("iframe"); fr.style.width = wf.iw + "px"; fr.style.height = wf.ih + "px";
     fr.setAttribute("scrolling", "no"); fr.setAttribute("tabindex", "-1"); fr.setAttribute("allow", "");
     fr.addEventListener("load", () => setTimeout(() => {
       if (fr.src === "about:blank") return;
@@ -559,12 +705,51 @@ function placeIframe(wf, fr) {
     _v.project(camera);
     pts.push([(_v.x + 1) / 2 * innerWidth, (1 - _v.y) / 2 * innerHeight]);
   }
-  const t = mm(basis(pts), SRC_ADJ); for (let k = 0; k < 9; k++) t[k] /= t[8];
+  const t = mm(basis(pts), wf.srcAdj || SRC_ADJ); for (let k = 0; k < 9; k++) t[k] /= t[8];
   fr.style.visibility = "visible";
   fr.style.transform = `matrix3d(${t[0]},${t[3]},0,${t[6]},${t[1]},${t[4]},0,${t[7]},0,0,1,0,${t[2]},${t[5]},0,${t[8]})`;
 }
+// LAZY frames (f.lazy, e.g. the Ord Lot crowd: ~6 MB, 100 characters, its own three.js + music): a poster drawn at once
+// from a few of its real characters, and the live piece only while you're near and facing it. Walk away → it's switched
+// off again, so it never slows the rest of the café. E still opens it full size, live.
+function drawLazyPoster(wf) {
+  const p = wf.f.pieces[0], cv = document.createElement("canvas"); cv.width = 1024; cv.height = Math.round(1024 * wf.ih / wf.iw);
+  const g = cv.getContext("2d"), W = cv.width, H = cv.height, tex = SRGB(new THREE.CanvasTexture(cv));
+  const base = () => {
+    const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#1b1030"); gr.addColorStop(1, "#07060a");
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    g.textAlign = "center"; g.fillStyle = "#f4ecdf"; g.font = "bold 64px 'Courier New', monospace"; g.fillText(p.collection.toUpperCase(), W / 2, 86);
+    g.font = "26px 'Courier New', monospace"; g.fillStyle = "#9a8fae"; g.fillText((wf.f.posterSub || "the crowd · walk up to watch it live"), W / 2, 126);
+  };
+  base(); tex.needsUpdate = true;
+  wf.pic.material.map = tex; wf.pic.material.color.set("#fff"); wf.pic.material.needsUpdate = true;
+  setPicked(wf, p);
+  // a line-up of a few real characters, straight from their inscriptions (each child carries its picture inline)
+  const picks = wf.f.posterPicks || [0, 12, 27, 41, 58, 74, 90];
+  fetch("/r/children/" + p.id + "/0").then(r => r.json()).then(j => {
+    const ids = picks.map(i => j.ids[i]).filter(Boolean), n = ids.length, slot = W / n;
+    ids.forEach((cid, k) => fetch("/content/" + cid).then(r => r.text()).then(t => {
+      const m = t.match(/data:image\/(?:avif|webp|png);base64,[A-Za-z0-9+\/=]+/); if (!m) return;
+      const im = new Image(); im.onload = () => {
+        const h = H * 0.68, w = h * im.width / im.height;
+        g.drawImage(im, slot * k + slot / 2 - w / 2, H - h, w, h); tex.needsUpdate = true;
+      }; im.src = m[0];
+    }).catch(() => {}));
+  }).catch(() => {});
+}
+function tickLazy(wf, now) {
+  const L = wf.f.lazy, gp = wf.g.position, dx = gp.x - camera.position.x, dz = gp.z - camera.position.z, d = Math.hypot(dx, dz);
+  camera.getWorldDirection(_v); const facing = (dx * _v.x + dz * _v.z) / (d || 1) > 0.25;
+  const live = wf.ifr.length > 0;
+  if (!live && d < L.near && facing) { wf.awayT = 0; showPiece(wf, 0, now); }
+  else if (live) {
+    if (d > L.far || !facing) { wf.awayT = wf.awayT || now; if (d > L.far || now - wf.awayT > 3) { clearIframes(wf, null); wf.punch.visible = false; wf.awayT = 0; } }
+    else wf.awayT = 0;
+  }
+}
 function tickWalls(now) {
   for (const wf of wallFrames) {
+    if (wf.f.lazy) { for (const fr of wf.ifr) placeIframe(wf, fr); tickLazy(wf, now); continue; }
     for (const fr of wf.ifr) placeIframe(wf, fr);
     const n = wf.f.pieces.length;
     if (n > 1 && now - wf.t0 >= WALLS.interval) showPiece(wf, (wf.i + 1) % n, now);
@@ -574,7 +759,7 @@ let WALLS = { interval: 15, frames: [] };
 function buildWalls(data) {
   WALLS = data;
   scene.updateMatrixWorld(true);
-  WALLS.frames.forEach((f, k) => { const wf = hangFrame(f); wf.g.updateMatrixWorld(true); showPiece(wf, 0, -k * 3); });   // stagger the switches
+  WALLS.frames.forEach((f, k) => { const wf = hangFrame(f); wf.g.updateMatrixWorld(true); if (f.lazy) drawLazyPoster(wf); else showPiece(wf, 0, -k * 3); });   // stagger the switches
 }
 if (window.CAFE_WALLS) buildWalls(window.CAFE_WALLS);
 else fetch("cafe-walls.json", { cache: "no-store" }).then(r => r.json()).then(buildWalls).catch(e => console.warn("walls", e));
@@ -602,7 +787,7 @@ const ARRIVE = DOOR === "cafe" && new URLSearchParams(location.search).get("at")
 const ENTRANCE = { x: -7.5, z: 7.3 };
 const player = DOOR === "trollbox" ? { x: -7.6, z: -6.0, yaw: 0, pitch: -0.04 } : ARRIVE ? { x: ENTRANCE.x, z: ENTRANCE.z, yaw: 0.35, pitch: -0.04 } : { x: 1.5, z: -3.2, yaw: 0, pitch: -0.04 };
 const keys = {};
-addEventListener("keydown", e => { keys[e.code] = true; if (e.code === "KeyE") useNearest(); if (e.code === "Escape" && mode === "use" && DOOR !== "trollbox") standUp(); if (e.code === "Escape") closePiece(); });
+addEventListener("keydown", e => { keys[e.code] = true; if (e.code === "KeyE") useNearest(); if (e.code === "Escape" && mode === "use" && DOOR !== "trollbox") standUp(); if (e.code === "Escape") { closePiece(); closeJukebox(); } });
 let eggFound = false, overScroll = 0;
 addEventListener("keyup", e => keys[e.code] = false);
 
@@ -716,6 +901,7 @@ function useNearest() {
   if (nearest.info) return openInfo();
   if (nearest.piece) return openPiece(nearest.piece);
   if (nearest.portal) return goPortal(nearest.portal);
+  if (nearest.use) return nearest.use();
   toast(nearest.msg);
 }
 $("prompt").addEventListener("click", useNearest);
@@ -817,6 +1003,8 @@ function frame() {
   const t = clock.getElapsedTime(), dt = Math.min(0.05, t - last); last = t;
   TrollboxScreen.draw(t); pc.update(t);
   eggs.forEach(e => e.draw && e.draw(t));
+  MUSIC.update(camera.position.x, camera.position.z);
+  for (const sp of MUSIC.sources) if (sp.led) sp.led.color.set(MUSIC.on && (t * 2 | 0) % 2 ? "#ff5a2a" : "#3a1a10");
   signLight.intensity = (10 + (Math.random() < 0.02 ? -6 : 0)) * LIGHT_K;
   updateScreenWorld();
 
@@ -880,12 +1068,13 @@ const fader = document.createElement("div");
 Object.assign(fader.style, { position: "fixed", inset: "0", background: "#000", opacity: "0", transition: "opacity .6s", pointerEvents: "none", zIndex: "30" });
 document.body.appendChild(fader);
 function goPortal(p) {
-  const dest = p.inscription ? "/content/" + p.inscription : p.href;
+  // a portal with a control sat goes straight to the latest page on that sat (no loader inside the café = no frames inside frames)
+  const dest = p.sat ? "/r/sat/" + p.sat + "/at/-1/content" : p.inscription ? "/content/" + p.inscription : p.href;
   if (!dest) return toast((p.label || "this portal").toLowerCase() + " opens later.");
   if (fader.dataset.going) return; fader.dataset.going = "1";
   if (document.pointerLockElement) document.exitPointerLock();
   fader.style.opacity = "1";
-  setTimeout(() => { location.href = dest + "?from=cafe&back=" + encodeURIComponent(location.pathname); }, 650);
+  setTimeout(() => { location.href = dest + "?from=cafe&back=" + encodeURIComponent(location.pathname) + (MUSIC.on ? "&sound=1" : ""); }, 650);   // the galleries keep the music going
 }
 function wallPlace(g, wall, at, y, inset) {
   if (wall === "back")  { g.position.set(at, y, -ROOM.d / 2 + inset); }
@@ -948,7 +1137,7 @@ if (ARRIVE) {   // back in through the front door: no entrance card, straight in
   toast("back at the strange café");
   if (!TOUCH) $("cross").style.display = "block";
 }
-window.__cafe = { player, camera, frame: () => frame(), get mode() { return mode; }, get nearest() { return nearest; }, get walls() { return wallFrames; }, get portals() { return PORTALS; } };   // debug handle
+window.__cafe = { player, camera, music: MUSIC, frame: () => frame(), get mode() { return mode; }, get nearest() { return nearest; }, get walls() { return wallFrames; }, get portals() { return PORTALS; } };   // debug handle
 frame();
 }).catch(e => { console.error(e); document.body.insertAdjacentHTML("beforeend", "<p style=\"position:fixed;inset:auto 0 40%;text-align:center;color:#9a8fae;font:13px monospace;z-index:20\">café closed: " + e.message + "</p>"); });
 </script>

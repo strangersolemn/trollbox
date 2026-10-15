@@ -1,92 +1,150 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Collabs · Trollbox</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="trollbox collab spots for communities: apply here.">
+<meta name="description" content="trollbox collabs: posts, art, a collab image maker and the wallet form.">
 <!--
-  Trollbox collab form (site v2, 2026-10-13). Posts JSON to the Strange Bot API (DISCORD chat's repo):
-    POST /api/trollbox?action=collab  {project, x, discord, contact, chain, collection, holders, spots, agree, hp}
-  Entries stay server-side; Solemn + BadBeast export them as CSV with GET ?action=collab-export (admin key).
-  hp = honeypot field, hidden from people.
+  Trollbox collab page (2026-10-15, Solemn: collabs are PEOPLE he knows, one public page, no private links).
+  1 what to do · 2 what to say (posts + copy) · 3 collab image maker (canvas, nothing uploaded) · 4 the art (kit/files) · 5 the form.
+  Form → Strange Bot (DISCORD chat's repo): POST /api/trollbox?action=collab-submit
+    {name, x, own:{btc}, gtd:[{btc,x}] ≤10, fcfs:[{btc,x}] ≤20, hp}  → stored as PENDING, never fed to the checker.
+  Solemn approves from the CSV export (?action=collab-submit-export, admin key). Closes Sun 18 Oct 19:00 UTC.
+  Previous versions: collab.v1/v2/v3.html.
 -->
 <link rel="stylesheet" href="tb.css">
 <style>
 .page{padding:56px 0 0}
 h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink);margin:0 0 14px}
-.lead{max-width:640px;margin:0 0 34px;font-size:19px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 14px 8px;display:inline-block}
-.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:36px;align-items:start}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-form.card{background:var(--butter);padding:24px;transform:rotate(-.4deg)}
-form h2,.post h2{font-size:40px;margin:0 0 14px}
-.f{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
-@media(max-width:560px){.f{grid-template-columns:1fr}}
-.f .wide{grid-column:1/-1}
+.lead{max-width:680px;margin:0 0 20px;font-size:19px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 14px 8px;display:inline-block}
+.deadline{display:inline-block;margin:0;font:24px/1.25 var(--hand);background:var(--red);color:#fff;border:4px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:10px 16px 6px;transform:rotate(-.8deg)}
+.sec{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:clamp(40px,6vw,64px);margin:76px 0 14px;color:var(--ink)}
+.sec i{font-style:normal;display:inline-grid;place-items:center;width:1.15em;height:1.15em;font-size:.7em;background:var(--yellow);border:4px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+.step{padding:20px 22px}.step:nth-child(1){background:var(--peri);transform:rotate(-1deg)}.step:nth-child(2){background:var(--salmon);transform:rotate(.8deg)}.step:nth-child(3){background:var(--mint);transform:rotate(-.5deg)}
+.step h3{font-size:40px;margin:0 0 8px}.step p{margin:0}
+.posts{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:900px){.posts{grid-template-columns:1fr}}
+.postc{background:var(--sky);padding:16px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.postc:nth-child(2){background:var(--pink)}.postc:nth-child(3){background:var(--butter)}
+.postc .tpl{background:#fff;border:4px solid var(--ink);padding:14px;font-size:17px;line-height:1.5;flex:1}
+.maker{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:30px;align-items:start}
+@media(max-width:860px){.maker{grid-template-columns:1fr}}
+.maker .frame{background:#fff;border:5px solid var(--ink);box-shadow:10px 10px 0 var(--ink);padding:10px}
+.maker canvas{display:block;width:100%;aspect-ratio:1;border:3px solid var(--ink)}
+.maker .ctl{background:var(--mint);padding:20px 22px}
+.maker .ctl p{margin:0 0 14px}
+.maker .ctl .btns{display:flex;gap:14px;flex-wrap:wrap}
+.maker input[type=file]{display:none}
+.kitgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:800px){.kitgrid{grid-template-columns:repeat(2,1fr)}}
+.kitgrid .item{display:block;text-decoration:none;padding:10px;transition:transform .12s}.kitgrid .item:hover{transform:translate(-2px,-2px) rotate(-.5deg)}
+.kitgrid .item.wide{grid-column:span 2}
+.kitgrid img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border:3px solid var(--ink);background:#fff}
+.kitgrid .item.wide img{aspect-ratio:2/1;object-fit:contain;background:var(--ink)}
+.kitgrid span{display:block;margin-top:8px;font:19px/1.1 var(--hand)}
+form.card{background:var(--butter);padding:24px}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}.f .wide{grid-column:1/-1}
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
+@media(max-width:760px){.f,.boxes{grid-template-columns:1fr}}
 label{display:block;font:22px/1.1 var(--hand)}
 label small{font:13px/1 var(--type);margin-left:6px}
-input,select{width:100%;margin-top:6px;font:17px/1.3 var(--type);padding:11px 13px;border:4px solid var(--ink);background:#fff;color:var(--ink);outline:none;border-radius:0}
-input:focus,select:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
-.tick{display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;font:17px/1.4 var(--type);background:#fff;border:4px solid var(--ink);padding:12px 14px;cursor:pointer}
-.tick input{width:24px;height:24px;margin:2px 0 0;flex:none;accent-color:var(--red)}
+input,textarea{width:100%;margin-top:6px;font:16px/1.4 var(--type);padding:11px 13px;border:4px solid var(--ink);background:#fff;color:var(--ink);outline:none;border-radius:0}
+textarea{min-height:270px;resize:vertical;font-size:14px;white-space:pre;overflow-x:auto}
+input:focus,textarea:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
+.box{border:4px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:14px}
+.box.gtd{background:var(--mint)}.box.fcfs{background:var(--sky)}
+.box h3{display:flex;justify-content:space-between;align-items:baseline;font-size:30px;margin:0 0 4px}
+.box h3 .n{font:15px/1 var(--type);background:#fff;border:3px solid var(--ink);padding:5px 8px 3px}
+.box h3 .n.over{background:var(--salmon)}
+.box .hint{font-size:14px;margin:0}
+.bad{display:block;font:14px/1.3 var(--type);margin:8px 0 0;color:var(--red);min-height:1.2em;word-break:break-all}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.send{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+.send{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}
 #msg{font-size:16px}
 #msg.ok{background:var(--mint);border:3px solid var(--ink);padding:6px 10px 4px}
 #msg.err{background:var(--salmon);border:3px solid var(--ink);padding:6px 10px 4px}
-.post{background:var(--sky);padding:24px;transform:rotate(.6deg)}
-.post .tpl{background:#fff;border:4px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:16px 18px;font-size:19px;line-height:1.5;white-space:pre-wrap}
-.post .tpl b{background:var(--yellow);padding:0 4px;font-weight:normal}
-.post p{margin:14px 0 0;font-size:15px}
-.post .btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
-.rules{margin-top:30px;background:var(--mint);padding:20px 22px;transform:rotate(-.6deg)}
-.rules h3{font-size:30px;margin:0 0 8px}
-.alloc{font:17px/1.35 var(--type);background:#fff;border:4px solid var(--ink);padding:10px 13px;align-self:end}.alloc b{display:block;font:22px/1.1 var(--hand);font-weight:normal;margin-bottom:4px}
-.rules .note{margin:12px 0 0;font-size:15px}
-.rules ol{margin:0;padding-left:20px}.rules li{margin:6px 0}
+.note{margin:18px 0 0;font-size:15px}
 </style></head><body>
 <div class="shapes" aria-hidden="true">
   <div class="shape" style="left:-70px;top:110px;width:260px;height:340px;background:var(--peri);--r:-7deg"></div>
   <div class="shape" style="right:-60px;top:60px;width:240px;height:260px;background:var(--salmon);--r:9deg;animation-delay:.2s"></div>
-  <div class="shape" style="right:-50px;top:62%;width:220px;height:240px;background:var(--lilac);--r:-5deg;animation-delay:.35s"></div>
+  <div class="shape" style="right:-50px;top:40%;width:220px;height:240px;background:var(--lilac);--r:-5deg"></div>
+  <div class="shape" style="left:-40px;top:62%;width:200px;height:260px;background:var(--butter);--r:6deg"></div>
 </div>
 <nav>
   <a class="logo" href="index.html" aria-label="trollbox home"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
   <div class="links"><a href="index.html#station">troll station</a><a href="roll.html">roll a troll</a><a href="allowlist.html">allowlist</a><a href="cafe.html">café</a></div>
-  <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
+  <a class="btn small yellow" href="#form">send your list</a>
 </nav>
 <main class="page"><div class="wrap">
   <span class="eyebrow">trollbox · collabs</span>
-  <h1>collab spots</h1>
-  <p class="lead">if you've got this link, solemn sent it to you. your people get 10 guaranteed spots + 10 first come. tell us who you are and how to reach you.</p>
+  <h1>collab with solemn</h1>
+  <p class="lead">you've got people. here's what to post, the art to use, and the form for your list.</p><br>
+  <p class="deadline">mint monday 19 october · 4pm utc · 12pm est · 9am pst · lists close sunday 18 october, 7pm utc</p>
 
-  <div class="grid">
-    <form class="card" id="form" novalidate>
-      <h2>who are you</h2>
-      <div class="f">
-        <label class="wide">name <small>project, group or just you</small><input name="project" required maxlength="200" autocomplete="organization"></label>
-        <label class="wide">direct contact <small>x or telegram handle</small><input name="contact" required maxlength="200" placeholder="@you"></label>
-        <label class="wide">where your people are <small>x, discord, telegram, a group chat…</small><input name="discord" maxlength="200" placeholder="e.g. our telegram group"></label>
-        <label>rough number of people<input name="holders" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 50"></label>
-        <div class="alloc"><b>your spots</b>10 guaranteed + 10 first come</div>
-      </div>
-      <label class="hp" aria-hidden="true">leave this empty<input name="hp" tabindex="-1" autocomplete="off"></label>
-      <div class="send"><button class="btn red" type="submit">send it</button><span id="msg" aria-live="polite"></span></div>
-    </form>
+  <h2 class="sec"><i>1</i> what to do</h2>
+  <div class="steps">
+    <div class="card step"><h3>post.</h3><p>pick a post below, add the art or make your collab image, and post it.</p></div>
+    <div class="card step"><h3>collect.</h3><p>your people reply with their taproot wallets (bc1p…).</p></div>
+    <div class="card step"><h3>send.</h3><p>fill the form at the bottom before sunday 7pm utc. solemn checks every list.</p></div>
+  </div>
 
-    <div>
-      <div class="card post">
-        <h2>the post</h2>
-        <div class="tpl" id="tpl">we've got 10 guaranteed + 10 fcfs spots for trollbox by @strangersolemn. 2,222 anonymous trolls on bitcoin, shielded by the protocol, coming to @Ord_Dropz. drop your taproot address below.</div>
-        <p>post it wherever your people are. change the words if you like.</p>
-        <div class="btns"><button class="btn small yellow" id="copy" type="button">copy the post</button></div>
-      </div>
-      <div class="card rules">
-        <h3>how it goes</h3>
-        <ol>
-          <li>send this. we message you on your direct contact.</li>
-          <li>share the post with your people.</li>
-          <li>send us their taproot addresses. they land on the allowlist.</li>
-        </ol>
-      </div>
+  <h2 class="sec"><i>2</i> what to say</h2>
+  <p class="eyebrow">copy one. change the words if you like.</p>
+  <div class="posts" style="margin-top:16px">
+    <div class="card postc"><div class="tpl">got trollbox spots for my people. 2,222 shielded trolls by @strangersolemn, minting monday 19 october on @Ord_Dropz. 4pm utc · 12pm est · 9am pst. drop your taproot below 👇</div><button class="btn small yellow copy" type="button">copy</button></div>
+    <div class="card postc"><div class="tpl">trollbox x me. 2,222 shielded trolls by @strangersolemn: nobody sees who holds which troll. mint monday 4pm utc on @Ord_Dropz. reply with a taproot (bc1p) to get in.</div><button class="btn small yellow copy" type="button">copy</button></div>
+    <div class="card postc"><div class="tpl">own a troll, write its line on the trollbox screen. 2,222 shielded trolls by @strangersolemn, monday 19 october, 4pm utc on @Ord_Dropz. i've got spots. taproot below.</div><button class="btn small yellow copy" type="button">copy</button></div>
+  </div>
+
+  <h2 class="sec"><i>3</i> your collab image</h2>
+  <div class="maker">
+    <div class="frame"><canvas id="mk" width="1200" height="1200" aria-label="collab image"></canvas></div>
+    <div class="card ctl">
+      <p>solemn's troll on the left, yours on the right. add your pfp or any picture. it stays on your device, nothing gets uploaded.</p>
+      <label>your name on it <small>optional</small><input id="mkName" maxlength="24" placeholder="you"></label>
+      <div class="btns" style="margin-top:16px"><button class="btn yellow" id="mkPick" type="button">add your image</button><button class="btn red" id="mkSave" type="button">download png</button></div>
+      <input type="file" id="mkFile" accept="image/*">
+      <p class="note">square, 1200×1200, ready for x.</p>
     </div>
   </div>
+
+  <h2 class="sec"><i>4</i> the art <a class="btn small red" href="kit/trollbox-images.zip" download>all images · zip 7 mb</a></h2>
+  <p class="eyebrow">full-res. tap one to download.</p>
+  <div class="kitgrid" style="margin-top:16px">
+    <a class="card item wide" href="kit/files/trollbox-how-it-works.mp4" download><img src="kit/thumbs/trollbox-how-it-works.jpg" alt="how it works" loading="lazy"><span>how it works · mp4 1080p</span></a>
+    <a class="card item" href="kit/files/nakas-x-trolls.mp4" download><img src="kit/thumbs/nakas-x-trolls.jpg" alt="nakas × trolls" loading="lazy"><span>nakas × trolls · mp4</span></a>
+    <a class="card item" href="kit/files/trollbox-grid-25.gif" download><img src="kit/thumbs/trollbox-grid-25-gif.jpg" alt="25-troll grid gif" loading="lazy"><span>25-troll grid · gif</span></a>
+    <a class="card item wide" href="kit/files/trollbox-typing-scene.mp4" download><img src="kit/thumbs/trollbox-typing-scene.jpg" alt="typing scene" loading="lazy"><span>typing scene · mp4 1080p</span></a>
+    <a class="card item" href="kit/files/trollbox-grid-25.png" download><img src="kit/thumbs/trollbox-grid-25.jpg" alt="25-troll grid png" loading="lazy"><span>25-troll grid · png</span></a>
+    <a class="card item" href="kit/files/trollbox-grid-16.gif" download><img src="kit/thumbs/trollbox-grid-16-gif.jpg" alt="16-troll grid gif" loading="lazy"><span>16-troll grid · gif</span></a>
+    <a class="card item" href="kit/files/trollbox-flipbook.mp4" download><img src="kit/thumbs/trollbox-flipbook.jpg" alt="flip book" loading="lazy"><span>flip book · mp4</span></a>
+    <a class="card item" href="kit/files/trollbox-slide-puzzle.mp4" download><img src="kit/thumbs/trollbox-slide-puzzle.jpg" alt="slide puzzle" loading="lazy"><span>slide puzzle · mp4</span></a>
+    <a class="card item wide" href="kit/files/trollbox-logo.png" download><img src="kit/thumbs/trollbox-logo.jpg" alt="logo" loading="lazy"><span>logo · png</span></a>
+    <a class="card item wide" href="kit/files/trollbox-banner-logo-3000x1000.png" download><img src="kit/thumbs/trollbox-banner-logo-3000x1000.jpg" alt="banner" loading="lazy"><span>banner · 3000×1000</span></a>
+    <a class="card item wide" href="kit/files/trollbox-banner-grid-3000x1000.png" download><img src="kit/thumbs/trollbox-banner-grid-3000x1000.jpg" alt="banner grid" loading="lazy"><span>banner grid · 3000×1000</span></a>
+    <a class="card item" href="kit/files/troll-71.png" download><img src="kit/thumbs/troll-71.jpg" alt="troll 71" loading="lazy"><span>troll 71 · 1000px</span></a>
+    <a class="card item" href="kit/files/troll-856.png" download><img src="kit/thumbs/troll-856.jpg" alt="troll 856" loading="lazy"><span>troll 856 · 1000px</span></a>
+    <a class="card item" href="kit/files/troll-48.png" download><img src="kit/thumbs/troll-48.jpg" alt="troll 48" loading="lazy"><span>troll 48 · 1000px</span></a>
+    <a class="card item" href="kit/files/troll-2136.png" download><img src="kit/thumbs/troll-2136.jpg" alt="troll 2136" loading="lazy"><span>troll 2136 · 1000px</span></a>
+  </div>
+
+  <h2 class="sec" id="formHead"><i>5</i> send your list</h2>
+  <form class="card" id="form" novalidate>
+    <div class="f">
+      <label>your name<input name="name" required maxlength="200" autocomplete="name"></label>
+      <label>x handle<input name="x" required maxlength="200" placeholder="@you"></label>
+      <label class="wide">your own wallet <small>bc1p…</small><input id="own" spellcheck="false" maxlength="120" placeholder="bc1p…"><span class="bad" id="badOwn"></span></label>
+    </div>
+    <div class="boxes">
+      <div class="box gtd"><h3>guaranteed <span class="n" id="nGtd">0 / 10</span></h3><p class="hint">up to 10, one per line, x handle optional</p>
+        <textarea id="gtd" spellcheck="false" placeholder="bc1p… @handle&#10;bc1p…"></textarea><span class="bad" id="badGtd"></span></div>
+      <div class="box fcfs"><h3>first come <span class="n" id="nFcfs">0 / 20</span></h3><p class="hint">up to 20, one per line, x handle optional</p>
+        <textarea id="fcfs" spellcheck="false" placeholder="bc1p… @handle&#10;bc1p…"></textarea><span class="bad" id="badFcfs"></span></div>
+    </div>
+    <label class="hp" aria-hidden="true">leave this empty<input name="hp" tabindex="-1" autocomplete="off"></label>
+    <div class="send"><button class="btn red" type="submit">send the list</button><span id="msg" aria-live="polite"></span></div>
+    <p class="note">taproot only (starts with bc1p). a wallet in two places counts once, at the highest spot. solemn checks every list before it goes on the allowlist. send again before sunday 7pm utc to replace yours.</p>
+  </form>
 </div></main>
 <footer><div class="wrap">
   <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
@@ -95,30 +153,107 @@ input:focus,select:focus{box-shadow:inset 0 0 0 3px var(--yellow)}
 </div></footer>
 <script>
 (function () {
-  var API = 'https://frontrun-discord-bot.vercel.app/api/trollbox?action=collab';
-  var $ = function (id) { return document.getElementById(id); }, form = $('form'), msg = $('msg');
-  var say = function (cls, t) { msg.className = cls; msg.textContent = t; };
-  $('copy').addEventListener('click', function () {
-    var t = $('tpl').textContent;
-    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('copy').textContent = 'copied'; }, function () { $('copy').textContent = 'select it and copy'; });
-    setTimeout(function () { $('copy').textContent = 'copy the post'; }, 1800);
+  var $ = function (id) { return document.getElementById(id); };
+  // ---- copy buttons
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = btn.previousElementSibling.textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { btn.textContent = 'copied'; }, function () { btn.textContent = 'select it and copy'; });
+      setTimeout(function () { btn.textContent = 'copy'; }, 1800);
+    });
   });
-  form.addEventListener('submit', async function (e) {
+
+  // ---- collab image maker: everything happens on this canvas, nothing leaves the device
+  var cv = $('mk'), g = cv.getContext('2d'), S = 1200, mine = null;
+  var solemn = new Image(); solemn.src = 'kit/solemn-pfp.png';
+  var logo = new Image(); logo.src = 'logo/trollbox-logo-red.png';
+  function box(x, y, w, h, fill) { g.fillStyle = '#0b0b0b'; g.fillRect(x + 14, y + 14, w, h); g.fillStyle = fill; g.fillRect(x, y, w, h); g.lineWidth = 10; g.strokeStyle = '#0b0b0b'; g.strokeRect(x, y, w, h); }
+  function cover(im, x, y, w, h) { var r = Math.max(w / im.width, h / im.height), iw = im.width * r, ih = im.height * r; g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip(); g.drawImage(im, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih); g.restore(); }
+  function draw() {
+    g.fillStyle = '#efe2c8'; g.fillRect(0, 0, S, S);
+    g.fillStyle = '#d8c8a6'; for (var yy = 13; yy < S; yy += 26) for (var xx = 13; xx < S; xx += 26) { g.beginPath(); g.arc(xx, yy, 2, 0, 7); g.fill(); }
+    var lw = 900, lh = lw * (logo.height || 522) / (logo.width || 1988);   // logo spills past its paper box
+    box(S / 2 - lw * .4, 92, lw * .8, lh * 1.47, '#fff');
+    if (logo.complete && logo.width) g.drawImage(logo, S / 2 - lw / 2, 92 + lh * .235, lw, lh);
+    var y = 430, w = 470;
+    box(70, y, w, w, '#c9ccff'); if (solemn.complete && solemn.width) cover(solemn, 75, y + 5, w - 10, w - 10);
+    box(S - 70 - w, y, w, w, '#fff');
+    if (mine) cover(mine, S - 70 - w + 5, y + 5, w - 10, w - 10);
+    else { g.fillStyle = '#0b0b0b'; g.font = '46px Mansalva, cursive'; g.textAlign = 'center'; g.fillText('your pfp', S - 70 - w / 2, y + w / 2 + 14); }
+    g.textAlign = 'center'; g.font = '190px Mansalva, cursive'; g.lineWidth = 16; g.strokeStyle = '#0b0b0b'; g.fillStyle = '#9a2d41';
+    g.strokeText('x', S / 2, y + w / 2 + 62); g.fillText('x', S / 2, y + w / 2 + 62);
+    var nm = ($('mkName').value || '').trim().toLowerCase();
+    g.font = '64px Mansalva, cursive'; g.fillStyle = '#0b0b0b';
+    g.fillText(nm ? 'solemn x ' + nm : 'solemn x you', S / 2, 1030);
+    g.font = '30px "Special Elite", monospace'; g.fillText('2,222 shielded trolls · monday 19 october · @Ord_Dropz', S / 2, 1100);
+  }
+  [solemn, logo].forEach(function (im) { im.onload = draw; });
+  (document.fonts ? Promise.all([document.fonts.load('80px Mansalva'), document.fonts.load('30px "Special Elite"')]) : Promise.resolve()).then(draw, draw);
+  $('mkName').addEventListener('input', draw);
+  $('mkPick').addEventListener('click', function () { $('mkFile').click(); });
+  $('mkFile').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var im = new Image(); im.onload = function () { mine = im; draw(); }; im.src = URL.createObjectURL(f);
+  });
+  $('mkSave').addEventListener('click', function () {
+    draw();
+    cv.toBlob(function (b) { var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'trollbox-collab.png'; a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000); }, 'image/png');
+  });
+  draw();
+
+  // ---- the form
+  var API = 'https://frontrun-discord-bot.vercel.app/api/trollbox?action=collab-submit';
+  var MAX = { Gtd: 10, Fcfs: 20 }, msg = $('msg'), say = function (cls, t) { msg.className = cls; msg.textContent = t; };
+  var CH = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  function polymod(v) { var G = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3], c = 1;
+    for (var i = 0; i < v.length; i++) { var b = c >>> 25; c = ((c & 0x1ffffff) << 5) ^ v[i]; for (var j = 0; j < 5; j++) if ((b >>> j) & 1) c ^= G[j]; } return c >>> 0; }
+  function isTaproot(a) {   // bech32m, witness v1, 32-byte program
+    if (!/^bc1p[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58}$/.test(a)) return false;
+    var v = [3, 3, 0, 2, 3]; for (var i = 3; i < a.length; i++) v.push(CH.indexOf(a[i]));
+    return polymod(v) === 0x2bc830a3;
+  }
+  function parse(text) {
+    var out = [], bad = [], seen = {};
+    text.split(/\n/).forEach(function (line) {
+      line = line.trim(); if (!line) return;
+      var m = line.match(/(bc1[a-z0-9]+)/i), x = (line.match(/@[A-Za-z0-9_]{1,30}/) || [''])[0];
+      if (!m) { bad.push(line.slice(0, 40)); return; }
+      var a = m[1].toLowerCase();
+      if (!isTaproot(a)) { bad.push(a.slice(0, 14) + '…'); return; }
+      if (seen[a]) return; seen[a] = 1; out.push({ btc: a, x: x });
+    });
+    return { list: out, bad: bad };
+  }
+  function check() {
+    var O = parse($('own').value), g2 = parse($('gtd').value), f = parse($('fcfs').value), taken = {};
+    var own = O.list[0] || null; if (own) taken[own.btc] = 1;
+    g2.list = g2.list.filter(function (e) { return !taken[e.btc] && (taken[e.btc] = 1); });
+    f.list = f.list.filter(function (e) { return !taken[e.btc]; });   // a wallet counts once, at its highest spot
+    $('badOwn').textContent = O.bad.length ? 'not a taproot: ' + O.bad.join(', ') : O.list.length > 1 ? 'one wallet here' : '';
+    [['Gtd', g2], ['Fcfs', f]].forEach(function (p) {
+      var n = $('n' + p[0]); n.textContent = p[1].list.length + ' / ' + MAX[p[0]]; n.classList.toggle('over', p[1].list.length > MAX[p[0]]);
+      $('bad' + p[0]).textContent = p[1].bad.length ? 'not a taproot: ' + p[1].bad.join(', ') : '';
+    });
+    return { own: own, ownBad: O.bad.length || O.list.length > 1, gtd: g2, fcfs: f };
+  }
+  ['own', 'gtd', 'fcfs'].forEach(function (id) { $(id).addEventListener('input', check); });
+  $('form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    var d = Object.fromEntries(new FormData(form)), int = function (v) { v = parseInt(v, 10); return isFinite(v) ? v : null; };
-    var body = { project: (d.project || '').trim(), contact: (d.contact || '').trim(), discord: (d.discord || '').trim(), chain: '', collection: '',
-      holders: int(d.holders), spots: 20, agree: true, hp: d.hp || '' };
-    body.x = body.contact;   // the bot wants an x field; the direct contact fills it
-    if (!body.project || !body.contact) return say('err', 'a name and a direct contact are needed.');
+    var r = check(), d = Object.fromEntries(new FormData($('form')));
+    var body = { name: (d.name || '').trim(), x: (d.x || '').trim(), own: r.own ? { btc: r.own.btc } : null, gtd: r.gtd.list, fcfs: r.fcfs.list, hp: d.hp || '' };
+    if (!body.name || !body.x) return say('err', 'your name and x handle are needed.');
+    if (!body.own) return say('err', r.ownBad ? 'your own wallet needs to be a taproot (bc1p…).' : 'add your own wallet.');
+    if (r.ownBad || r.gtd.bad.length || r.fcfs.bad.length) return say('err', 'fix the lines marked in red first.');
+    if (body.gtd.length > MAX.Gtd || body.fcfs.length > MAX.Fcfs) return say('err', 'up to 10 guaranteed and 20 first come.');
     say('', 'sending…');
     try {
-      var r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-      var j = await r.json().catch(function () { return {}; });
-      if (!r.ok || !j.ok) return say('err', j.error || 'could not send. try again in a minute.');
-      form.reset();
-      say('ok', 'got it. we\'ll message you.');
+      var res = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      var j = await res.json().catch(function () { return {}; });
+      if (!res.ok || !j.ok) return say('err', j.error || 'could not send. try again in a minute.');
+      say('ok', 'got it: your wallet, ' + body.gtd.length + ' guaranteed, ' + body.fcfs.length + ' first come. solemn checks it next.');
     } catch (err) { say('err', 'could not send. try again in a minute, or dm @strangersolemn.'); }
   });
+  check();
 })();
 </script>
 <script src="music.js"></script>
