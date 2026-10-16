@@ -439,9 +439,11 @@ const MUSIC = (() => {
   //   {"p":"strange-cafe-jukebox","v":1,"tracks":[{"name":"COME ON IN","id":"<inscription id>"}, …]}
   // so adding, renaming or reordering songs = reinscribe that JSON on its sat (the café and the galleries both read it).
   let TRACKS = [
-    { name: "COME ON IN", src: "build/inscribe/audio/final/strange-cafe-new.opus" },
-    { name: "CROOKED SMILE", src: "build/inscribe/audio/final/strange-cafe.opus" },
+    { name: "COME ON IN", src: "build/inscribe/audio/final/strange-cafe-new.opus", id: "ce6a8f7ad4700b5d5f3e03a21864bf2f116ac088df4e499c0dd914af6fc932dfi1" },
+    { name: "CROOKED SMILE", src: "build/inscribe/audio/final/strange-cafe.opus", id: "2ad0fd354dcedc6bca88af2c719748f8d99c02a83c0cc011a9ba83dd12bb5c65i0" },
   ];
+  // the local opus files only exist on the test server: anywhere else (the website) the records come from ordinals.com
+  if (!/^(localhost|127\.0\.0\.1|)$/.test(location.hostname) && !location.pathname.startsWith("/content/")) TRACKS.forEach(t => { if (t.id && !t.src.startsWith("/")) t.src = "https://ordinals.com/content/" + t.id; });
   const JUKEBOX_SAT = "__JUKEBOX_SAT__";
   // newest on the jukebox sat: a tracklist JSON, or (first) the jukebox PAGE itself → use the list embedded in it
   const readList = (txt) => { try { return JSON.parse(txt); } catch (e) {}
@@ -483,7 +485,7 @@ const MUSIC = (() => {
     } catch (e) { ctx = null; }   // no WebAudio: plain playback at a fixed level
     if (!el.src || !el.src.includes(TRACKS[track].src.split("/").pop())) el.src = TRACKS[track].src;
     el.play().then(() => { m.on = true; paint(); m.renderList(); toast("now playing: " + TRACKS[track].name.toLowerCase()); },
-                   () => toast("the music won't play here. it needs a newer browser (ogg opus)."));
+                   () => toast(can ? "couldn't load the track. try again." : "the music won't play here. it needs a newer browser (ogg opus)."));
   };
   // gain from the distance to the nearest speaker / the jukebox: base 0.35 everywhere, up to 1 within ~1.5 m, eased
   m.update = (x, z) => {
