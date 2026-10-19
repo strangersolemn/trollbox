@@ -55,17 +55,14 @@ details p{margin:12px 0 0;font-size:15px}
 </nav>
 <main class="page"><div class="wrap">
   <span class="eyebrow">trollbox · allowlist</span>
-  <h1>are you on it?</h1>
-  <p class="lead">paste the bitcoin address you'll mint with. it says yes or no. that's all it says.</p>
+  <h1>the list is locked</h1>
+  <p class="lead">the checker is closed. the full list is with ord dropz now, naka minters included, and the mint page checks it for you.</p>
 
   <section class="card checker" aria-labelledby="chk-h">
-    <h2 id="chk-h">check an address</h2>
-    <div class="eyebrow">bitcoin address · bc1p… for most wallets</div>
-    <form class="row" id="form">
-      <input id="addr" type="text" placeholder="bc1p…" autocomplete="off" spellcheck="false" aria-label="bitcoin address">
-      <button class="btn red" type="submit">check</button>
-    </form>
-    <div id="result" aria-live="polite"></div>
+    <h2 id="chk-h">mint today on ord dropz</h2>
+    <div class="eyebrow">3pm utc · 4pm london · 11am est · 8am pst</div>
+    <p>guaranteed 3pm utc (naka minters + my guaranteed list) · first come 4pm utc · public 5pm utc.<br>connect the wallet you're on the list with, the mint page tells you your tier.</p>
+    <div class="row"><a class="btn red" href="https://ord-dropz.xyz/marketplace/listing_1792372387528">go to the mint</a></div>
   </section>
 <section class="tiers" aria-label="the allowlist">
   <div class="card tier">
@@ -138,7 +135,7 @@ details p{margin:12px 0 0;font-size:15px}
     var p = document.createElement('p'); p.textContent = text; box.appendChild(p);
     $('result').replaceChildren(box);
   }
-  $('form').addEventListener('submit', async function (e) {
+  if ($('form')) if ($('form')) $('form').addEventListener('submit', async function (e) {
     e.preventDefault();
     var a = norm($('addr').value);
     if (!a) return;
