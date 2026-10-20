@@ -30,7 +30,7 @@ h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(
 </div>
 <nav>
   <a class="logo" href="index.html" aria-label="trollbox home"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
-  <div class="links"><a href="index.html#station">troll station</a><a href="roll.html">roll a troll</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">café</a></div>
+  <div class="links"><a href="index.html#station">troll station</a><a href="gallery.html">gallery</a><a href="roll.html">roll a troll</a><a href="soon.html">the trollbox</a><a href="cafe.html">café</a></div>
   <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
 </nav>
 
@@ -41,7 +41,7 @@ h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(
     <h1>roll a troll</h1>
     <div class="btns"><button class="btn red" id="rollBtn">roll</button><button class="btn yellow" id="dlBtn">download pfp</button></div>
     <div class="rules">
-      <p>wear it as your pfp and post your roll tagging @strangersolemn → fcfs. wear it till mint → gtd.</p>
+      <p>all 2,222 are minted. find the real ones in the <a href="gallery.html">gallery</a>.</p>
       <div class="cta"><a class="btn small" id="postBtn" href="https://x.com/intent/post" target="_blank" rel="noopener">post your roll</a><a class="btn small mint" href="https://discord.gg/3cAwmXFF7u">join the discord</a></div>
     </div>
     <ul class="traits" id="traits"></ul>
@@ -50,7 +50,7 @@ h1{font-size:clamp(56px,9vw,104px);color:var(--red);-webkit-text-stroke:2px var(
 
 <footer><div class="wrap">
   <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
-    <div class="links"><a href="index.html">home</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">strange café</a><a href="allowlist.html">allowlist</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+    <div class="links"><a href="index.html">home</a><a href="gallery.html">gallery</a><a href="soon.html">the trollbox</a><a href="cafe.html">strange café</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
   <small>trollbox · strangersolemn · 2026 · shielded on ord dropz</small>
 </div></footer>
 
@@ -67,7 +67,7 @@ async function show(t) {
   $("name").textContent = t.name;
   await onchain; const a = ONCHAIN[t.id - 1] || {};
   $("traits").innerHTML = KEYS.filter(k => a[k]).map(k => `<li><b>${a[k]}</b>${k}</li>`).join("");
-  $("postBtn").href = "https://x.com/intent/post?text=" + encodeURIComponent(`rolled ${t.name.toLowerCase()} on the trollbox. wearing it till mint. @strangersolemn\n\nhttps://trollbox.strangersolemn.art/roll.html?n=${t.id}`);
+  $("postBtn").href = "https://x.com/intent/post?text=" + encodeURIComponent(`rolled ${t.name.toLowerCase()} on the trollbox. @strangersolemn\n\nhttps://trollbox.strangersolemn.art/roll.html?n=${t.id}`);
   try { history.replaceState(null, "", "?n=" + t.id); } catch (e) {}
 }
 const roll = () => show(T.trolls[Math.floor(Math.random() * T.trolls.length)]);

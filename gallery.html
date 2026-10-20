@@ -1,0 +1,153 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trollbox Gallery</title>
+<meta name="description" content="all 2,222 trolls. find yours, grab the gif.">
+<!--
+  The gallery (2026-10-20, after the sell-out). All 2,222 minted trolls, drawn from the masters (troll-sprites.js + tb-site.js),
+  traits = build/traits.json (the same file Ord Dropz shows), inscription ids = build/gallery-ids.json (fetch-minted.py,
+  every one checked byte-for-byte against chain). Each troll: an animated GIF (gifenc) and a PNG to download.
+-->
+<link rel="stylesheet" href="tb.css">
+<style>
+.hero{padding:60px 0 10px;text-align:center}
+.hero h1{font-size:clamp(54px,10vw,110px);color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.hero p{margin:14px auto 0;max-width:620px}
+.tools{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:4px solid var(--ink);padding:14px 0}
+.tools .wrap{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tools input,.tools select{font:16px/1 var(--type);padding:10px 12px;border:3px solid var(--ink);background:#fff;color:var(--ink);min-width:0}
+.tools input{width:150px}
+.tools select{max-width:190px}
+.tools .count{margin-left:auto;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;padding:26px 0 60px}
+.tile{all:unset;cursor:pointer;display:block;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);transition:transform .12s}
+.tile:hover,.tile:focus-visible{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.tile canvas{display:block;width:100%;aspect-ratio:1;background:var(--sand);border-bottom:3px solid var(--ink)}
+.tile span{display:block;padding:6px 8px 4px;font:20px/1 var(--hand)}
+.more{display:block;margin:0 auto 70px}
+.empty{padding:40px 0;text-align:center;font:28px/1.2 var(--hand)}
+/* one troll */
+dialog{border:5px solid var(--ink);box-shadow:12px 12px 0 var(--ink);padding:0;max-width:min(900px,calc(100vw - 32px));width:100%;background:var(--paper);color:var(--ink)}
+dialog::backdrop{background:rgba(11,11,11,.6)}
+.one{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding:24px}
+@media(max-width:700px){.one{grid-template-columns:1fr;padding:16px}}
+.one canvas{width:100%;aspect-ratio:1;display:block;border:4px solid var(--ink)}
+.one h2{font-size:52px}
+.one dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:16px 0 18px;font-size:15px}
+.one dt{opacity:.65}.one dd{margin:0}
+.one .dl{display:flex;gap:10px;flex-wrap:wrap}
+.one .id{display:block;margin-top:16px;font-size:13px;word-break:break-all}
+.one .msg{min-height:1.4em;font-size:14px;margin-top:10px}
+.close{all:unset;position:absolute;right:10px;top:8px;cursor:pointer;font:34px/1 var(--hand);padding:4px 10px}
+dialog{position:fixed}
+</style></head><body>
+<nav>
+  <a class="logo" href="index.html" aria-label="trollbox"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
+  <div class="links"><a href="index.html">home</a><a href="gallery.html">gallery</a><a href="soon.html">the trollbox</a><a href="cafe.html">café</a></div>
+  <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
+</nav>
+
+<header class="hero"><div class="wrap">
+  <h1>the 2,222</h1>
+  <p>every troll on bitcoin. find yours, grab the gif, wear it.</p>
+</div></header>
+
+<div class="tools"><div class="wrap">
+  <input id="q" type="search" inputmode="numeric" placeholder="troll #" aria-label="troll number">
+  <span id="filters"></span>
+  <button class="btn small" id="rand" type="button">random</button>
+  <span class="count" id="count"></span>
+</div></div>
+
+<main class="wrap"><div class="grid" id="grid"></div><p class="empty" id="empty" hidden>no trolls like that.</p>
+  <button class="btn more" id="more" type="button" hidden>show more</button></main>
+
+<dialog id="dlg"><button class="close" id="x" aria-label="close">×</button>
+  <div class="one">
+    <canvas id="big" width="600" height="600"></canvas>
+    <div><h2 id="name"></h2><dl id="traits"></dl>
+      <div class="dl"><button class="btn red" id="gif" type="button">download gif</button><button class="btn" id="png" type="button">download png</button></div>
+      <p class="msg" id="msg"></p>
+      <a class="id" id="chain" target="_blank" rel="noopener"></a></div>
+  </div>
+</dialog>
+
+<footer><div class="wrap">
+  <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
+    <div class="links"><a href="gallery.html">gallery</a><a href="soon.html">the trollbox</a><a href="cafe.html">strange café</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+  <small>trollbox · strangersolemn · 2026 · shielded on ord dropz</small>
+</div></footer>
+
+<script src="recolor.js"></script><script src="troll-sprites.js"></script><script src="tb-site.js"></script>
+<script type="module">
+import { GIFEncoder, quantize, applyPalette } from "https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js";
+const $ = id => document.getElementById(id), PAGE = 120, KEYS = ["Background", "Body", "Headwear", "Eyes", "Mouth"];
+const [T, traits, ids] = await Promise.all([TB.load(256), fetch("build/traits.json").then(r => r.json()).catch(() => fetch("build/ob1/upload/traits.json").then(r => r.json())), fetch("build/gallery-ids.json").then(r => r.json())]);
+const byN = new Map(traits.map(t => [+t.name.split(" ")[1], t]));
+const all = T.trolls.map(t => ({ t, n: t.id, tr: byN.get(t.id) || {}, id: ids[t.id - 1] }));
+
+// ---- filters: one dropdown per trait, values from the on-chain trait names
+const sel = {};
+for (const k of KEYS) {
+  const vals = [...new Set(all.map(x => x.tr[k]).filter(Boolean))].sort();
+  const s = document.createElement("select"); s.setAttribute("aria-label", k);
+  s.innerHTML = `<option value="">${k.toLowerCase()}: all</option>` + vals.map(v => `<option>${v}</option>`).join("");
+  s.onchange = run; sel[k] = s; $("filters").appendChild(s); $("filters").append(" ");
+}
+let list = all, shown = 0;
+const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; io.unobserve(e.target); paint(e.target); }), { rootMargin: "300px" });
+async function paint(tile) { const x = all[tile.dataset.n - 1], c = tile.querySelector("canvas"); TB.draw(c.getContext("2d"), T, await T.sprite(x.t), 0, 0, c.width, 0, 0); }
+function more() {
+  const frag = document.createDocumentFragment();
+  for (const x of list.slice(shown, shown + PAGE)) {
+    const b = document.createElement("button"); b.className = "tile"; b.dataset.n = x.n; b.innerHTML = `<canvas width="256" height="256"></canvas><span>Troll ${x.n}</span>`;
+    b.onclick = () => open(x.n); frag.appendChild(b); io.observe(b);
+  }
+  $("grid").appendChild(frag); shown = Math.min(list.length, shown + PAGE); $("more").hidden = shown >= list.length;
+}
+function run() {
+  const q = $("q").value.trim().replace(/^#/, "");
+  list = all.filter(x => (!q || String(x.n).startsWith(q)) && KEYS.every(k => !sel[k].value || x.tr[k] === sel[k].value));
+  $("grid").innerHTML = ""; shown = 0; $("count").textContent = list.length.toLocaleString() + " trolls"; $("empty").hidden = list.length > 0; more();
+}
+$("q").oninput = run; $("more").onclick = more;
+$("q").onkeydown = e => { const n = +$("q").value.replace(/^#/, ""); if (e.key === "Enter" && n >= 1 && n <= 2222) open(n); };
+$("rand").onclick = () => open(1 + Math.floor(Math.random() * 2222));
+run();
+
+// ---- one troll: typing on a big canvas, its traits, GIF + PNG
+const big = $("big"), bg = big.getContext("2d"); let stop = null, cur = null;
+async function open(n) {
+  const x = all[n - 1]; cur = x; if (stop) stop();
+  $("name").textContent = "Troll " + n; $("msg").textContent = "";
+  $("traits").innerHTML = KEYS.concat(Object.keys(x.tr).filter(k => !KEYS.includes(k) && k !== "name" && k !== "filename")).filter(k => x.tr[k]).map(k => `<dt>${k.toLowerCase()}</dt><dd>${x.tr[k]}</dd>`).join("");
+  $("chain").href = "https://ordinals.com/inscription/" + x.id; $("chain").textContent = "on-chain: " + x.id;
+  const T5 = await TB.load(512), sp = await T5.sprite(x.t); if (cur !== x) return;   // 512 for the screen; downloads use the full 1000 px masters
+  stop = TB.animate(big, T5, sp); history.replaceState(null, "", "#" + n);
+  if (!$("dlg").open) $("dlg").showModal();
+}
+$("x").onclick = () => $("dlg").close();
+$("dlg").addEventListener("close", () => { if (stop) stop(); stop = null; history.replaceState(null, "", location.pathname); });
+$("dlg").addEventListener("click", e => { if (e.target === $("dlg")) $("dlg").close(); });
+const save = (blob, name) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+async function frames(x, size) {   // one loop: types for 14 ticks, rests for 10 (the screen keeps flickering), 120 ms a tick
+  const T5 = await TB.load(1000), sp = await T5.sprite(x.t), c = document.createElement("canvas"); c.width = c.height = size;
+  const g = c.getContext("2d", { willReadFrequently: true }), out = []; let hf = 0;
+  for (let i = 0; i < 24; i++) { if (i < 14) hf++; TB.draw(g, T5, sp, 0, 0, size, hf, i); out.push(g.getImageData(0, 0, size, size).data); }
+  return out;
+}
+$("gif").onclick = async () => {
+  const x = cur; $("msg").textContent = "making your gif…";
+  try {
+    const S = 600, fr = await frames(x, S), all4 = new Uint8Array(fr.length * S * S * 4); fr.forEach((f, i) => all4.set(f, i * f.length));
+    const pal = quantize(all4.filter((_, i) => (i >> 2) % 7 === 0), 256), enc = GIFEncoder();   // one palette for every frame, from a sample of all of them
+    for (const f of fr) enc.writeFrame(applyPalette(f, pal), S, S, { palette: pal, delay: 120 });
+    enc.finish(); save(new Blob([enc.bytes()], { type: "image/gif" }), `troll-${x.n}.gif`); $("msg").textContent = "done. wear it.";
+  } catch (e) { $("msg").textContent = "couldn't make it: " + e.message; }
+};
+$("png").onclick = async () => {
+  const x = cur, T5 = await TB.load(1000), sp = await T5.sprite(x.t), c = document.createElement("canvas"); c.width = c.height = 1000;
+  TB.draw(c.getContext("2d"), T5, sp, 0, 0, 1000, 0, 0); c.toBlob(b => save(b, `troll-${x.n}.png`), "image/png");
+};
+const h = +location.hash.slice(1); if (h >= 1 && h <= 2222) open(h);
+</script><script src="music.js?v=3"></script>
+</body></html>
