@@ -1,0 +1,117 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trollbox Speak</title>
+<meta name="description" content="list to speak: put your troll's line on the trollbox. everyone sees which troll said it, never who.">
+<!--
+  LIST TO SPEAK (2026-10-23). The holder writes a line → gets a code price (21.000xxxxx BTC) → lists their troll at
+  exactly that price in the Ord Dropz vault → the public shielded state shows which troll was listed at that price →
+  the line is proven as that troll. API: frontrun-discord-bot.vercel.app/api/line (moves no money, signs nothing).
+  The board below shows proven lines live (?feed=1&latest=1).
+-->
+<link rel="stylesheet" href="tb.css">
+<style>
+.hero{padding:56px 0 6px;text-align:center}
+.hero h1{font-size:clamp(52px,10vw,104px);color:var(--red);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.hero p{max-width:640px;margin:14px auto 0}
+.box{max-width:760px;margin:34px auto 0;padding:22px;background:var(--butter);transform:rotate(-.4deg)}
+.box h2{font-size:38px;margin:0 0 12px}
+.box textarea{width:100%;min-height:96px;resize:vertical;font:20px/1.45 var(--type);padding:14px 16px;border:4px solid var(--ink);background:#fff;color:var(--ink);box-sizing:border-box}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.count{font-size:14px;margin-left:auto}
+.msg{min-height:1.4em;margin-top:10px;font-size:16px}
+.price{display:inline-block;font:clamp(30px,7vw,52px)/1 var(--hand);background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:12px 18px 6px;margin:8px 0 14px;user-select:all}
+ol{padding-left:22px}ol li{margin:8px 0}
+.step2{display:none}
+.board{max-width:760px;margin:40px auto 70px}
+.line{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 12px;margin:0 0 12px}
+.line canvas{width:72px;height:72px;border:3px solid var(--ink)}
+.line b{font:24px/1 var(--hand)}
+.line p{margin:4px 0 0;word-break:break-word}
+.empty{text-align:center;font:24px/1.3 var(--hand)}
+</style></head><body>
+<nav>
+  <a class="logo" href="index.html" aria-label="trollbox"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
+  <div class="links"><a href="index.html">home</a><a href="gallery.html">gallery</a><a href="speak.html">speak</a><a href="cafe.html">café</a></div>
+  <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
+</nav>
+<header class="hero"><div class="wrap">
+  <h1>list to speak</h1>
+  <p>put your troll's line on the trollbox. everyone sees which troll said it. nobody sees who.</p>
+</div></header>
+
+<main class="wrap">
+  <section class="card box" id="step1">
+    <h2>1. your line</h2>
+    <textarea id="text" maxlength="280" placeholder="type it. nobody sees who wrote it."></textarea>
+    <div class="row"><button class="btn red" id="go" type="button">get my code</button><span class="count" id="count">0 / 280</span></div>
+    <p class="msg" id="msg1"></p>
+  </section>
+
+  <section class="card box step2" id="step2">
+    <h2>2. list your troll at exactly</h2>
+    <div class="price" id="price"></div>
+    <ol>
+      <li>open your vault on <a href="https://ord-dropz.xyz/secondary/collections/trollbox-mvfgs4lw" target="_blank" rel="noopener">ord dropz</a>.</li>
+      <li>list the troll you want to speak as, at <b>exactly</b> that price. nobody buys at that.</li>
+      <li>once the listing confirms on bitcoin, press check. your line goes up as that troll.</li>
+      <li>take the listing back whenever you want. the line stays.</li>
+    </ol>
+    <div class="row"><button class="btn" id="check" type="button">check</button><span class="msg" id="msg2"></span></div>
+    <p style="font-size:14px;margin:12px 0 0">your code waits 48 hours. listing uses a relay (or a small fee), same as any listing.</p>
+  </section>
+
+  <section class="board">
+    <div class="head"><h2>the trollbox</h2><span class="chip" id="chip">loading…</span></div>
+    <div id="board"></div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
+    <div class="links"><a href="gallery.html">gallery</a><a href="speak.html">speak</a><a href="cafe.html">strange café</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+  <small>trollbox · strangersolemn · 2026 · shielded on ord dropz</small>
+</div></footer>
+
+<script src="recolor.js"></script><script src="troll-sprites.js"></script><script src="tb-site.js"></script>
+<script>
+const API = 'https://frontrun-discord-bot.vercel.app/api/line', $ = id => document.getElementById(id);
+const text = $('text'); text.oninput = () => $('count').textContent = text.value.length + ' / 280';
+let code = null;
+try { const s = JSON.parse(localStorage.getItem('trollbox-speak') || 'null'); if (s && Date.now() - s.t < 48 * 3600e3) show(s); } catch (e) {}
+function show(s) { code = s.code; $('price').textContent = s.price + ' BTC'; $('step2').style.display = 'block'; text.value = s.text || ''; }
+$('go').onclick = async () => {
+  const t = text.value.trim(); if (!t) { $('msg1').textContent = 'type something first.'; return; }
+  $('msg1').textContent = 'getting your code…';
+  try {
+    const r = await (await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: t }) })).json();
+    if (!r.ok) throw new Error(r.error);
+    const s = { code: r.code, price: r.price, text: t, t: Date.now() };
+    try { localStorage.setItem('trollbox-speak', JSON.stringify(s)); } catch (e) {}
+    show(s); $('msg1').textContent = ''; $('step2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) { $('msg1').textContent = e.message; }
+};
+$('check').onclick = async () => {
+  if (!code) return; $('msg2').textContent = 'checking the chain…';
+  try {
+    const r = await (await fetch(API + '?code=' + code)).json();
+    if (r.state === 'proven') { $('msg2').textContent = `you're on the trollbox as troll ${r.troll} 🧌`; try { localStorage.removeItem('trollbox-speak'); } catch (e) {} board(); }
+    else if (r.state === 'expired') $('msg2').textContent = 'that code ran out. write your line again.';
+    else $('msg2').textContent = r.ok ? 'not seen yet. listings show once they confirm on bitcoin, try again in a few minutes.' : r.error;
+  } catch (e) { $('msg2').textContent = e.message; }
+};
+async function board() {
+  try {
+    const r = await (await fetch(API + '?feed=1&latest=1')).json(), lines = (r.lines || []).slice().reverse();
+    $('chip').textContent = lines.length ? lines.length + ' trolls on the box' : 'no lines yet';
+    const el = $('board'); el.innerHTML = lines.length ? '' : '<p class="empty">be the first troll on the box.</p>';
+    const T = lines.length ? await TB.load(256) : null;
+    for (const l of lines) {
+      const d = document.createElement('div'); d.className = 'line';
+      d.innerHTML = `<canvas width="144" height="144"></canvas><div><b>troll ${l.troll}</b><p></p></div>`; d.querySelector('p').textContent = l.text; el.appendChild(d);
+      const t = T.trolls[l.troll - 1]; if (t) TB.draw(d.querySelector('canvas').getContext('2d'), T, await T.sprite(t), 0, 0, 144, 0, 0);
+    }
+  } catch (e) { $('chip').textContent = 'board offline'; }
+}
+board(); setInterval(board, 60000);
+</script><script src="music.js?v=3"></script>
+</body></html>

@@ -171,7 +171,7 @@ let comments = [], entries = [];
 const avatars = new Map();
 let manifest = null;
 const TRAITS = window.TROLLBOX_TRAITS || "traits-avif/";
-fetch(TRAITS + "manifest.json").then(r => r.json()).then(M => { manifest = M; comments.forEach(realAvatar); }).catch(() => {});
+if (!CFG.face) fetch(TRAITS + "manifest.json").then(r => r.json()).then(M => { manifest = M; comments.forEach(realAvatar); }).catch(() => {});
 // Real trolls: build each avatar from the trait art (seeded by id), head crop, swapped in once loaded.
 // On-chain this becomes the troll's own inscription content (/content/<troll id>); here it reads traits-avif/.
 function realAvatar(c) {
