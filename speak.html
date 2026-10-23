@@ -3,9 +3,9 @@
 <title>Trollbox Speak</title>
 <meta name="description" content="list to speak: put your troll's line on the trollbox. everyone sees which troll said it, never who.">
 <!--
-  LIST TO SPEAK (2026-10-23). The holder writes a line → gets a code price (21.000xxxxx BTC) → lists their troll at
-  exactly that price in the Ord Dropz vault → the public shielded state shows which troll was listed at that price →
-  the line is proven as that troll. API: frontrun-discord-bot.vercel.app/api/line (moves no money, signs nothing).
+  LIST TO SPEAK (2026-10-23). The holder writes a line → gets a 4-digit code → lists their troll in the Ord Dropz vault at
+  ANY price ending in that code (in sats; a real sale listing) → the public shielded state shows which troll was listed
+  at that price → the line is proven as that troll. API: frontrun-discord-bot.vercel.app/api/line (moves no money, signs nothing).
   The board below shows proven lines live (?feed=1&latest=1).
 -->
 <link rel="stylesheet" href="tb.css">
@@ -48,16 +48,18 @@ ol{padding-left:22px}ol li{margin:8px 0}
   </section>
 
   <section class="card box step2" id="step2">
-    <h2>2. list your troll at exactly</h2>
+    <h2>2. your code</h2>
     <div class="price" id="price"></div>
+    <p>list your troll at <b>any price that ends in these four digits</b> (in sats). it's a real listing: sell at your own price, the last four digits just say it's you.</p>
+    <p>e.g. want ~40,000 sats? list at <b id="ex"></b></p>
     <ol>
       <li>open your vault on <a href="https://ord-dropz.xyz/secondary/collections/trollbox-mvfgs4lw" target="_blank" rel="noopener">ord dropz</a>.</li>
-      <li>list the troll you want to speak as, at <b>exactly</b> that price. nobody buys at that.</li>
+      <li>list the troll you want to speak as, at a price ending in your code.</li>
       <li>once the listing confirms on bitcoin, press check. your line goes up as that troll.</li>
-      <li>take the listing back whenever you want. the line stays.</li>
+      <li>if it sells, it sells at your price. your line stays until the next owner speaks.</li>
     </ol>
     <div class="row"><button class="btn" id="check" type="button">check</button><span class="msg" id="msg2"></span></div>
-    <p style="font-size:14px;margin:12px 0 0">your code waits 48 hours. listing uses a relay (or a small fee), same as any listing.</p>
+    <p style="font-size:14px;margin:12px 0 0">your code waits 48 hours. only listings made after you got it count. listing uses a relay, same as any listing.</p>
   </section>
 
   <section class="board">
@@ -78,14 +80,14 @@ const API = 'https://frontrun-discord-bot.vercel.app/api/line', $ = id => docume
 const text = $('text'); text.oninput = () => $('count').textContent = text.value.length + ' / 280';
 let code = null;
 try { const s = JSON.parse(localStorage.getItem('trollbox-speak') || 'null'); if (s && Date.now() - s.t < 48 * 3600e3) show(s); } catch (e) {}
-function show(s) { code = s.code; $('price').textContent = s.price + ' BTC'; $('step2').style.display = 'block'; text.value = s.text || ''; }
+function show(s) { code = s.code; $('price').textContent = String(s.code); $('ex').textContent = (s.example || '') + ' BTC'; $('step2').style.display = 'block'; text.value = s.text || ''; }
 $('go').onclick = async () => {
   const t = text.value.trim(); if (!t) { $('msg1').textContent = 'type something first.'; return; }
   $('msg1').textContent = 'getting your code…';
   try {
     const r = await (await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: t }) })).json();
     if (!r.ok) throw new Error(r.error);
-    const s = { code: r.code, price: r.price, text: t, t: Date.now() };
+    const s = { code: r.code, example: r.example, text: t, t: Date.now() };
     try { localStorage.setItem('trollbox-speak', JSON.stringify(s)); } catch (e) {}
     show(s); $('msg1').textContent = ''; $('step2').scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (e) { $('msg1').textContent = e.message; }
