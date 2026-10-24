@@ -85,14 +85,14 @@
 
 <nav>
   <a class="logo" href="#top" aria-label="trollbox"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></a>
-  <div class="links"><a href="#station">troll station</a><a href="gallery.html">gallery</a><a href="roll.html">roll a troll</a><a href="soon.html">the trollbox</a><a href="cafe.html">café</a></div>
+  <div class="links"><a href="#station">troll station</a><a href="gallery.html">gallery</a><a href="roll.html">roll a troll</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">café</a></div>
   <a class="btn small yellow" href="https://discord.gg/3cAwmXFF7u">discord</a>
 </nav>
 
 <header class="hero" id="top"><div class="wrap">
   <div class="logobox"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX"></div>
   <span class="eyebrow">2,222 anonymous trolls on bitcoin · shielded on ord dropz</span>
-  <div class="cta"><a class="btn red" href="gallery.html">see all 2,222</a><a class="btn yellow" href="soon.html">the trollbox</a><a class="btn" href="#station">the troll station</a></div>
+  <div class="cta"><a class="btn red" href="gallery.html">see all 2,222</a><a class="btn yellow" href="trollbox.html">the trollbox</a><a class="btn" href="#station">the troll station</a></div>
 </div></header>
 
 <section id="station"><div class="wrap">
@@ -100,15 +100,11 @@
   <div class="station">
     <div class="monitor"><div class="bezel"><canvas id="screen" width="1024" height="768" aria-label="the trollbox screen"></canvas></div></div>
     <div class="neck"></div>
-    <form class="write" id="write" autocomplete="off">
-      <label for="line">your troll line <span class="count" id="count">0 / 280</span></label>
-      <textarea id="line" maxlength="280" placeholder="type it. nobody sees who wrote it."></textarea>
-      <div class="row">
-        <div class="left"><button class="btn red" type="submit">post line</button><span class="chip">preview · opens soon</span></div>
-        <span class="msg" id="msg"></span>
-      </div>
-      <p>one line per troll. it goes in through the vault and onto the trollbox through the ord dropz relay, so the wallet behind it stays hidden. change it or switch it off any time.</p>
-    </form>
+    <div class="write" id="write">
+      <label>post your troll's line</label>
+      <p style="margin:0 0 14px">open your troll in your <a href="https://ord-dropz.xyz/wallet" target="_blank" rel="noopener">ord dropz vault</a> → the arrow next to <b>send</b> → <b>say something</b> → type your line. it goes on chain and shows up here, next to your troll's face. everyone sees which troll said it. nobody sees who.</p>
+      <a class="btn red" href="https://ord-dropz.xyz/wallet" target="_blank" rel="noopener">open my vault</a>
+    </div>
     <a class="chainlink" href="https://ordinals.com/content/b1b81b61d564cabf4c043d7f0284aedd4974be32418e71edca90780b74ad67e5i0" target="_blank" rel="noopener">the trollbox on-chain ↗</a>
   </div>
 </div></section>
@@ -140,11 +136,11 @@
 
 <footer><div class="wrap">
   <div class="row"><img src="logo/trollbox-logo-red.png" alt="TROLLBOX">
-    <div class="links"><a href="gallery.html">gallery</a><a href="soon.html">the trollbox</a><a href="cafe.html">strange café</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
+    <div class="links"><a href="gallery.html">gallery</a><a href="trollbox.html">the trollbox</a><a href="cafe.html">strange café</a><a href="https://discord.gg/3cAwmXFF7u">discord</a><a href="https://x.com/strangersolemn">x</a></div></div>
   <small>trollbox · strangersolemn · 2026 · shielded on ord dropz</small>
 </div></footer>
 
-<script>window.TROLLBOX_CONFIG = { face: n => TB.face(n) };</script>
+<script>window.TROLLBOX_CONFIG = { face: n => TB.face(n), feed: "1105292686112471" };</script>
 <script src="recolor.js"></script><script src="troll-sprites.js"></script><script src="tb-site.js"></script>
 <script src="trollbox-screen.js"></script>
 <script>
@@ -155,6 +151,7 @@ if (TrollboxScreen.config.feed) document.getElementById("feedChip").textContent 
 
 // ---- the line box. postLine() is the one piece that changes at mint: it hands the line to the Ord Dropz vault/relay.
 const line = document.getElementById("line"), count = document.getElementById("count"), msg = document.getElementById("msg");
+if (line) {
 const MINT_OPEN = false;
 async function postLine(text) { throw new Error("opens soon"); }   // → Ord Dropz vault/relay, {"p":"trollbox","v":1,"troll":N,"text":...}
 try { line.value = localStorage.getItem("trollbox-draft") || ""; } catch (e) {}
@@ -170,6 +167,7 @@ document.getElementById("write").addEventListener("submit", async e => {
   }
   try { await postLine(line.value.trim()); msg.textContent = "sent. it shows up after the next relay batch."; } catch (err) { msg.textContent = err.message; }
 });
+}
 
 // ---- scroll reveal
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });

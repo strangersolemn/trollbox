@@ -214,7 +214,13 @@ function setComments(list) {
   comments.forEach(c => { if (!avatars.has(c.id)) { avatars.set(c.id, drawTroll(c.id, AV)); realAvatar(c); } });
   sg.font = FONT;
   entries = comments.map(c => ({ ...c, rows: wrap(c.text) }));
-  if (history.length === 0) history.push(...entries.slice(-8)); // pre-fill so the screen isn't empty
+  // Real feed lines carry their place on the sat (i): those are typed ONCE each, in order, then the screen waits with
+  // a blinking cursor for the next one (one line must not repeat down the screen). Placeholder lines loop as before.
+  const live = entries.length > 0 && entries[0].i !== undefined;
+  if (live !== liveMode) { history.length = 0; typed.clear(); cur = null; liveMode = live; }   // placeholders → real feed
+  if (live) {
+    if (!typed.size) { const old = entries.slice(0, -1); history.push(...old.slice(-40)); old.forEach(e => typed.add(keyOf(e))); }
+  } else if (history.length === 0) history.push(...entries.slice(-8)); // pre-fill so the screen isn't empty
 }
 let loadError = null, loaded = false;
 function refresh() { return loadComments().then(l => { loaded = true; loadError = null; setComments(l); }, e => { loadError = e; log({ error: String(e) }); }); }
@@ -225,19 +231,31 @@ function refresh() { return loadComments().then(l => { loaded = true; loadError 
 const history = [];            // finished entries, oldest first
 let nextIdx = 0, cur = null;   // cur = { e, n, rows, phase, wait }
 const pending = [];            // lines pushed by the page (say()), typed next, before the loop carries on
+const typed = new Set();       // live feed: lines already typed (troll:place on the sat)
+let liveMode = false, replayIdx = 0;
+const LOOP_MIN = 12;           // live feed: from this many lines the screen keeps going round (Solemn, 2026-10-24)
+const keyOf = e => e.id + ":" + e.i;
 let shift = 0, lastT = 0;
 let onKeystroke = () => {};    // set by whoever owns the keyboard
 const entryH = rowsN => rowsN * LINE_H + 12;
 const rowsShown = (e, n) => { let left = n, k = 0; for (const r of e.rows) { if (left <= 0) break; k++; left -= r.length + 1; } return Math.max(1, k); };
 
 function startNext() {
-  const e = pending.length ? pending.shift() : entries[nextIdx++ % entries.length];
+  let e;
+  if (pending.length) e = pending.shift();
+  else if (liveMode) {
+    e = entries.find(x => !typed.has(keyOf(x)));                  // a new line always goes next
+    if (e) typed.add(keyOf(e));
+    else if (entries.length >= LOOP_MIN) e = entries[replayIdx++ % entries.length];   // enough to fill the screen: go round
+    else { cur = null; return false; }                             // a few lines: type once, then wait (no repeats down the screen)
+  }
+  else e = entries[nextIdx++ % entries.length];
   cur = { e, n: 0, rowsN: 1, phase: "arrive", wait: 0.35 };
   shift += entryH(1);          // everything rolls up to make room
 }
 function stepTyper(dt) {
   if (!entries.length && !pending.length) return;
-  if (!cur) startNext();
+  if (!cur && startNext() === false) return;   // live feed, everything typed: wait for the next line
   cur.wait -= dt;
   if (cur.wait > 0) return;
   if (cur.phase === "arrive") { cur.phase = "type"; cur.wait = 0; }
@@ -289,7 +307,7 @@ function drawScreen(t) {
   sg.font = "bold 26px 'Courier New', monospace"; sg.fillStyle = PHOS;
   sg.fillText("TROLLBOX v1.0", PAD, 50);
   sg.font = "18px 'Courier New', monospace"; sg.fillStyle = DIM;
-  const status = comments.length ? comments.length + " LINES ONLINE" : loadError ? "FEED UNREACHABLE" : loaded ? "NO LINES YET" : "READING THE FEED...";
+  const status = comments.length ? comments.length + (comments.length === 1 ? " LINE ONLINE" : " LINES ONLINE") : loadError ? "FEED UNREACHABLE" : loaded ? "NO LINES YET" : "READING THE FEED...";
   sg.fillText("SHIELDED  ·  " + status + "  ·  SENDER: UNKNOWN", PAD, 76);
   sg.fillRect(PAD, HEADER - 6, SW - PAD * 2, 2);
 
@@ -313,7 +331,7 @@ function drawScreen(t) {
   // footer
   sg.fillStyle = DIM; sg.fillRect(PAD, SH - FOOTER + 2, SW - PAD * 2, 2);
   sg.font = "18px 'Courier New', monospace"; sg.fillStyle = DIM;
-  sg.fillText(cur && cur.phase === "type" ? "> someone is typing..." : "> ", PAD, SH - 20);
+  sg.fillText(cur && cur.phase === "type" ? "> someone is typing..." : liveMode && !cur ? "> waiting for the next troll" + (Math.floor(t * 2) % 2 ? "_" : " ") : "> ", PAD, SH - 20);
 
   // scanlines + vignette
   sg.fillStyle = "rgba(0,0,0,0.28)";
