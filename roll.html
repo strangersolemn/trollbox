@@ -71,15 +71,16 @@ async function show(t) {
   try { history.replaceState(null, "", "?n=" + t.id); } catch (e) {}
 }
 const roll = () => show(T.trolls[Math.floor(Math.random() * T.trolls.length)]);
-TB.load(1000).then(t => {
+TB.load(512).then(t => {   // 512 px rolls fast; the pfp download draws at full 1000 px
   T = t; const n = +new URLSearchParams(location.search).get("n");
   (n >= 1 && n <= T.trolls.length) ? show(T.trolls[n - 1]) : roll();
 });
 $("rollBtn").onclick = () => T && roll();
 $("dlBtn").onclick = () => {
   if (!cur) return;
-  const c = document.createElement("canvas"); c.width = c.height = 1000; TB.draw(c.getContext("2d"), T, cur, 0, 0, 1000, 0, 0);
-  c.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = cur.t.name.toLowerCase().replace(/\s+/g, "-") + "-pfp.png"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, "image/png");
+  const t = cur.t; TB.load(1000).then(async T1 => { const sp = await T1.sprite(t);
+  const c = document.createElement("canvas"); c.width = c.height = 1000; TB.draw(c.getContext("2d"), T1, sp, 0, 0, 1000, 0, 0);
+  c.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = t.name.toLowerCase().replace(/\s+/g, "-") + "-pfp.png"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, "image/png"); });
 };
 </script><script src="music.js?v=3"></script>
 </body></html>
